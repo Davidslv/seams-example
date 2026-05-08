@@ -1,0 +1,44 @@
+# frozen_string_literal: true
+
+module Auth
+  class PasswordResetsController < ApplicationController
+    # 5 reset requests per hour per IP. Cheap to send mail but
+    # creating reset tokens for every email is a guess-the-user attack
+    # vector — rate-limit modestly.
+    rate_limit to: 5, within: 1.hour, only: %i[create update],
+               with: -> { redirect_to auth.new_session_path, alert: "Too many password-reset requests. Try again later." }
+
+    # GET /auth/password_reset/new
+    def new
+    end
+
+    # POST /auth/password_reset
+    def create
+      Auth::ResetPassword.request(email: params[:email])
+      # Don't leak whether the email exists — same response either way.
+      flash[:notice] = "If that email is registered, a reset link is on its way."
+      redirect_to new_session_path
+    end
+
+    # GET /auth/password_reset/edit?token=...
+    def edit
+      @token = params[:token]
+    end
+
+    # PATCH /auth/password_reset
+    def update
+      result = Auth::ResetPassword.complete(
+        token: params[:token],
+        new_password: params[:password]
+      )
+
+      if result.ok?
+        redirect_to new_session_path, notice: "Password updated. Sign in with your new password."
+      else
+        flash.now[:alert] = result.error
+        @token            = params[:token]
+        render :edit, status: :unprocessable_entity
+      end
+    end
+  end
+end

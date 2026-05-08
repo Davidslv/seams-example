@@ -1,0 +1,18 @@
+# Omakase Ruby styling for Rails
+inherit_gem: { rubocop-rails-omakase: rubocop.yml }
+
+# Overwrite or add rules to create your own house style
+#
+# # Use `[a, [b, c]]` not `[ a, [ b, c ] ]`
+# Layout/SpaceInsideArrayLiteralBrackets:
+#   Enabled: false
+
+# Engines have their own self-contained .rubocop.yml. Linting them
+# from the host runs gem-style code under whatever flavor of rules
+# the host uses (omakase / etc.) and produces noisy false positives.
+# The gem-generated lib/tasks/seams.rake is excluded for the same
+# reason.
+AllCops:
+  Exclude:
+    - "engines/**/*"
+    - "lib/tasks/seams.rake"

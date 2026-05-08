@@ -1,0 +1,62 @@
+# frozen_string_literal: true
+
+module Billing
+  class CheckoutController < ApplicationController
+    # POST /billing/checkout?plan=price_xxx
+    def create
+      plan = Billing::Plan.active.find_by!(gateway_ref: params[:plan])
+
+      result = Billing::Checkout::CreateSessionService.call(
+        customer_ref: customer_ref_or_create!,
+        plan_ref:     plan.gateway_ref,
+        success_url:  billing.checkout_success_url,
+        cancel_url:   billing.plans_url
+      )
+
+      if result.ok?
+        redirect_to result.url, allow_other_host: true, status: :see_other
+      else
+        redirect_to billing.plans_path, alert: result.error
+      end
+    end
+
+    # GET /billing/checkout/success
+    def success
+      # Stripe will fire `checkout.session.completed` webhook; the
+      # subscription row gets created/updated by the webhook handler.
+      render :success
+    end
+
+    # POST /billing/checkout/lifetime?plan=price_xxx
+    # LTD purchase flow — same shape as #create but uses Stripe's
+    # `mode: "payment"`. The webhook handler distinguishes the two via
+    # session.metadata.access_type.
+    def lifetime
+      plan = Billing::Plan.active.find_by!(gateway_ref: params[:plan])
+
+      result = Billing::Lifetime::CreateLifetimeSessionService.call(
+        customer_ref: customer_ref_or_create!,
+        plan_ref:     plan.gateway_ref,
+        success_url:  billing.checkout_success_url,
+        cancel_url:   billing.plans_url
+      )
+
+      if result.ok?
+        redirect_to result.url, allow_other_host: true, status: :see_other
+      else
+        redirect_to billing.plans_path, alert: result.error
+      end
+    end
+
+    private
+
+    def customer_ref_or_create!
+      user = current_user
+      raise "Host must define current_user" unless user
+
+      return user.stripe_customer_id if user.respond_to?(:stripe_customer_id) && user.stripe_customer_id.present?
+
+      raise Billing::Error, "User #{user.id} has no stripe_customer_id; create one before checkout"
+    end
+  end
+end

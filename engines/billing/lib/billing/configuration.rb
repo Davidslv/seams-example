@@ -1,0 +1,38 @@
+# frozen_string_literal: true
+
+module Billing
+  # Engine-scoped configuration. Override in
+  # config/initializers/billing.rb of the host application:
+  #
+  #   Billing.configure do |c|
+  #     c.gateway        = "Billing::Gateways::Stripe"
+  #     c.api_key        = ENV.fetch("STRIPE_SECRET_KEY")
+  #     c.webhook_secret = ENV.fetch("STRIPE_WEBHOOK_SECRET")
+  #   end
+  class Configuration
+    attr_accessor :gateway, :api_key, :webhook_secret, :default_currency,
+                  :process_webhooks_async
+
+    def initialize
+      @gateway                = "Billing::Gateways::Stripe"
+      @api_key                = ENV.fetch("STRIPE_SECRET_KEY",     nil)
+      @webhook_secret         = ENV.fetch("STRIPE_WEBHOOK_SECRET", nil)
+      @default_currency       = "usd"
+      # Default to synchronous so failed handlers roll back the
+      # WebhookEvent insert and Stripe gets to retry. Hosts on Solid
+      # Queue (or similar) can flip to async + accept the trade-off.
+      @process_webhooks_async = false
+    end
+
+    # Short identifier used as the `gateway:` field in canonical event
+    # payloads. Derived from `gateway` (e.g. "Billing::Gateways::Stripe"
+    # → "stripe"). Override directly if your class name doesn't follow
+    # the convention. NOT memoized — `gateway` is mutable, so
+    # gateway_name re-derives on every read.
+    def gateway_name
+      @gateway_name || gateway.to_s.split("::").last.to_s.downcase
+    end
+
+    attr_writer :gateway_name
+  end
+end

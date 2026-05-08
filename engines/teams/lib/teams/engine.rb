@@ -1,0 +1,31 @@
+# frozen_string_literal: true
+
+module Teams
+  class Engine < ::Rails::Engine
+    isolate_namespace Teams
+
+    config.generators do |g|
+      g.test_framework :rspec
+    end
+
+    initializer "teams.register_events" do
+      Seams::EventRegistry.register("team.created.teams",         emitted_by: "Teams")
+      Seams::EventRegistry.register("team.member_added.teams",    emitted_by: "Teams")
+      Seams::EventRegistry.register("team.member_removed.teams",  emitted_by: "Teams")
+      Seams::EventRegistry.register("invitation.sent.teams",      emitted_by: "Teams")
+      Seams::EventRegistry.register("invitation.accepted.teams",  emitted_by: "Teams")
+    end
+
+    initializer "teams.append_migrations" do |app|
+      unless app.root == root
+        config.paths["db/migrate"].expanded.each do |expanded_path|
+          app.config.paths["db/migrate"] << expanded_path
+        end
+      end
+    end
+
+    config.after_initialize do
+      Teams::InvitationSubscriber.attach!
+    end
+  end
+end

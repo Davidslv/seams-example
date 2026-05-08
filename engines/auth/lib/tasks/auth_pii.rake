@@ -1,0 +1,68 @@
+# frozen_string_literal: true
+
+# Re-encrypts plaintext PII columns for hosts upgrading from Auth
+# generator versions ≤ Wave 10 (where `email` and `provider_uid` were
+# stored plaintext).
+#
+# Usage on the host:
+#
+#   1. Set the transitional flag in config/application.rb so existing
+#      plaintext rows can still be read while the rotation runs:
+#
+#        config.active_record.encryption.support_unencrypted_data = true
+#
+#   2. Deploy + run:
+#
+#        bin/rails seams:auth:rotate_pii_encryption
+#
+#   3. Once the task reports zero remaining unencrypted rows, set the
+#      flag back to `false` (default) and redeploy.
+#
+# Idempotent — re-running on already-encrypted rows is a no-op because
+# the assignment goes through the encryption setter every time.
+namespace :seams do
+  namespace :auth do
+    desc "Re-encrypt PII columns (email, provider_uid) — host upgrades from Wave ≤10"
+    task rotate_pii_encryption: :environment do
+      counts   = { users: 0, oauth_providers: 0 }
+      failures = { users: [], oauth_providers: [] }
+
+      # `update!` runs ALL validations. Legacy rows whose data fails
+      # today's regex (e.g. emails without @, stale imports) would
+      # raise RecordInvalid mid-`find_each` and abort the rotation,
+      # leaving downstream rows plaintext. Trap per-row, log, count
+      # the failure, and keep going — the operator gets a final report
+      # of which rows still need attention before flipping
+      # support_unencrypted_data back to false.
+      Auth::User.find_each do |user|
+        user.update!(email: user.email)
+        counts[:users] += 1
+      rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique => e
+        failures[:users] << { id: user.id, error: "#{e.class}: #{e.message}" }
+      end
+
+      Auth::OAuth::Provider.find_each do |provider|
+        provider.update!(provider_uid: provider.provider_uid)
+        counts[:oauth_providers] += 1
+      rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique => e
+        failures[:oauth_providers] << { id: provider.id, error: "#{e.class}: #{e.message}" }
+      end
+
+      puts "Auth PII rotation complete:"
+      puts "  users           re-encrypted: #{counts[:users]}, failures: #{failures[:users].size}"
+      puts "  oauth_providers re-encrypted: #{counts[:oauth_providers]}, failures: #{failures[:oauth_providers].size}"
+
+      if failures.values.any?(&:any?)
+        puts ""
+        puts "Failures (fix the underlying data, then re-run this task):"
+        failures.each do |table, rows|
+          rows.each { |row| puts "  #{table} id=#{row[:id]} — #{row[:error]}" }
+        end
+        puts ""
+        puts "DO NOT set support_unencrypted_data = false until failure count is zero — " \
+             "those rows are still plaintext."
+        abort("Rotation incomplete: #{failures.values.flatten.size} row(s) failed.")
+      end
+    end
+  end
+end

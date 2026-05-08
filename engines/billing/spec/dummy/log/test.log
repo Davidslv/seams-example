@@ -1,0 +1,785 @@
+  [1m[35m (4.3ms)[0m  [1m[35mDROP TABLE "billing_subscriptions" CASCADE[0m
+  [1m[35m (3.3ms)[0m  [1m[35mDROP TABLE "billing_invoices" CASCADE[0m
+  [1m[35m (3.3ms)[0m  [1m[35mDROP TABLE "billing_webhook_events" CASCADE[0m
+  [1m[35m (2.4ms)[0m  [1m[35mDROP TABLE "billing_plans" CASCADE[0m
+  [1m[35m (2.6ms)[0m  [1m[35mDROP TABLE "billing_lifetime_passes" CASCADE[0m
+  [1m[35m (1.9ms)[0m  [1m[35mDROP TABLE "users" CASCADE[0m
+  [1m[35m (1.5ms)[0m  [1m[35mDROP TABLE "schema_migrations" CASCADE[0m
+  [1m[35m (1.4ms)[0m  [1m[35mDROP TABLE "ar_internal_metadata" CASCADE[0m
+  [1m[35m (6.2ms)[0m  [1m[35mCREATE TABLE "billing_subscriptions" ("id" bigserial primary key, "customer_ref" character varying NOT NULL, "plan_ref" character varying NOT NULL, "gateway_ref" character varying NOT NULL, "status" character varying DEFAULT 'incomplete' NOT NULL, "current_period_end" timestamp(6), "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (0.9ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_billing_subscriptions_on_gateway_ref" ON "billing_subscriptions" ("gateway_ref")[0m
+  [1m[35m (5.1ms)[0m  [1m[35mCREATE TABLE "billing_invoices" ("id" bigserial primary key, "gateway_ref" character varying NOT NULL, "customer_ref" character varying NOT NULL, "subscription_ref" character varying, "amount_cents" integer NOT NULL, "currency" character varying DEFAULT 'USD' NOT NULL, "status" character varying DEFAULT 'open' NOT NULL, "paid_at" timestamp(6), "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (1.3ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_billing_invoices_on_gateway_ref" ON "billing_invoices" ("gateway_ref")[0m
+  [1m[35m (1.7ms)[0m  [1m[35mCREATE TABLE "billing_webhook_events" ("id" bigserial primary key, "gateway" character varying NOT NULL, "gateway_event_id" character varying NOT NULL, "event_type" character varying NOT NULL, "livemode" boolean DEFAULT FALSE NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (0.5ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_billing_webhook_events_on_gateway_and_gateway_event_id" ON "billing_webhook_events" ("gateway", "gateway_event_id")[0m
+  [1m[35m (1.6ms)[0m  [1m[35mCREATE TABLE "billing_plans" ("id" bigserial primary key, "gateway_ref" character varying NOT NULL, "name" character varying NOT NULL, "description" text, "amount_cents" integer DEFAULT 0 NOT NULL, "currency" character varying DEFAULT 'usd' NOT NULL, "interval" character varying DEFAULT 'month' NOT NULL, "trial_period_days" integer, "active" boolean DEFAULT TRUE NOT NULL, "features" jsonb DEFAULT '{}' NOT NULL, "max_lifetime_units" integer, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (1.2ms)[0m  [1m[35mCREATE TABLE "billing_lifetime_passes" ("id" bigserial primary key, "customer_ref" character varying NOT NULL, "plan_ref" character varying NOT NULL, "gateway_ref" character varying, "granted_by_user_id" bigint, "granted_at" timestamp(6) NOT NULL, "revoked_at" timestamp(6), "revoked_by_user_id" bigint, "notes" text, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (0.5ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_billing_ltd_unique" ON "billing_lifetime_passes" ("customer_ref", "plan_ref")[0m
+  [1m[35m (1.3ms)[0m  [1m[35mCREATE TABLE "users" ("id" bigserial primary key, "email" character varying, "stripe_customer_id" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (1.2ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" character varying NOT NULL PRIMARY KEY)[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.4ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[35m (0.3ms)[0m  [1m[32mINSERT INTO "schema_migrations" (version) VALUES (0)[0m
+  [1m[35m (1.5ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" character varying NOT NULL PRIMARY KEY, "value" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.4ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::InternalMetadata Create (0.3ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'test', '2026-05-08 08:14:39.785577', '2026-05-08 08:14:39.785579') RETURNING "key"[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mBilling::Invoice Load (1.1ms)[0m  [1m[34mSELECT "billing_invoices".* FROM "billing_invoices" WHERE "billing_invoices"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "in_test_123"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Invoice Exists? (0.6ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_invoices" WHERE "billing_invoices"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "in_test_123"], ["LIMIT", 1]]
+  [1m[36mBilling::Invoice Create (1.0ms)[0m  [1m[32mINSERT INTO "billing_invoices" ("gateway_ref", "customer_ref", "subscription_ref", "amount_cents", "currency", "status", "paid_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["gateway_ref", "in_test_123"], ["customer_ref", "cus_test_123"], ["subscription_ref", "sub_test_123"], ["amount_cents", 1299], ["currency", "GBP"], ["status", "void"], ["paid_at", nil], ["created_at", "2026-05-08 08:14:39.853473"], ["updated_at", "2026-05-08 08:14:39.853473"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mBilling::Invoice Load (0.3ms)[0m  [1m[34mSELECT "billing_invoices".* FROM "billing_invoices" WHERE "billing_invoices"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "in_test_123"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Subscription Exists? (1.0ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_subscriptions" WHERE "billing_subscriptions"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "sub_test_123"], ["LIMIT", 1]]
+  [1m[36mBilling::Subscription Create (0.8ms)[0m  [1m[32mINSERT INTO "billing_subscriptions" ("customer_ref", "plan_ref", "gateway_ref", "status", "current_period_end", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["customer_ref", "cus_test_123"], ["plan_ref", "price_test_pro"], ["gateway_ref", "sub_test_123"], ["status", "active"], ["current_period_end", "2026-06-07 08:14:39.860836"], ["created_at", "2026-05-08 08:14:39.862179"], ["updated_at", "2026-05-08 08:14:39.862179"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mBilling::Subscription Load (0.4ms)[0m  [1m[34mSELECT "billing_subscriptions".* FROM "billing_subscriptions" WHERE "billing_subscriptions"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "sub_test_123"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Subscription Update (0.5ms)[0m  [1m[33mUPDATE "billing_subscriptions" SET "plan_ref" = $1, "current_period_end" = $2, "updated_at" = $3 WHERE "billing_subscriptions"."id" = $4[0m  [["plan_ref", "price_test_pro_annual"], ["current_period_end", "2024-12-27 03:33:20"], ["updated_at", "2026-05-08 08:14:39.868852"], ["id", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mBilling::Subscription Load (0.2ms)[0m  [1m[34mSELECT "billing_subscriptions".* FROM "billing_subscriptions" WHERE "billing_subscriptions"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "sub_test_123"], ["LIMIT", 1]]
+  [1m[36mBilling::Subscription Count (0.6ms)[0m  [1m[34mSELECT COUNT(*) FROM "billing_subscriptions" WHERE "billing_subscriptions"."gateway_ref" = $1[0m  [["gateway_ref", "sub_test_123"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mBilling::Subscription Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "billing_subscriptions"[0m
+  [1m[36mBilling::Invoice Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "billing_invoices"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mBilling::Subscription Load (0.2ms)[0m  [1m[34mSELECT "billing_subscriptions".* FROM "billing_subscriptions" WHERE "billing_subscriptions"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "sub_test_123"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Subscription Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_subscriptions" WHERE "billing_subscriptions"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "sub_test_123"], ["LIMIT", 1]]
+  [1m[36mBilling::Subscription Create (0.3ms)[0m  [1m[32mINSERT INTO "billing_subscriptions" ("customer_ref", "plan_ref", "gateway_ref", "status", "current_period_end", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["customer_ref", "cus_test_123"], ["plan_ref", "price_test_pro"], ["gateway_ref", "sub_test_123"], ["status", "active"], ["current_period_end", "2024-11-27 03:33:20"], ["created_at", "2026-05-08 08:14:39.874786"], ["updated_at", "2026-05-08 08:14:39.874786"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mBilling::Subscription Load (0.3ms)[0m  [1m[34mSELECT "billing_subscriptions".* FROM "billing_subscriptions" WHERE "billing_subscriptions"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "sub_test_123"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mBilling::Invoice Load (0.2ms)[0m  [1m[34mSELECT "billing_invoices".* FROM "billing_invoices" WHERE "billing_invoices"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "in_test_123"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Invoice Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_invoices" WHERE "billing_invoices"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "in_test_123"], ["LIMIT", 1]]
+  [1m[36mBilling::Invoice Create (0.3ms)[0m  [1m[32mINSERT INTO "billing_invoices" ("gateway_ref", "customer_ref", "subscription_ref", "amount_cents", "currency", "status", "paid_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["gateway_ref", "in_test_123"], ["customer_ref", "cus_test_123"], ["subscription_ref", "sub_test_123"], ["amount_cents", 1299], ["currency", "GBP"], ["status", "open"], ["paid_at", nil], ["created_at", "2026-05-08 08:14:39.877752"], ["updated_at", "2026-05-08 08:14:39.877752"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mBilling::Invoice Load (0.2ms)[0m  [1m[34mSELECT "billing_invoices".* FROM "billing_invoices" WHERE "billing_invoices"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "in_test_123"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Invoice Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_invoices" WHERE "billing_invoices"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "in_test_123"], ["LIMIT", 1]]
+  [1m[36mBilling::Invoice Create (0.3ms)[0m  [1m[32mINSERT INTO "billing_invoices" ("gateway_ref", "customer_ref", "subscription_ref", "amount_cents", "currency", "status", "paid_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["gateway_ref", "in_test_123"], ["customer_ref", "cus_test_1"], ["subscription_ref", "sub_test_1"], ["amount_cents", 1299], ["currency", "GBP"], ["status", "draft"], ["paid_at", nil], ["created_at", "2026-05-08 08:14:39.880406"], ["updated_at", "2026-05-08 08:14:39.880406"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mBilling::Invoice Load (0.2ms)[0m  [1m[34mSELECT "billing_invoices".* FROM "billing_invoices" WHERE "billing_invoices"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "in_test_123"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Invoice Update (0.3ms)[0m  [1m[33mUPDATE "billing_invoices" SET "customer_ref" = $1, "subscription_ref" = $2, "status" = $3, "updated_at" = $4 WHERE "billing_invoices"."id" = $5[0m  [["customer_ref", "cus_test_123"], ["subscription_ref", "sub_test_123"], ["status", "open"], ["updated_at", "2026-05-08 08:14:39.883819"], ["id", 3]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mBilling::Invoice Load (0.3ms)[0m  [1m[34mSELECT "billing_invoices".* FROM "billing_invoices" WHERE "billing_invoices"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "in_test_123"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mBilling::Subscription Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "billing_subscriptions"[0m
+  [1m[36mBilling::Invoice Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "billing_invoices"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mBilling::LifetimePass Load (1.2ms)[0m  [1m[34mSELECT "billing_lifetime_passes".* FROM "billing_lifetime_passes" WHERE "billing_lifetime_passes"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "cs_test_123"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::LifetimePass Exists? (0.7ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_lifetime_passes" WHERE "billing_lifetime_passes"."customer_ref" = $1 AND "billing_lifetime_passes"."plan_ref" = $2 LIMIT $3[0m  [["customer_ref", "cus_test_123"], ["plan_ref", "price_test_lifetime_1"], ["LIMIT", 1]]
+  [1m[36mBilling::LifetimePass Create (0.9ms)[0m  [1m[32mINSERT INTO "billing_lifetime_passes" ("customer_ref", "plan_ref", "gateway_ref", "granted_by_user_id", "granted_at", "revoked_at", "revoked_by_user_id", "notes", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING "id"[0m  [["customer_ref", "cus_test_123"], ["plan_ref", "price_test_lifetime_1"], ["gateway_ref", "cs_test_123"], ["granted_by_user_id", nil], ["granted_at", "2026-05-08 08:14:39.911684"], ["revoked_at", nil], ["revoked_by_user_id", nil], ["notes", nil], ["created_at", "2026-05-08 08:14:39.912736"], ["updated_at", "2026-05-08 08:14:39.912736"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mBilling::LifetimePass Load (0.3ms)[0m  [1m[34mSELECT "billing_lifetime_passes".* FROM "billing_lifetime_passes" WHERE "billing_lifetime_passes"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "cs_test_123"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mBilling::LifetimePass Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "billing_lifetime_passes"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mBilling::Invoice Load (0.2ms)[0m  [1m[34mSELECT "billing_invoices".* FROM "billing_invoices" WHERE "billing_invoices"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "in_test_123"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Invoice Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_invoices" WHERE "billing_invoices"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "in_test_123"], ["LIMIT", 1]]
+  [1m[36mBilling::Invoice Create (0.3ms)[0m  [1m[32mINSERT INTO "billing_invoices" ("gateway_ref", "customer_ref", "subscription_ref", "amount_cents", "currency", "status", "paid_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["gateway_ref", "in_test_123"], ["customer_ref", "cus_test_123"], ["subscription_ref", "sub_test_123"], ["amount_cents", 1299], ["currency", "GBP"], ["status", "draft"], ["paid_at", nil], ["created_at", "2026-05-08 08:14:39.919743"], ["updated_at", "2026-05-08 08:14:39.919743"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mBilling::Invoice Load (0.2ms)[0m  [1m[34mSELECT "billing_invoices".* FROM "billing_invoices" WHERE "billing_invoices"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "in_test_123"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mBilling::Subscription Load (0.2ms)[0m  [1m[34mSELECT "billing_subscriptions".* FROM "billing_subscriptions" WHERE "billing_subscriptions"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "sub_test_123"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Subscription Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_subscriptions" WHERE "billing_subscriptions"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "sub_test_123"], ["LIMIT", 1]]
+  [1m[36mBilling::Subscription Create (0.4ms)[0m  [1m[32mINSERT INTO "billing_subscriptions" ("customer_ref", "plan_ref", "gateway_ref", "status", "current_period_end", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["customer_ref", "cus_test_123"], ["plan_ref", "price_test_pro"], ["gateway_ref", "sub_test_123"], ["status", "trialing"], ["current_period_end", nil], ["created_at", "2026-05-08 08:14:39.922588"], ["updated_at", "2026-05-08 08:14:39.922588"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mBilling::Subscription Load (0.3ms)[0m  [1m[34mSELECT "billing_subscriptions".* FROM "billing_subscriptions" WHERE "billing_subscriptions"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "sub_test_123"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Subscription Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_subscriptions" WHERE "billing_subscriptions"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "sub_test_123"], ["LIMIT", 1]]
+  [1m[36mBilling::Subscription Create (0.3ms)[0m  [1m[32mINSERT INTO "billing_subscriptions" ("customer_ref", "plan_ref", "gateway_ref", "status", "current_period_end", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["customer_ref", "cus_test_123"], ["plan_ref", "price_test_pro"], ["gateway_ref", "sub_test_123"], ["status", "active"], ["current_period_end", "2026-06-07 08:14:39.924983"], ["created_at", "2026-05-08 08:14:39.925583"], ["updated_at", "2026-05-08 08:14:39.925583"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mBilling::Subscription Load (0.2ms)[0m  [1m[34mSELECT "billing_subscriptions".* FROM "billing_subscriptions" WHERE "billing_subscriptions"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "sub_test_123"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Subscription Update (0.5ms)[0m  [1m[33mUPDATE "billing_subscriptions" SET "status" = $1, "current_period_end" = $2, "updated_at" = $3 WHERE "billing_subscriptions"."id" = $4[0m  [["status", "canceled"], ["current_period_end", nil], ["updated_at", "2026-05-08 08:14:39.926725"], ["id", 4]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mBilling::Subscription Load (0.2ms)[0m  [1m[34mSELECT "billing_subscriptions".* FROM "billing_subscriptions" WHERE "billing_subscriptions"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "sub_test_123"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mBilling::Invoice Load (0.2ms)[0m  [1m[34mSELECT "billing_invoices".* FROM "billing_invoices" WHERE "billing_invoices"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "in_test_123"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Invoice Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_invoices" WHERE "billing_invoices"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "in_test_123"], ["LIMIT", 1]]
+  [1m[36mBilling::Invoice Create (0.3ms)[0m  [1m[32mINSERT INTO "billing_invoices" ("gateway_ref", "customer_ref", "subscription_ref", "amount_cents", "currency", "status", "paid_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["gateway_ref", "in_test_123"], ["customer_ref", "cus_test_123"], ["subscription_ref", "sub_test_123"], ["amount_cents", 1299], ["currency", "GBP"], ["status", "paid"], ["paid_at", "2026-05-08 08:14:39.928995"], ["created_at", "2026-05-08 08:14:39.929567"], ["updated_at", "2026-05-08 08:14:39.929567"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mBilling::Invoice Load (0.2ms)[0m  [1m[34mSELECT "billing_invoices".* FROM "billing_invoices" WHERE "billing_invoices"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "in_test_123"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.7ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mBilling::Subscription Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_subscriptions" WHERE "billing_subscriptions"."gateway_ref" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mBilling::Subscription Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_subscriptions" WHERE "billing_subscriptions"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "sub_x"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Plan Exists? (0.8ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_plans" WHERE "billing_plans"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "price_test_lifetime_1"], ["LIMIT", 1]]
+  [1m[36mBilling::Plan Create (0.5ms)[0m  [1m[32mINSERT INTO "billing_plans" ("gateway_ref", "name", "description", "amount_cents", "currency", "interval", "trial_period_days", "active", "features", "max_lifetime_units", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING "id"[0m  [["gateway_ref", "price_test_lifetime_1"], ["name", "Plan 1"], ["description", nil], ["amount_cents", 1299], ["currency", "GBP"], ["interval", "lifetime"], ["trial_period_days", 0], ["active", true], ["features", "{}"], ["max_lifetime_units", 5], ["created_at", "2026-05-08 08:14:39.959567"], ["updated_at", "2026-05-08 08:14:39.959567"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Plan Load (0.5ms)[0m  [1m[37mSELECT "billing_plans".* FROM "billing_plans" WHERE "billing_plans"."id" = $1 LIMIT $2 FOR UPDATE[0m  [["id", 1], ["LIMIT", 1]]
+  [1m[36mBilling::LifetimePass Count (0.4ms)[0m  [1m[34mSELECT COUNT(*) FROM "billing_lifetime_passes" WHERE "billing_lifetime_passes"."plan_ref" = $1[0m  [["plan_ref", "price_test_lifetime_1"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Plan Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_plans" WHERE "billing_plans"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "price_test_lifetime_2"], ["LIMIT", 1]]
+  [1m[36mBilling::Plan Create (0.3ms)[0m  [1m[32mINSERT INTO "billing_plans" ("gateway_ref", "name", "description", "amount_cents", "currency", "interval", "trial_period_days", "active", "features", "max_lifetime_units", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING "id"[0m  [["gateway_ref", "price_test_lifetime_2"], ["name", "Plan 2"], ["description", nil], ["amount_cents", 1299], ["currency", "GBP"], ["interval", "lifetime"], ["trial_period_days", 0], ["active", true], ["features", "{}"], ["max_lifetime_units", 1], ["created_at", "2026-05-08 08:14:39.968042"], ["updated_at", "2026-05-08 08:14:39.968042"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::LifetimePass Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_lifetime_passes" WHERE "billing_lifetime_passes"."customer_ref" = $1 AND "billing_lifetime_passes"."plan_ref" = $2 LIMIT $3[0m  [["customer_ref", "cus_test_lifetime_1"], ["plan_ref", "price_test_lifetime_2"], ["LIMIT", 1]]
+  [1m[36mBilling::LifetimePass Create (0.2ms)[0m  [1m[32mINSERT INTO "billing_lifetime_passes" ("customer_ref", "plan_ref", "gateway_ref", "granted_by_user_id", "granted_at", "revoked_at", "revoked_by_user_id", "notes", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING "id"[0m  [["customer_ref", "cus_test_lifetime_1"], ["plan_ref", "price_test_lifetime_2"], ["gateway_ref", "cs_test_1"], ["granted_by_user_id", nil], ["granted_at", "2026-05-08 08:14:39.968846"], ["revoked_at", nil], ["revoked_by_user_id", nil], ["notes", nil], ["created_at", "2026-05-08 08:14:39.969701"], ["updated_at", "2026-05-08 08:14:39.969701"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Plan Load (0.5ms)[0m  [1m[37mSELECT "billing_plans".* FROM "billing_plans" WHERE "billing_plans"."id" = $1 LIMIT $2 FOR UPDATE[0m  [["id", 2], ["LIMIT", 1]]
+  [1m[36mBilling::LifetimePass Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "billing_lifetime_passes" WHERE "billing_lifetime_passes"."plan_ref" = $1[0m  [["plan_ref", "price_test_lifetime_2"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Plan Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_plans" WHERE "billing_plans"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "price_test_lifetime_3"], ["LIMIT", 1]]
+  [1m[36mBilling::Plan Create (0.3ms)[0m  [1m[32mINSERT INTO "billing_plans" ("gateway_ref", "name", "description", "amount_cents", "currency", "interval", "trial_period_days", "active", "features", "max_lifetime_units", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING "id"[0m  [["gateway_ref", "price_test_lifetime_3"], ["name", "Plan 3"], ["description", nil], ["amount_cents", 1299], ["currency", "GBP"], ["interval", "lifetime"], ["trial_period_days", 0], ["active", true], ["features", "{}"], ["max_lifetime_units", nil], ["created_at", "2026-05-08 08:14:39.972981"], ["updated_at", "2026-05-08 08:14:39.972981"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::LifetimePass Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_lifetime_passes" WHERE "billing_lifetime_passes"."customer_ref" = $1 AND "billing_lifetime_passes"."plan_ref" = $2 LIMIT $3[0m  [["customer_ref", "cus_test_lifetime_2"], ["plan_ref", "price_test_lifetime_3"], ["LIMIT", 1]]
+  [1m[36mBilling::LifetimePass Create (0.3ms)[0m  [1m[32mINSERT INTO "billing_lifetime_passes" ("customer_ref", "plan_ref", "gateway_ref", "granted_by_user_id", "granted_at", "revoked_at", "revoked_by_user_id", "notes", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING "id"[0m  [["customer_ref", "cus_test_lifetime_2"], ["plan_ref", "price_test_lifetime_3"], ["gateway_ref", "cs_test_2"], ["granted_by_user_id", nil], ["granted_at", "2026-05-08 08:14:39.973726"], ["revoked_at", nil], ["revoked_by_user_id", nil], ["notes", nil], ["created_at", "2026-05-08 08:14:39.974304"], ["updated_at", "2026-05-08 08:14:39.974304"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Plan Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_plans" WHERE "billing_plans"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "price_test_lifetime_4"], ["LIMIT", 1]]
+  [1m[36mBilling::Plan Create (0.3ms)[0m  [1m[32mINSERT INTO "billing_plans" ("gateway_ref", "name", "description", "amount_cents", "currency", "interval", "trial_period_days", "active", "features", "max_lifetime_units", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING "id"[0m  [["gateway_ref", "price_test_lifetime_4"], ["name", "Plan 4"], ["description", nil], ["amount_cents", 1299], ["currency", "GBP"], ["interval", "lifetime"], ["trial_period_days", 0], ["active", true], ["features", "{}"], ["max_lifetime_units", 5], ["created_at", "2026-05-08 08:14:39.976324"], ["updated_at", "2026-05-08 08:14:39.976324"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::LifetimePass Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_lifetime_passes" WHERE "billing_lifetime_passes"."customer_ref" = $1 AND "billing_lifetime_passes"."plan_ref" = $2 LIMIT $3[0m  [["customer_ref", "cus_test_lifetime_3"], ["plan_ref", "price_test_lifetime_4"], ["LIMIT", 1]]
+  [1m[36mBilling::LifetimePass Create (0.3ms)[0m  [1m[32mINSERT INTO "billing_lifetime_passes" ("customer_ref", "plan_ref", "gateway_ref", "granted_by_user_id", "granted_at", "revoked_at", "revoked_by_user_id", "notes", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING "id"[0m  [["customer_ref", "cus_test_lifetime_3"], ["plan_ref", "price_test_lifetime_4"], ["gateway_ref", "cs_test_3"], ["granted_by_user_id", nil], ["granted_at", "2026-05-08 08:14:39.977228"], ["revoked_at", nil], ["revoked_by_user_id", nil], ["notes", nil], ["created_at", "2026-05-08 08:14:39.977832"], ["updated_at", "2026-05-08 08:14:39.977832"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Plan Load (0.5ms)[0m  [1m[37mSELECT "billing_plans".* FROM "billing_plans" WHERE "billing_plans"."id" = $1 LIMIT $2 FOR UPDATE[0m  [["id", 4], ["LIMIT", 1]]
+  [1m[36mBilling::LifetimePass Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "billing_lifetime_passes" WHERE "billing_lifetime_passes"."plan_ref" = $1[0m  [["plan_ref", "price_test_lifetime_4"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Plan Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_plans" WHERE "billing_plans"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "price_test_1"], ["LIMIT", 1]]
+  [1m[36mBilling::Plan Create (0.3ms)[0m  [1m[32mINSERT INTO "billing_plans" ("gateway_ref", "name", "description", "amount_cents", "currency", "interval", "trial_period_days", "active", "features", "max_lifetime_units", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING "id"[0m  [["gateway_ref", "price_test_1"], ["name", "Plan 5"], ["description", nil], ["amount_cents", 1299], ["currency", "GBP"], ["interval", "month"], ["trial_period_days", 0], ["active", true], ["features", "{}"], ["max_lifetime_units", 1], ["created_at", "2026-05-08 08:14:39.981166"], ["updated_at", "2026-05-08 08:14:39.981166"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Plan Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_plans" WHERE "billing_plans"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "price_test_lifetime_5"], ["LIMIT", 1]]
+  [1m[36mBilling::Plan Create (0.3ms)[0m  [1m[32mINSERT INTO "billing_plans" ("gateway_ref", "name", "description", "amount_cents", "currency", "interval", "trial_period_days", "active", "features", "max_lifetime_units", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING "id"[0m  [["gateway_ref", "price_test_lifetime_5"], ["name", "Plan 6"], ["description", nil], ["amount_cents", 1299], ["currency", "GBP"], ["interval", "lifetime"], ["trial_period_days", 0], ["active", true], ["features", "{}"], ["max_lifetime_units", 3], ["created_at", "2026-05-08 08:14:39.983193"], ["updated_at", "2026-05-08 08:14:39.983193"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::LifetimePass Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_lifetime_passes" WHERE "billing_lifetime_passes"."customer_ref" = $1 AND "billing_lifetime_passes"."plan_ref" = $2 LIMIT $3[0m  [["customer_ref", "cus_test_lifetime_4"], ["plan_ref", "price_test_lifetime_5"], ["LIMIT", 1]]
+  [1m[36mBilling::LifetimePass Create (0.4ms)[0m  [1m[32mINSERT INTO "billing_lifetime_passes" ("customer_ref", "plan_ref", "gateway_ref", "granted_by_user_id", "granted_at", "revoked_at", "revoked_by_user_id", "notes", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING "id"[0m  [["customer_ref", "cus_test_lifetime_4"], ["plan_ref", "price_test_lifetime_5"], ["gateway_ref", "cs_test_4"], ["granted_by_user_id", nil], ["granted_at", "2026-05-08 08:14:39.983901"], ["revoked_at", nil], ["revoked_by_user_id", nil], ["notes", nil], ["created_at", "2026-05-08 08:14:39.984662"], ["updated_at", "2026-05-08 08:14:39.984662"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mBilling::LifetimePass Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "billing_lifetime_passes" WHERE "billing_lifetime_passes"."plan_ref" = $1[0m  [["plan_ref", "price_test_lifetime_5"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Plan Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_plans" WHERE "billing_plans"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "price_test_lifetime_6"], ["LIMIT", 1]]
+  [1m[36mBilling::Plan Create (0.3ms)[0m  [1m[32mINSERT INTO "billing_plans" ("gateway_ref", "name", "description", "amount_cents", "currency", "interval", "trial_period_days", "active", "features", "max_lifetime_units", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING "id"[0m  [["gateway_ref", "price_test_lifetime_6"], ["name", "Plan 7"], ["description", nil], ["amount_cents", 1299], ["currency", "GBP"], ["interval", "lifetime"], ["trial_period_days", 0], ["active", true], ["features", "{}"], ["max_lifetime_units", nil], ["created_at", "2026-05-08 08:14:39.987141"], ["updated_at", "2026-05-08 08:14:39.987141"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Plan Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_plans" WHERE "billing_plans"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "price_test_lifetime_7"], ["LIMIT", 1]]
+  [1m[36mBilling::Plan Create (0.3ms)[0m  [1m[32mINSERT INTO "billing_plans" ("gateway_ref", "name", "description", "amount_cents", "currency", "interval", "trial_period_days", "active", "features", "max_lifetime_units", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING "id"[0m  [["gateway_ref", "price_test_lifetime_7"], ["name", "Plan 8"], ["description", nil], ["amount_cents", 1299], ["currency", "GBP"], ["interval", "lifetime"], ["trial_period_days", 0], ["active", true], ["features", "{}"], ["max_lifetime_units", 1], ["created_at", "2026-05-08 08:14:39.989133"], ["updated_at", "2026-05-08 08:14:39.989133"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::LifetimePass Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_lifetime_passes" WHERE "billing_lifetime_passes"."customer_ref" = $1 AND "billing_lifetime_passes"."plan_ref" = $2 LIMIT $3[0m  [["customer_ref", "cus_test_lifetime_5"], ["plan_ref", "price_test_lifetime_7"], ["LIMIT", 1]]
+  [1m[36mBilling::LifetimePass Create (0.3ms)[0m  [1m[32mINSERT INTO "billing_lifetime_passes" ("customer_ref", "plan_ref", "gateway_ref", "granted_by_user_id", "granted_at", "revoked_at", "revoked_by_user_id", "notes", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING "id"[0m  [["customer_ref", "cus_test_lifetime_5"], ["plan_ref", "price_test_lifetime_7"], ["gateway_ref", "cs_test_5"], ["granted_by_user_id", nil], ["granted_at", "2026-05-08 08:14:39.989843"], ["revoked_at", nil], ["revoked_by_user_id", nil], ["notes", nil], ["created_at", "2026-05-08 08:14:39.990479"], ["updated_at", "2026-05-08 08:14:39.990479"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::LifetimePass Exists? (0.6ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_lifetime_passes" WHERE "billing_lifetime_passes"."customer_ref" = $1 AND "billing_lifetime_passes"."plan_ref" = $2 LIMIT $3[0m  [["customer_ref", "cus_test_lifetime_6"], ["plan_ref", "price_test_lifetime_7"], ["LIMIT", 1]]
+  [1m[36mBilling::LifetimePass Create (0.3ms)[0m  [1m[32mINSERT INTO "billing_lifetime_passes" ("customer_ref", "plan_ref", "gateway_ref", "granted_by_user_id", "granted_at", "revoked_at", "revoked_by_user_id", "notes", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING "id"[0m  [["customer_ref", "cus_test_lifetime_6"], ["plan_ref", "price_test_lifetime_7"], ["gateway_ref", "cs_test_6"], ["granted_by_user_id", nil], ["granted_at", "2026-05-08 08:14:39.991200"], ["revoked_at", nil], ["revoked_by_user_id", nil], ["notes", nil], ["created_at", "2026-05-08 08:14:39.991932"], ["updated_at", "2026-05-08 08:14:39.991932"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mBilling::LifetimePass Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "billing_lifetime_passes" WHERE "billing_lifetime_passes"."plan_ref" = $1[0m  [["plan_ref", "price_test_lifetime_7"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mBilling::Plan Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_plans" WHERE "billing_plans"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "price_test_2"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mBilling::Plan Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_plans" WHERE "billing_plans"."gateway_ref" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[35m (5.4ms)[0m  [1m[35mDROP TABLE "billing_subscriptions" CASCADE[0m
+  [1m[35m (2.2ms)[0m  [1m[35mDROP TABLE "billing_invoices" CASCADE[0m
+  [1m[35m (2.7ms)[0m  [1m[35mDROP TABLE "billing_webhook_events" CASCADE[0m
+  [1m[35m (2.2ms)[0m  [1m[35mDROP TABLE "billing_plans" CASCADE[0m
+  [1m[35m (3.5ms)[0m  [1m[35mDROP TABLE "billing_lifetime_passes" CASCADE[0m
+  [1m[35m (2.7ms)[0m  [1m[35mDROP TABLE "users" CASCADE[0m
+  [1m[35m (2.2ms)[0m  [1m[35mDROP TABLE "schema_migrations" CASCADE[0m
+  [1m[35m (2.2ms)[0m  [1m[35mDROP TABLE "ar_internal_metadata" CASCADE[0m
+  [1m[35m (6.8ms)[0m  [1m[35mCREATE TABLE "billing_subscriptions" ("id" bigserial primary key, "customer_ref" character varying NOT NULL, "plan_ref" character varying NOT NULL, "gateway_ref" character varying NOT NULL, "status" character varying DEFAULT 'incomplete' NOT NULL, "current_period_end" timestamp(6), "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (1.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_billing_subscriptions_on_gateway_ref" ON "billing_subscriptions" ("gateway_ref")[0m
+  [1m[35m (3.3ms)[0m  [1m[35mCREATE TABLE "billing_invoices" ("id" bigserial primary key, "gateway_ref" character varying NOT NULL, "customer_ref" character varying NOT NULL, "subscription_ref" character varying, "amount_cents" integer NOT NULL, "currency" character varying DEFAULT 'USD' NOT NULL, "status" character varying DEFAULT 'open' NOT NULL, "paid_at" timestamp(6), "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (1.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_billing_invoices_on_gateway_ref" ON "billing_invoices" ("gateway_ref")[0m
+  [1m[35m (1.5ms)[0m  [1m[35mCREATE TABLE "billing_webhook_events" ("id" bigserial primary key, "gateway" character varying NOT NULL, "gateway_event_id" character varying NOT NULL, "event_type" character varying NOT NULL, "livemode" boolean DEFAULT FALSE NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (0.5ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_billing_webhook_events_on_gateway_and_gateway_event_id" ON "billing_webhook_events" ("gateway", "gateway_event_id")[0m
+  [1m[35m (1.5ms)[0m  [1m[35mCREATE TABLE "billing_plans" ("id" bigserial primary key, "gateway_ref" character varying NOT NULL, "name" character varying NOT NULL, "description" text, "amount_cents" integer DEFAULT 0 NOT NULL, "currency" character varying DEFAULT 'usd' NOT NULL, "interval" character varying DEFAULT 'month' NOT NULL, "trial_period_days" integer, "active" boolean DEFAULT TRUE NOT NULL, "features" jsonb DEFAULT '{}' NOT NULL, "max_lifetime_units" integer, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (1.1ms)[0m  [1m[35mCREATE TABLE "billing_lifetime_passes" ("id" bigserial primary key, "customer_ref" character varying NOT NULL, "plan_ref" character varying NOT NULL, "gateway_ref" character varying, "granted_by_user_id" bigint, "granted_at" timestamp(6) NOT NULL, "revoked_at" timestamp(6), "revoked_by_user_id" bigint, "notes" text, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (0.5ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_billing_ltd_unique" ON "billing_lifetime_passes" ("customer_ref", "plan_ref")[0m
+  [1m[35m (1.1ms)[0m  [1m[35mCREATE TABLE "users" ("id" bigserial primary key, "email" character varying, "stripe_customer_id" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (0.9ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" character varying NOT NULL PRIMARY KEY)[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.4ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[35m (0.3ms)[0m  [1m[32mINSERT INTO "schema_migrations" (version) VALUES (0)[0m
+  [1m[35m (1.0ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" character varying NOT NULL PRIMARY KEY, "value" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.3ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::InternalMetadata Create (0.3ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'test', '2026-05-08 08:14:55.840048', '2026-05-08 08:14:55.840049') RETURNING "key"[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mBilling::Subscription Exists? (0.8ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_subscriptions" WHERE "billing_subscriptions"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "sub_x"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mBilling::Subscription Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_subscriptions" WHERE "billing_subscriptions"."gateway_ref" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Plan Exists? (0.9ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_plans" WHERE "billing_plans"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "price_test_lifetime_1"], ["LIMIT", 1]]
+  [1m[36mBilling::Plan Create (0.6ms)[0m  [1m[32mINSERT INTO "billing_plans" ("gateway_ref", "name", "description", "amount_cents", "currency", "interval", "trial_period_days", "active", "features", "max_lifetime_units", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING "id"[0m  [["gateway_ref", "price_test_lifetime_1"], ["name", "Plan 1"], ["description", nil], ["amount_cents", 1299], ["currency", "GBP"], ["interval", "lifetime"], ["trial_period_days", 0], ["active", true], ["features", "{}"], ["max_lifetime_units", 1], ["created_at", "2026-05-08 08:14:55.924630"], ["updated_at", "2026-05-08 08:14:55.924630"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::LifetimePass Exists? (0.8ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_lifetime_passes" WHERE "billing_lifetime_passes"."customer_ref" = $1 AND "billing_lifetime_passes"."plan_ref" = $2 LIMIT $3[0m  [["customer_ref", "cus_test_lifetime_1"], ["plan_ref", "price_test_lifetime_1"], ["LIMIT", 1]]
+  [1m[36mBilling::LifetimePass Create (0.6ms)[0m  [1m[32mINSERT INTO "billing_lifetime_passes" ("customer_ref", "plan_ref", "gateway_ref", "granted_by_user_id", "granted_at", "revoked_at", "revoked_by_user_id", "notes", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING "id"[0m  [["customer_ref", "cus_test_lifetime_1"], ["plan_ref", "price_test_lifetime_1"], ["gateway_ref", "cs_test_1"], ["granted_by_user_id", nil], ["granted_at", "2026-05-08 08:14:55.930969"], ["revoked_at", nil], ["revoked_by_user_id", nil], ["notes", nil], ["created_at", "2026-05-08 08:14:55.932100"], ["updated_at", "2026-05-08 08:14:55.932100"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Plan Load (0.5ms)[0m  [1m[37mSELECT "billing_plans".* FROM "billing_plans" WHERE "billing_plans"."id" = $1 LIMIT $2 FOR UPDATE[0m  [["id", 1], ["LIMIT", 1]]
+  [1m[36mBilling::LifetimePass Count (0.5ms)[0m  [1m[34mSELECT COUNT(*) FROM "billing_lifetime_passes" WHERE "billing_lifetime_passes"."plan_ref" = $1[0m  [["plan_ref", "price_test_lifetime_1"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Plan Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_plans" WHERE "billing_plans"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "price_test_1"], ["LIMIT", 1]]
+  [1m[36mBilling::Plan Create (0.3ms)[0m  [1m[32mINSERT INTO "billing_plans" ("gateway_ref", "name", "description", "amount_cents", "currency", "interval", "trial_period_days", "active", "features", "max_lifetime_units", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING "id"[0m  [["gateway_ref", "price_test_1"], ["name", "Plan 2"], ["description", nil], ["amount_cents", 1299], ["currency", "GBP"], ["interval", "month"], ["trial_period_days", 0], ["active", true], ["features", "{}"], ["max_lifetime_units", 1], ["created_at", "2026-05-08 08:14:55.956430"], ["updated_at", "2026-05-08 08:14:55.956430"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Plan Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_plans" WHERE "billing_plans"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "price_test_lifetime_2"], ["LIMIT", 1]]
+  [1m[36mBilling::Plan Create (0.3ms)[0m  [1m[32mINSERT INTO "billing_plans" ("gateway_ref", "name", "description", "amount_cents", "currency", "interval", "trial_period_days", "active", "features", "max_lifetime_units", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING "id"[0m  [["gateway_ref", "price_test_lifetime_2"], ["name", "Plan 3"], ["description", nil], ["amount_cents", 1299], ["currency", "GBP"], ["interval", "lifetime"], ["trial_period_days", 0], ["active", true], ["features", "{}"], ["max_lifetime_units", 5], ["created_at", "2026-05-08 08:14:55.959028"], ["updated_at", "2026-05-08 08:14:55.959028"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Plan Load (0.5ms)[0m  [1m[37mSELECT "billing_plans".* FROM "billing_plans" WHERE "billing_plans"."id" = $1 LIMIT $2 FOR UPDATE[0m  [["id", 3], ["LIMIT", 1]]
+  [1m[36mBilling::LifetimePass Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "billing_lifetime_passes" WHERE "billing_lifetime_passes"."plan_ref" = $1[0m  [["plan_ref", "price_test_lifetime_2"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Plan Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_plans" WHERE "billing_plans"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "price_test_lifetime_3"], ["LIMIT", 1]]
+  [1m[36mBilling::Plan Create (0.3ms)[0m  [1m[32mINSERT INTO "billing_plans" ("gateway_ref", "name", "description", "amount_cents", "currency", "interval", "trial_period_days", "active", "features", "max_lifetime_units", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING "id"[0m  [["gateway_ref", "price_test_lifetime_3"], ["name", "Plan 4"], ["description", nil], ["amount_cents", 1299], ["currency", "GBP"], ["interval", "lifetime"], ["trial_period_days", 0], ["active", true], ["features", "{}"], ["max_lifetime_units", nil], ["created_at", "2026-05-08 08:14:55.962864"], ["updated_at", "2026-05-08 08:14:55.962864"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::LifetimePass Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_lifetime_passes" WHERE "billing_lifetime_passes"."customer_ref" = $1 AND "billing_lifetime_passes"."plan_ref" = $2 LIMIT $3[0m  [["customer_ref", "cus_test_lifetime_2"], ["plan_ref", "price_test_lifetime_3"], ["LIMIT", 1]]
+  [1m[36mBilling::LifetimePass Create (0.3ms)[0m  [1m[32mINSERT INTO "billing_lifetime_passes" ("customer_ref", "plan_ref", "gateway_ref", "granted_by_user_id", "granted_at", "revoked_at", "revoked_by_user_id", "notes", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING "id"[0m  [["customer_ref", "cus_test_lifetime_2"], ["plan_ref", "price_test_lifetime_3"], ["gateway_ref", "cs_test_2"], ["granted_by_user_id", nil], ["granted_at", "2026-05-08 08:14:55.963792"], ["revoked_at", nil], ["revoked_by_user_id", nil], ["notes", nil], ["created_at", "2026-05-08 08:14:55.964466"], ["updated_at", "2026-05-08 08:14:55.964466"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Plan Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_plans" WHERE "billing_plans"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "price_test_lifetime_4"], ["LIMIT", 1]]
+  [1m[36mBilling::Plan Create (0.4ms)[0m  [1m[32mINSERT INTO "billing_plans" ("gateway_ref", "name", "description", "amount_cents", "currency", "interval", "trial_period_days", "active", "features", "max_lifetime_units", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING "id"[0m  [["gateway_ref", "price_test_lifetime_4"], ["name", "Plan 5"], ["description", nil], ["amount_cents", 1299], ["currency", "GBP"], ["interval", "lifetime"], ["trial_period_days", 0], ["active", true], ["features", "{}"], ["max_lifetime_units", 5], ["created_at", "2026-05-08 08:14:55.966900"], ["updated_at", "2026-05-08 08:14:55.966900"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::LifetimePass Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_lifetime_passes" WHERE "billing_lifetime_passes"."customer_ref" = $1 AND "billing_lifetime_passes"."plan_ref" = $2 LIMIT $3[0m  [["customer_ref", "cus_test_lifetime_3"], ["plan_ref", "price_test_lifetime_4"], ["LIMIT", 1]]
+  [1m[36mBilling::LifetimePass Create (0.3ms)[0m  [1m[32mINSERT INTO "billing_lifetime_passes" ("customer_ref", "plan_ref", "gateway_ref", "granted_by_user_id", "granted_at", "revoked_at", "revoked_by_user_id", "notes", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING "id"[0m  [["customer_ref", "cus_test_lifetime_3"], ["plan_ref", "price_test_lifetime_4"], ["gateway_ref", "cs_test_3"], ["granted_by_user_id", nil], ["granted_at", "2026-05-08 08:14:55.967776"], ["revoked_at", nil], ["revoked_by_user_id", nil], ["notes", nil], ["created_at", "2026-05-08 08:14:55.968453"], ["updated_at", "2026-05-08 08:14:55.968453"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Plan Load (0.4ms)[0m  [1m[37mSELECT "billing_plans".* FROM "billing_plans" WHERE "billing_plans"."id" = $1 LIMIT $2 FOR UPDATE[0m  [["id", 5], ["LIMIT", 1]]
+  [1m[36mBilling::LifetimePass Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "billing_lifetime_passes" WHERE "billing_lifetime_passes"."plan_ref" = $1[0m  [["plan_ref", "price_test_lifetime_4"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mBilling::Plan Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_plans" WHERE "billing_plans"."gateway_ref" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mBilling::Plan Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_plans" WHERE "billing_plans"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "price_test_2"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Plan Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_plans" WHERE "billing_plans"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "price_test_lifetime_5"], ["LIMIT", 1]]
+  [1m[36mBilling::Plan Create (0.3ms)[0m  [1m[32mINSERT INTO "billing_plans" ("gateway_ref", "name", "description", "amount_cents", "currency", "interval", "trial_period_days", "active", "features", "max_lifetime_units", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING "id"[0m  [["gateway_ref", "price_test_lifetime_5"], ["name", "Plan 8"], ["description", nil], ["amount_cents", 1299], ["currency", "GBP"], ["interval", "lifetime"], ["trial_period_days", 0], ["active", true], ["features", "{}"], ["max_lifetime_units", 3], ["created_at", "2026-05-08 08:14:55.974348"], ["updated_at", "2026-05-08 08:14:55.974348"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::LifetimePass Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_lifetime_passes" WHERE "billing_lifetime_passes"."customer_ref" = $1 AND "billing_lifetime_passes"."plan_ref" = $2 LIMIT $3[0m  [["customer_ref", "cus_test_lifetime_4"], ["plan_ref", "price_test_lifetime_5"], ["LIMIT", 1]]
+  [1m[36mBilling::LifetimePass Create (0.2ms)[0m  [1m[32mINSERT INTO "billing_lifetime_passes" ("customer_ref", "plan_ref", "gateway_ref", "granted_by_user_id", "granted_at", "revoked_at", "revoked_by_user_id", "notes", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING "id"[0m  [["customer_ref", "cus_test_lifetime_4"], ["plan_ref", "price_test_lifetime_5"], ["gateway_ref", "cs_test_4"], ["granted_by_user_id", nil], ["granted_at", "2026-05-08 08:14:55.975025"], ["revoked_at", nil], ["revoked_by_user_id", nil], ["notes", nil], ["created_at", "2026-05-08 08:14:55.975509"], ["updated_at", "2026-05-08 08:14:55.975509"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mBilling::LifetimePass Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "billing_lifetime_passes" WHERE "billing_lifetime_passes"."plan_ref" = $1[0m  [["plan_ref", "price_test_lifetime_5"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Plan Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_plans" WHERE "billing_plans"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "price_test_lifetime_6"], ["LIMIT", 1]]
+  [1m[36mBilling::Plan Create (0.2ms)[0m  [1m[32mINSERT INTO "billing_plans" ("gateway_ref", "name", "description", "amount_cents", "currency", "interval", "trial_period_days", "active", "features", "max_lifetime_units", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING "id"[0m  [["gateway_ref", "price_test_lifetime_6"], ["name", "Plan 9"], ["description", nil], ["amount_cents", 1299], ["currency", "GBP"], ["interval", "lifetime"], ["trial_period_days", 0], ["active", true], ["features", "{}"], ["max_lifetime_units", 1], ["created_at", "2026-05-08 08:14:55.978071"], ["updated_at", "2026-05-08 08:14:55.978071"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::LifetimePass Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_lifetime_passes" WHERE "billing_lifetime_passes"."customer_ref" = $1 AND "billing_lifetime_passes"."plan_ref" = $2 LIMIT $3[0m  [["customer_ref", "cus_test_lifetime_5"], ["plan_ref", "price_test_lifetime_6"], ["LIMIT", 1]]
+  [1m[36mBilling::LifetimePass Create (0.3ms)[0m  [1m[32mINSERT INTO "billing_lifetime_passes" ("customer_ref", "plan_ref", "gateway_ref", "granted_by_user_id", "granted_at", "revoked_at", "revoked_by_user_id", "notes", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING "id"[0m  [["customer_ref", "cus_test_lifetime_5"], ["plan_ref", "price_test_lifetime_6"], ["gateway_ref", "cs_test_5"], ["granted_by_user_id", nil], ["granted_at", "2026-05-08 08:14:55.978677"], ["revoked_at", nil], ["revoked_by_user_id", nil], ["notes", nil], ["created_at", "2026-05-08 08:14:55.979203"], ["updated_at", "2026-05-08 08:14:55.979203"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::LifetimePass Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_lifetime_passes" WHERE "billing_lifetime_passes"."customer_ref" = $1 AND "billing_lifetime_passes"."plan_ref" = $2 LIMIT $3[0m  [["customer_ref", "cus_test_lifetime_6"], ["plan_ref", "price_test_lifetime_6"], ["LIMIT", 1]]
+  [1m[36mBilling::LifetimePass Create (0.3ms)[0m  [1m[32mINSERT INTO "billing_lifetime_passes" ("customer_ref", "plan_ref", "gateway_ref", "granted_by_user_id", "granted_at", "revoked_at", "revoked_by_user_id", "notes", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING "id"[0m  [["customer_ref", "cus_test_lifetime_6"], ["plan_ref", "price_test_lifetime_6"], ["gateway_ref", "cs_test_6"], ["granted_by_user_id", nil], ["granted_at", "2026-05-08 08:14:55.979868"], ["revoked_at", nil], ["revoked_by_user_id", nil], ["notes", nil], ["created_at", "2026-05-08 08:14:55.980380"], ["updated_at", "2026-05-08 08:14:55.980380"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mBilling::LifetimePass Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "billing_lifetime_passes" WHERE "billing_lifetime_passes"."plan_ref" = $1[0m  [["plan_ref", "price_test_lifetime_6"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Plan Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_plans" WHERE "billing_plans"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "price_test_lifetime_7"], ["LIMIT", 1]]
+  [1m[36mBilling::Plan Create (0.3ms)[0m  [1m[32mINSERT INTO "billing_plans" ("gateway_ref", "name", "description", "amount_cents", "currency", "interval", "trial_period_days", "active", "features", "max_lifetime_units", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING "id"[0m  [["gateway_ref", "price_test_lifetime_7"], ["name", "Plan 10"], ["description", nil], ["amount_cents", 1299], ["currency", "GBP"], ["interval", "lifetime"], ["trial_period_days", 0], ["active", true], ["features", "{}"], ["max_lifetime_units", nil], ["created_at", "2026-05-08 08:14:55.982912"], ["updated_at", "2026-05-08 08:14:55.982912"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mBilling::Invoice Load (0.9ms)[0m  [1m[34mSELECT "billing_invoices".* FROM "billing_invoices" WHERE "billing_invoices"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "in_test_123"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Invoice Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_invoices" WHERE "billing_invoices"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "in_test_123"], ["LIMIT", 1]]
+  [1m[36mBilling::Invoice Create (0.6ms)[0m  [1m[32mINSERT INTO "billing_invoices" ("gateway_ref", "customer_ref", "subscription_ref", "amount_cents", "currency", "status", "paid_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["gateway_ref", "in_test_123"], ["customer_ref", "cus_test_123"], ["subscription_ref", "sub_test_123"], ["amount_cents", 1299], ["currency", "GBP"], ["status", "draft"], ["paid_at", nil], ["created_at", "2026-05-08 08:14:55.990407"], ["updated_at", "2026-05-08 08:14:55.990407"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mBilling::Invoice Load (0.2ms)[0m  [1m[34mSELECT "billing_invoices".* FROM "billing_invoices" WHERE "billing_invoices"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "in_test_123"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mBilling::Subscription Load (0.5ms)[0m  [1m[34mSELECT "billing_subscriptions".* FROM "billing_subscriptions" WHERE "billing_subscriptions"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "sub_test_123"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Subscription Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_subscriptions" WHERE "billing_subscriptions"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "sub_test_123"], ["LIMIT", 1]]
+  [1m[36mBilling::Subscription Create (0.8ms)[0m  [1m[32mINSERT INTO "billing_subscriptions" ("customer_ref", "plan_ref", "gateway_ref", "status", "current_period_end", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["customer_ref", "cus_test_123"], ["plan_ref", "price_test_pro"], ["gateway_ref", "sub_test_123"], ["status", "active"], ["current_period_end", "2024-11-27 03:33:20"], ["created_at", "2026-05-08 08:14:55.994274"], ["updated_at", "2026-05-08 08:14:55.994274"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mBilling::Subscription Load (0.3ms)[0m  [1m[34mSELECT "billing_subscriptions".* FROM "billing_subscriptions" WHERE "billing_subscriptions"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "sub_test_123"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Subscription Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_subscriptions" WHERE "billing_subscriptions"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "sub_test_123"], ["LIMIT", 1]]
+  [1m[36mBilling::Subscription Create (0.7ms)[0m  [1m[32mINSERT INTO "billing_subscriptions" ("customer_ref", "plan_ref", "gateway_ref", "status", "current_period_end", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["customer_ref", "cus_test_123"], ["plan_ref", "price_test_pro"], ["gateway_ref", "sub_test_123"], ["status", "active"], ["current_period_end", "2026-06-07 08:14:55.997219"], ["created_at", "2026-05-08 08:14:55.997876"], ["updated_at", "2026-05-08 08:14:55.997876"]]
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mBilling::Subscription Load (0.3ms)[0m  [1m[34mSELECT "billing_subscriptions".* FROM "billing_subscriptions" WHERE "billing_subscriptions"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "sub_test_123"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Subscription Update (0.4ms)[0m  [1m[33mUPDATE "billing_subscriptions" SET "plan_ref" = $1, "current_period_end" = $2, "updated_at" = $3 WHERE "billing_subscriptions"."id" = $4[0m  [["plan_ref", "price_test_pro_annual"], ["current_period_end", "2024-12-27 03:33:20"], ["updated_at", "2026-05-08 08:14:56.004350"], ["id", 2]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mBilling::Subscription Load (0.3ms)[0m  [1m[34mSELECT "billing_subscriptions".* FROM "billing_subscriptions" WHERE "billing_subscriptions"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "sub_test_123"], ["LIMIT", 1]]
+  [1m[36mBilling::Subscription Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "billing_subscriptions" WHERE "billing_subscriptions"."gateway_ref" = $1[0m  [["gateway_ref", "sub_test_123"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Invoice Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_invoices" WHERE "billing_invoices"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "in_test_123"], ["LIMIT", 1]]
+  [1m[36mBilling::Invoice Create (0.3ms)[0m  [1m[32mINSERT INTO "billing_invoices" ("gateway_ref", "customer_ref", "subscription_ref", "amount_cents", "currency", "status", "paid_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["gateway_ref", "in_test_123"], ["customer_ref", "cus_test_1"], ["subscription_ref", "sub_test_1"], ["amount_cents", 1299], ["currency", "GBP"], ["status", "draft"], ["paid_at", nil], ["created_at", "2026-05-08 08:14:56.007971"], ["updated_at", "2026-05-08 08:14:56.007971"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mBilling::Invoice Load (0.3ms)[0m  [1m[34mSELECT "billing_invoices".* FROM "billing_invoices" WHERE "billing_invoices"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "in_test_123"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Invoice Update (0.3ms)[0m  [1m[33mUPDATE "billing_invoices" SET "customer_ref" = $1, "subscription_ref" = $2, "status" = $3, "updated_at" = $4 WHERE "billing_invoices"."id" = $5[0m  [["customer_ref", "cus_test_123"], ["subscription_ref", "sub_test_123"], ["status", "open"], ["updated_at", "2026-05-08 08:14:56.011533"], ["id", 2]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mBilling::Invoice Load (0.2ms)[0m  [1m[34mSELECT "billing_invoices".* FROM "billing_invoices" WHERE "billing_invoices"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "in_test_123"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mBilling::Subscription Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "billing_subscriptions"[0m
+  [1m[36mBilling::Invoice Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "billing_invoices"[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mBilling::Invoice Load (0.2ms)[0m  [1m[34mSELECT "billing_invoices".* FROM "billing_invoices" WHERE "billing_invoices"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "in_test_123"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Invoice Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_invoices" WHERE "billing_invoices"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "in_test_123"], ["LIMIT", 1]]
+  [1m[36mBilling::Invoice Create (0.3ms)[0m  [1m[32mINSERT INTO "billing_invoices" ("gateway_ref", "customer_ref", "subscription_ref", "amount_cents", "currency", "status", "paid_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["gateway_ref", "in_test_123"], ["customer_ref", "cus_test_123"], ["subscription_ref", "sub_test_123"], ["amount_cents", 1299], ["currency", "GBP"], ["status", "void"], ["paid_at", nil], ["created_at", "2026-05-08 08:14:56.017336"], ["updated_at", "2026-05-08 08:14:56.017336"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mBilling::Invoice Load (0.2ms)[0m  [1m[34mSELECT "billing_invoices".* FROM "billing_invoices" WHERE "billing_invoices"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "in_test_123"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Subscription Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_subscriptions" WHERE "billing_subscriptions"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "sub_test_123"], ["LIMIT", 1]]
+  [1m[36mBilling::Subscription Create (0.2ms)[0m  [1m[32mINSERT INTO "billing_subscriptions" ("customer_ref", "plan_ref", "gateway_ref", "status", "current_period_end", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["customer_ref", "cus_test_123"], ["plan_ref", "price_test_pro"], ["gateway_ref", "sub_test_123"], ["status", "active"], ["current_period_end", "2026-06-07 08:14:56.019123"], ["created_at", "2026-05-08 08:14:56.019906"], ["updated_at", "2026-05-08 08:14:56.019906"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mBilling::Subscription Load (0.4ms)[0m  [1m[34mSELECT "billing_subscriptions".* FROM "billing_subscriptions" WHERE "billing_subscriptions"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "sub_test_123"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Subscription Update (0.8ms)[0m  [1m[33mUPDATE "billing_subscriptions" SET "status" = $1, "current_period_end" = $2, "updated_at" = $3 WHERE "billing_subscriptions"."id" = $4[0m  [["status", "canceled"], ["current_period_end", nil], ["updated_at", "2026-05-08 08:14:56.021189"], ["id", 3]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mBilling::Subscription Load (0.2ms)[0m  [1m[34mSELECT "billing_subscriptions".* FROM "billing_subscriptions" WHERE "billing_subscriptions"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "sub_test_123"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mBilling::Subscription Load (0.1ms)[0m  [1m[34mSELECT "billing_subscriptions".* FROM "billing_subscriptions" WHERE "billing_subscriptions"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "sub_test_123"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Subscription Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_subscriptions" WHERE "billing_subscriptions"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "sub_test_123"], ["LIMIT", 1]]
+  [1m[36mBilling::Subscription Create (0.3ms)[0m  [1m[32mINSERT INTO "billing_subscriptions" ("customer_ref", "plan_ref", "gateway_ref", "status", "current_period_end", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["customer_ref", "cus_test_123"], ["plan_ref", "price_test_pro"], ["gateway_ref", "sub_test_123"], ["status", "trialing"], ["current_period_end", nil], ["created_at", "2026-05-08 08:14:56.024323"], ["updated_at", "2026-05-08 08:14:56.024323"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mBilling::Subscription Load (0.1ms)[0m  [1m[34mSELECT "billing_subscriptions".* FROM "billing_subscriptions" WHERE "billing_subscriptions"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "sub_test_123"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mBilling::Subscription Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "billing_subscriptions"[0m
+  [1m[36mBilling::Invoice Count (0.6ms)[0m  [1m[34mSELECT COUNT(*) FROM "billing_invoices"[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mBilling::LifetimePass Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "billing_lifetime_passes"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mBilling::LifetimePass Load (0.4ms)[0m  [1m[34mSELECT "billing_lifetime_passes".* FROM "billing_lifetime_passes" WHERE "billing_lifetime_passes"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "cs_test_123"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::LifetimePass Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_lifetime_passes" WHERE "billing_lifetime_passes"."customer_ref" = $1 AND "billing_lifetime_passes"."plan_ref" = $2 LIMIT $3[0m  [["customer_ref", "cus_test_123"], ["plan_ref", "price_test_lifetime_1"], ["LIMIT", 1]]
+  [1m[36mBilling::LifetimePass Create (0.6ms)[0m  [1m[32mINSERT INTO "billing_lifetime_passes" ("customer_ref", "plan_ref", "gateway_ref", "granted_by_user_id", "granted_at", "revoked_at", "revoked_by_user_id", "notes", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING "id"[0m  [["customer_ref", "cus_test_123"], ["plan_ref", "price_test_lifetime_1"], ["gateway_ref", "cs_test_123"], ["granted_by_user_id", nil], ["granted_at", "2026-05-08 08:14:56.030303"], ["revoked_at", nil], ["revoked_by_user_id", nil], ["notes", nil], ["created_at", "2026-05-08 08:14:56.030979"], ["updated_at", "2026-05-08 08:14:56.030979"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mBilling::LifetimePass Load (0.3ms)[0m  [1m[34mSELECT "billing_lifetime_passes".* FROM "billing_lifetime_passes" WHERE "billing_lifetime_passes"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "cs_test_123"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mBilling::Invoice Load (0.2ms)[0m  [1m[34mSELECT "billing_invoices".* FROM "billing_invoices" WHERE "billing_invoices"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "in_test_123"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Invoice Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_invoices" WHERE "billing_invoices"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "in_test_123"], ["LIMIT", 1]]
+  [1m[36mBilling::Invoice Create (0.4ms)[0m  [1m[32mINSERT INTO "billing_invoices" ("gateway_ref", "customer_ref", "subscription_ref", "amount_cents", "currency", "status", "paid_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["gateway_ref", "in_test_123"], ["customer_ref", "cus_test_123"], ["subscription_ref", "sub_test_123"], ["amount_cents", 1299], ["currency", "GBP"], ["status", "paid"], ["paid_at", "2026-05-08 08:14:56.033681"], ["created_at", "2026-05-08 08:14:56.034377"], ["updated_at", "2026-05-08 08:14:56.034377"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mBilling::Invoice Load (0.2ms)[0m  [1m[34mSELECT "billing_invoices".* FROM "billing_invoices" WHERE "billing_invoices"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "in_test_123"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mBilling::Invoice Load (0.2ms)[0m  [1m[34mSELECT "billing_invoices".* FROM "billing_invoices" WHERE "billing_invoices"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "in_test_123"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Invoice Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_invoices" WHERE "billing_invoices"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "in_test_123"], ["LIMIT", 1]]
+  [1m[36mBilling::Invoice Create (0.3ms)[0m  [1m[32mINSERT INTO "billing_invoices" ("gateway_ref", "customer_ref", "subscription_ref", "amount_cents", "currency", "status", "paid_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["gateway_ref", "in_test_123"], ["customer_ref", "cus_test_123"], ["subscription_ref", "sub_test_123"], ["amount_cents", 1299], ["currency", "GBP"], ["status", "open"], ["paid_at", nil], ["created_at", "2026-05-08 08:14:56.037402"], ["updated_at", "2026-05-08 08:14:56.037402"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mBilling::Invoice Load (0.2ms)[0m  [1m[34mSELECT "billing_invoices".* FROM "billing_invoices" WHERE "billing_invoices"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "in_test_123"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[35m (7.2ms)[0m  [1m[35mDROP TABLE "billing_subscriptions" CASCADE[0m
+  [1m[35m (2.6ms)[0m  [1m[35mDROP TABLE "billing_invoices" CASCADE[0m
+  [1m[35m (4.7ms)[0m  [1m[35mDROP TABLE "billing_plans" CASCADE[0m
+  [1m[35m (2.4ms)[0m  [1m[35mDROP TABLE "billing_webhook_events" CASCADE[0m
+  [1m[35m (2.0ms)[0m  [1m[35mDROP TABLE "billing_lifetime_passes" CASCADE[0m
+  [1m[35m (1.0ms)[0m  [1m[35mDROP TABLE "users" CASCADE[0m
+  [1m[35m (0.6ms)[0m  [1m[35mDROP TABLE "schema_migrations" CASCADE[0m
+  [1m[35m (0.6ms)[0m  [1m[35mDROP TABLE "ar_internal_metadata" CASCADE[0m
+  [1m[35m (2.3ms)[0m  [1m[35mCREATE TABLE "billing_subscriptions" ("id" bigserial primary key, "customer_ref" character varying NOT NULL, "plan_ref" character varying NOT NULL, "gateway_ref" character varying NOT NULL, "status" character varying DEFAULT 'incomplete' NOT NULL, "current_period_end" timestamp(6), "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (0.5ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_billing_subscriptions_on_gateway_ref" ON "billing_subscriptions" ("gateway_ref")[0m
+  [1m[35m (1.5ms)[0m  [1m[35mCREATE TABLE "billing_invoices" ("id" bigserial primary key, "gateway_ref" character varying NOT NULL, "customer_ref" character varying NOT NULL, "subscription_ref" character varying, "amount_cents" integer NOT NULL, "currency" character varying DEFAULT 'USD' NOT NULL, "status" character varying DEFAULT 'open' NOT NULL, "paid_at" timestamp(6), "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (0.4ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_billing_invoices_on_gateway_ref" ON "billing_invoices" ("gateway_ref")[0m
+  [1m[35m (1.4ms)[0m  [1m[35mCREATE TABLE "billing_webhook_events" ("id" bigserial primary key, "gateway" character varying NOT NULL, "gateway_event_id" character varying NOT NULL, "event_type" character varying NOT NULL, "livemode" boolean DEFAULT FALSE NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (0.4ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_billing_webhook_events_on_gateway_and_gateway_event_id" ON "billing_webhook_events" ("gateway", "gateway_event_id")[0m
+  [1m[35m (1.5ms)[0m  [1m[35mCREATE TABLE "billing_plans" ("id" bigserial primary key, "gateway_ref" character varying NOT NULL, "name" character varying NOT NULL, "description" text, "amount_cents" integer DEFAULT 0 NOT NULL, "currency" character varying DEFAULT 'usd' NOT NULL, "interval" character varying DEFAULT 'month' NOT NULL, "trial_period_days" integer, "active" boolean DEFAULT TRUE NOT NULL, "features" jsonb DEFAULT '{}' NOT NULL, "max_lifetime_units" integer, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (1.4ms)[0m  [1m[35mCREATE TABLE "billing_lifetime_passes" ("id" bigserial primary key, "customer_ref" character varying NOT NULL, "plan_ref" character varying NOT NULL, "gateway_ref" character varying, "granted_by_user_id" bigint, "granted_at" timestamp(6) NOT NULL, "revoked_at" timestamp(6), "revoked_by_user_id" bigint, "notes" text, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (0.5ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_billing_ltd_unique" ON "billing_lifetime_passes" ("customer_ref", "plan_ref")[0m
+  [1m[35m (1.3ms)[0m  [1m[35mCREATE TABLE "users" ("id" bigserial primary key, "email" character varying, "stripe_customer_id" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (2.3ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" character varying NOT NULL PRIMARY KEY)[0m
+  [1m[36mActiveRecord::SchemaMigration Load (1.8ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[35m (0.7ms)[0m  [1m[32mINSERT INTO "schema_migrations" (version) VALUES (0)[0m
+  [1m[35m (2.5ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" character varying NOT NULL PRIMARY KEY, "value" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.7ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::InternalMetadata Create (0.7ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'test', '2026-05-08 08:44:43.485498', '2026-05-08 08:44:43.485498') RETURNING "key"[0m
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (1.3ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.5ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (2.0ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mBilling::Subscription Exists? (3.7ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_subscriptions" WHERE "billing_subscriptions"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "sub_x"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mBilling::Subscription Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_subscriptions" WHERE "billing_subscriptions"."gateway_ref" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Plan Exists? (0.9ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_plans" WHERE "billing_plans"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "price_test_lifetime_1"], ["LIMIT", 1]]
+  [1m[36mBilling::Plan Create (0.7ms)[0m  [1m[32mINSERT INTO "billing_plans" ("gateway_ref", "name", "description", "amount_cents", "currency", "interval", "trial_period_days", "active", "features", "max_lifetime_units", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING "id"[0m  [["gateway_ref", "price_test_lifetime_1"], ["name", "Plan 1"], ["description", nil], ["amount_cents", 1299], ["currency", "GBP"], ["interval", "lifetime"], ["trial_period_days", 0], ["active", true], ["features", "{}"], ["max_lifetime_units", 1], ["created_at", "2026-05-08 08:44:43.589185"], ["updated_at", "2026-05-08 08:44:43.589185"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::LifetimePass Exists? (1.4ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_lifetime_passes" WHERE "billing_lifetime_passes"."customer_ref" = $1 AND "billing_lifetime_passes"."plan_ref" = $2 LIMIT $3[0m  [["customer_ref", "cus_test_lifetime_1"], ["plan_ref", "price_test_lifetime_1"], ["LIMIT", 1]]
+  [1m[36mBilling::LifetimePass Create (0.9ms)[0m  [1m[32mINSERT INTO "billing_lifetime_passes" ("customer_ref", "plan_ref", "gateway_ref", "granted_by_user_id", "granted_at", "revoked_at", "revoked_by_user_id", "notes", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING "id"[0m  [["customer_ref", "cus_test_lifetime_1"], ["plan_ref", "price_test_lifetime_1"], ["gateway_ref", "cs_test_1"], ["granted_by_user_id", nil], ["granted_at", "2026-05-08 08:44:43.598727"], ["revoked_at", nil], ["revoked_by_user_id", nil], ["notes", nil], ["created_at", "2026-05-08 08:44:43.600465"], ["updated_at", "2026-05-08 08:44:43.600465"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::LifetimePass Exists? (0.6ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_lifetime_passes" WHERE "billing_lifetime_passes"."customer_ref" = $1 AND "billing_lifetime_passes"."plan_ref" = $2 LIMIT $3[0m  [["customer_ref", "cus_test_lifetime_2"], ["plan_ref", "price_test_lifetime_1"], ["LIMIT", 1]]
+  [1m[36mBilling::LifetimePass Create (3.0ms)[0m  [1m[32mINSERT INTO "billing_lifetime_passes" ("customer_ref", "plan_ref", "gateway_ref", "granted_by_user_id", "granted_at", "revoked_at", "revoked_by_user_id", "notes", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING "id"[0m  [["customer_ref", "cus_test_lifetime_2"], ["plan_ref", "price_test_lifetime_1"], ["gateway_ref", "cs_test_2"], ["granted_by_user_id", nil], ["granted_at", "2026-05-08 08:44:43.601874"], ["revoked_at", nil], ["revoked_by_user_id", nil], ["notes", nil], ["created_at", "2026-05-08 08:44:43.602693"], ["updated_at", "2026-05-08 08:44:43.602693"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mBilling::LifetimePass Count (0.7ms)[0m  [1m[34mSELECT COUNT(*) FROM "billing_lifetime_passes" WHERE "billing_lifetime_passes"."plan_ref" = $1[0m  [["plan_ref", "price_test_lifetime_1"]]
+  [1m[36mTRANSACTION (2.8ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Plan Exists? (0.9ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_plans" WHERE "billing_plans"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "price_test_lifetime_2"], ["LIMIT", 1]]
+  [1m[36mBilling::Plan Create (0.4ms)[0m  [1m[32mINSERT INTO "billing_plans" ("gateway_ref", "name", "description", "amount_cents", "currency", "interval", "trial_period_days", "active", "features", "max_lifetime_units", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING "id"[0m  [["gateway_ref", "price_test_lifetime_2"], ["name", "Plan 2"], ["description", nil], ["amount_cents", 1299], ["currency", "GBP"], ["interval", "lifetime"], ["trial_period_days", 0], ["active", true], ["features", "{}"], ["max_lifetime_units", 3], ["created_at", "2026-05-08 08:44:43.631809"], ["updated_at", "2026-05-08 08:44:43.631809"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::LifetimePass Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_lifetime_passes" WHERE "billing_lifetime_passes"."customer_ref" = $1 AND "billing_lifetime_passes"."plan_ref" = $2 LIMIT $3[0m  [["customer_ref", "cus_test_lifetime_3"], ["plan_ref", "price_test_lifetime_2"], ["LIMIT", 1]]
+  [1m[36mBilling::LifetimePass Create (0.4ms)[0m  [1m[32mINSERT INTO "billing_lifetime_passes" ("customer_ref", "plan_ref", "gateway_ref", "granted_by_user_id", "granted_at", "revoked_at", "revoked_by_user_id", "notes", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING "id"[0m  [["customer_ref", "cus_test_lifetime_3"], ["plan_ref", "price_test_lifetime_2"], ["gateway_ref", "cs_test_3"], ["granted_by_user_id", nil], ["granted_at", "2026-05-08 08:44:43.632965"], ["revoked_at", nil], ["revoked_by_user_id", nil], ["notes", nil], ["created_at", "2026-05-08 08:44:43.633799"], ["updated_at", "2026-05-08 08:44:43.633799"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mBilling::LifetimePass Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "billing_lifetime_passes" WHERE "billing_lifetime_passes"."plan_ref" = $1[0m  [["plan_ref", "price_test_lifetime_2"]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (2.6ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Plan Exists? (3.0ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_plans" WHERE "billing_plans"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "price_test_lifetime_3"], ["LIMIT", 1]]
+  [1m[36mBilling::Plan Create (0.4ms)[0m  [1m[32mINSERT INTO "billing_plans" ("gateway_ref", "name", "description", "amount_cents", "currency", "interval", "trial_period_days", "active", "features", "max_lifetime_units", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING "id"[0m  [["gateway_ref", "price_test_lifetime_3"], ["name", "Plan 3"], ["description", nil], ["amount_cents", 1299], ["currency", "GBP"], ["interval", "lifetime"], ["trial_period_days", 0], ["active", true], ["features", "{}"], ["max_lifetime_units", nil], ["created_at", "2026-05-08 08:44:43.639398"], ["updated_at", "2026-05-08 08:44:43.639398"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Plan Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_plans" WHERE "billing_plans"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "price_test_1"], ["LIMIT", 1]]
+  [1m[36mBilling::Plan Create (0.3ms)[0m  [1m[32mINSERT INTO "billing_plans" ("gateway_ref", "name", "description", "amount_cents", "currency", "interval", "trial_period_days", "active", "features", "max_lifetime_units", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING "id"[0m  [["gateway_ref", "price_test_1"], ["name", "Plan 4"], ["description", nil], ["amount_cents", 1299], ["currency", "GBP"], ["interval", "month"], ["trial_period_days", 0], ["active", true], ["features", "{}"], ["max_lifetime_units", 1], ["created_at", "2026-05-08 08:44:43.641619"], ["updated_at", "2026-05-08 08:44:43.641619"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Plan Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_plans" WHERE "billing_plans"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "price_test_lifetime_4"], ["LIMIT", 1]]
+  [1m[36mBilling::Plan Create (0.3ms)[0m  [1m[32mINSERT INTO "billing_plans" ("gateway_ref", "name", "description", "amount_cents", "currency", "interval", "trial_period_days", "active", "features", "max_lifetime_units", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING "id"[0m  [["gateway_ref", "price_test_lifetime_4"], ["name", "Plan 5"], ["description", nil], ["amount_cents", 1299], ["currency", "GBP"], ["interval", "lifetime"], ["trial_period_days", 0], ["active", true], ["features", "{}"], ["max_lifetime_units", 1], ["created_at", "2026-05-08 08:44:43.644002"], ["updated_at", "2026-05-08 08:44:43.644002"]]
+  [1m[36mTRANSACTION (0.7ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (1.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::LifetimePass Exists? (1.6ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_lifetime_passes" WHERE "billing_lifetime_passes"."customer_ref" = $1 AND "billing_lifetime_passes"."plan_ref" = $2 LIMIT $3[0m  [["customer_ref", "cus_test_lifetime_4"], ["plan_ref", "price_test_lifetime_4"], ["LIMIT", 1]]
+  [1m[36mBilling::LifetimePass Create (0.3ms)[0m  [1m[32mINSERT INTO "billing_lifetime_passes" ("customer_ref", "plan_ref", "gateway_ref", "granted_by_user_id", "granted_at", "revoked_at", "revoked_by_user_id", "notes", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING "id"[0m  [["customer_ref", "cus_test_lifetime_4"], ["plan_ref", "price_test_lifetime_4"], ["gateway_ref", "cs_test_4"], ["granted_by_user_id", nil], ["granted_at", "2026-05-08 08:44:43.645259"], ["revoked_at", nil], ["revoked_by_user_id", nil], ["notes", nil], ["created_at", "2026-05-08 08:44:43.647012"], ["updated_at", "2026-05-08 08:44:43.647012"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Plan Load (0.5ms)[0m  [1m[37mSELECT "billing_plans".* FROM "billing_plans" WHERE "billing_plans"."id" = $1 LIMIT $2 FOR UPDATE[0m  [["id", 5], ["LIMIT", 1]]
+  [1m[36mBilling::LifetimePass Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "billing_lifetime_passes" WHERE "billing_lifetime_passes"."plan_ref" = $1[0m  [["plan_ref", "price_test_lifetime_4"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Plan Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_plans" WHERE "billing_plans"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "price_test_lifetime_5"], ["LIMIT", 1]]
+  [1m[36mBilling::Plan Create (0.3ms)[0m  [1m[32mINSERT INTO "billing_plans" ("gateway_ref", "name", "description", "amount_cents", "currency", "interval", "trial_period_days", "active", "features", "max_lifetime_units", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING "id"[0m  [["gateway_ref", "price_test_lifetime_5"], ["name", "Plan 6"], ["description", nil], ["amount_cents", 1299], ["currency", "GBP"], ["interval", "lifetime"], ["trial_period_days", 0], ["active", true], ["features", "{}"], ["max_lifetime_units", 5], ["created_at", "2026-05-08 08:44:43.650618"], ["updated_at", "2026-05-08 08:44:43.650618"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::LifetimePass Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_lifetime_passes" WHERE "billing_lifetime_passes"."customer_ref" = $1 AND "billing_lifetime_passes"."plan_ref" = $2 LIMIT $3[0m  [["customer_ref", "cus_test_lifetime_5"], ["plan_ref", "price_test_lifetime_5"], ["LIMIT", 1]]
+  [1m[36mBilling::LifetimePass Create (0.4ms)[0m  [1m[32mINSERT INTO "billing_lifetime_passes" ("customer_ref", "plan_ref", "gateway_ref", "granted_by_user_id", "granted_at", "revoked_at", "revoked_by_user_id", "notes", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING "id"[0m  [["customer_ref", "cus_test_lifetime_5"], ["plan_ref", "price_test_lifetime_5"], ["gateway_ref", "cs_test_5"], ["granted_by_user_id", nil], ["granted_at", "2026-05-08 08:44:43.651297"], ["revoked_at", nil], ["revoked_by_user_id", nil], ["notes", nil], ["created_at", "2026-05-08 08:44:43.651814"], ["updated_at", "2026-05-08 08:44:43.651814"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (2.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Plan Load (2.5ms)[0m  [1m[37mSELECT "billing_plans".* FROM "billing_plans" WHERE "billing_plans"."id" = $1 LIMIT $2 FOR UPDATE[0m  [["id", 6], ["LIMIT", 1]]
+  [1m[36mBilling::LifetimePass Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "billing_lifetime_passes" WHERE "billing_lifetime_passes"."plan_ref" = $1[0m  [["plan_ref", "price_test_lifetime_5"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Plan Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_plans" WHERE "billing_plans"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "price_test_lifetime_6"], ["LIMIT", 1]]
+  [1m[36mBilling::Plan Create (0.3ms)[0m  [1m[32mINSERT INTO "billing_plans" ("gateway_ref", "name", "description", "amount_cents", "currency", "interval", "trial_period_days", "active", "features", "max_lifetime_units", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING "id"[0m  [["gateway_ref", "price_test_lifetime_6"], ["name", "Plan 7"], ["description", nil], ["amount_cents", 1299], ["currency", "GBP"], ["interval", "lifetime"], ["trial_period_days", 0], ["active", true], ["features", "{}"], ["max_lifetime_units", 5], ["created_at", "2026-05-08 08:44:43.657336"], ["updated_at", "2026-05-08 08:44:43.657336"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Plan Load (0.4ms)[0m  [1m[37mSELECT "billing_plans".* FROM "billing_plans" WHERE "billing_plans"."id" = $1 LIMIT $2 FOR UPDATE[0m  [["id", 7], ["LIMIT", 1]]
+  [1m[36mBilling::LifetimePass Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "billing_lifetime_passes" WHERE "billing_lifetime_passes"."plan_ref" = $1[0m  [["plan_ref", "price_test_lifetime_6"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Plan Exists? (2.4ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_plans" WHERE "billing_plans"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "price_test_lifetime_7"], ["LIMIT", 1]]
+  [1m[36mBilling::Plan Create (0.3ms)[0m  [1m[32mINSERT INTO "billing_plans" ("gateway_ref", "name", "description", "amount_cents", "currency", "interval", "trial_period_days", "active", "features", "max_lifetime_units", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING "id"[0m  [["gateway_ref", "price_test_lifetime_7"], ["name", "Plan 8"], ["description", nil], ["amount_cents", 1299], ["currency", "GBP"], ["interval", "lifetime"], ["trial_period_days", 0], ["active", true], ["features", "{}"], ["max_lifetime_units", nil], ["created_at", "2026-05-08 08:44:43.663369"], ["updated_at", "2026-05-08 08:44:43.663369"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::LifetimePass Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_lifetime_passes" WHERE "billing_lifetime_passes"."customer_ref" = $1 AND "billing_lifetime_passes"."plan_ref" = $2 LIMIT $3[0m  [["customer_ref", "cus_test_lifetime_6"], ["plan_ref", "price_test_lifetime_7"], ["LIMIT", 1]]
+  [1m[36mBilling::LifetimePass Create (0.3ms)[0m  [1m[32mINSERT INTO "billing_lifetime_passes" ("customer_ref", "plan_ref", "gateway_ref", "granted_by_user_id", "granted_at", "revoked_at", "revoked_by_user_id", "notes", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING "id"[0m  [["customer_ref", "cus_test_lifetime_6"], ["plan_ref", "price_test_lifetime_7"], ["gateway_ref", "cs_test_6"], ["granted_by_user_id", nil], ["granted_at", "2026-05-08 08:44:43.664101"], ["revoked_at", nil], ["revoked_by_user_id", nil], ["notes", nil], ["created_at", "2026-05-08 08:44:43.664699"], ["updated_at", "2026-05-08 08:44:43.664699"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mBilling::Plan Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_plans" WHERE "billing_plans"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "price_test_2"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mBilling::Plan Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_plans" WHERE "billing_plans"."gateway_ref" IS NULL LIMIT $1[0m  [["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (2.8ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.5ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (2.7ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mBilling::Invoice Load (4.2ms)[0m  [1m[34mSELECT "billing_invoices".* FROM "billing_invoices" WHERE "billing_invoices"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "in_test_123"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Invoice Exists? (0.7ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_invoices" WHERE "billing_invoices"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "in_test_123"], ["LIMIT", 1]]
+  [1m[36mBilling::Invoice Create (3.7ms)[0m  [1m[32mINSERT INTO "billing_invoices" ("gateway_ref", "customer_ref", "subscription_ref", "amount_cents", "currency", "status", "paid_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["gateway_ref", "in_test_123"], ["customer_ref", "cus_test_123"], ["subscription_ref", "sub_test_123"], ["amount_cents", 1299], ["currency", "GBP"], ["status", "paid"], ["paid_at", "2026-05-08 08:44:43.692285"], ["created_at", "2026-05-08 08:44:43.693620"], ["updated_at", "2026-05-08 08:44:43.693620"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mBilling::Invoice Load (0.3ms)[0m  [1m[34mSELECT "billing_invoices".* FROM "billing_invoices" WHERE "billing_invoices"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "in_test_123"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mBilling::LifetimePass Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "billing_lifetime_passes"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mBilling::LifetimePass Load (0.4ms)[0m  [1m[34mSELECT "billing_lifetime_passes".* FROM "billing_lifetime_passes" WHERE "billing_lifetime_passes"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "cs_test_123"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::LifetimePass Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_lifetime_passes" WHERE "billing_lifetime_passes"."customer_ref" = $1 AND "billing_lifetime_passes"."plan_ref" = $2 LIMIT $3[0m  [["customer_ref", "cus_test_123"], ["plan_ref", "price_test_lifetime_1"], ["LIMIT", 1]]
+  [1m[36mBilling::LifetimePass Create (2.2ms)[0m  [1m[32mINSERT INTO "billing_lifetime_passes" ("customer_ref", "plan_ref", "gateway_ref", "granted_by_user_id", "granted_at", "revoked_at", "revoked_by_user_id", "notes", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING "id"[0m  [["customer_ref", "cus_test_123"], ["plan_ref", "price_test_lifetime_1"], ["gateway_ref", "cs_test_123"], ["granted_by_user_id", nil], ["granted_at", "2026-05-08 08:44:43.701859"], ["revoked_at", nil], ["revoked_by_user_id", nil], ["notes", nil], ["created_at", "2026-05-08 08:44:43.702590"], ["updated_at", "2026-05-08 08:44:43.702590"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mBilling::LifetimePass Load (0.3ms)[0m  [1m[34mSELECT "billing_lifetime_passes".* FROM "billing_lifetime_passes" WHERE "billing_lifetime_passes"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "cs_test_123"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Subscription Exists? (0.6ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_subscriptions" WHERE "billing_subscriptions"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "sub_test_123"], ["LIMIT", 1]]
+  [1m[36mBilling::Subscription Create (0.7ms)[0m  [1m[32mINSERT INTO "billing_subscriptions" ("customer_ref", "plan_ref", "gateway_ref", "status", "current_period_end", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["customer_ref", "cus_test_123"], ["plan_ref", "price_test_pro"], ["gateway_ref", "sub_test_123"], ["status", "active"], ["current_period_end", "2026-06-07 08:44:43.707209"], ["created_at", "2026-05-08 08:44:43.707986"], ["updated_at", "2026-05-08 08:44:43.707986"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mBilling::Subscription Load (0.3ms)[0m  [1m[34mSELECT "billing_subscriptions".* FROM "billing_subscriptions" WHERE "billing_subscriptions"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "sub_test_123"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Subscription Update (0.3ms)[0m  [1m[33mUPDATE "billing_subscriptions" SET "status" = $1, "current_period_end" = $2, "updated_at" = $3 WHERE "billing_subscriptions"."id" = $4[0m  [["status", "canceled"], ["current_period_end", nil], ["updated_at", "2026-05-08 08:44:43.715076"], ["id", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mBilling::Subscription Load (0.2ms)[0m  [1m[34mSELECT "billing_subscriptions".* FROM "billing_subscriptions" WHERE "billing_subscriptions"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "sub_test_123"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mBilling::Invoice Load (0.2ms)[0m  [1m[34mSELECT "billing_invoices".* FROM "billing_invoices" WHERE "billing_invoices"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "in_test_123"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Invoice Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_invoices" WHERE "billing_invoices"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "in_test_123"], ["LIMIT", 1]]
+  [1m[36mBilling::Invoice Create (0.3ms)[0m  [1m[32mINSERT INTO "billing_invoices" ("gateway_ref", "customer_ref", "subscription_ref", "amount_cents", "currency", "status", "paid_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["gateway_ref", "in_test_123"], ["customer_ref", "cus_test_123"], ["subscription_ref", "sub_test_123"], ["amount_cents", 1299], ["currency", "GBP"], ["status", "draft"], ["paid_at", nil], ["created_at", "2026-05-08 08:44:43.718181"], ["updated_at", "2026-05-08 08:44:43.718181"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mBilling::Invoice Load (0.2ms)[0m  [1m[34mSELECT "billing_invoices".* FROM "billing_invoices" WHERE "billing_invoices"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "in_test_123"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mBilling::Subscription Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "billing_subscriptions"[0m
+  [1m[36mBilling::Invoice Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "billing_invoices"[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mBilling::Subscription Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "billing_subscriptions"[0m
+  [1m[36mBilling::Invoice Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "billing_invoices"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mBilling::Subscription Load (0.2ms)[0m  [1m[34mSELECT "billing_subscriptions".* FROM "billing_subscriptions" WHERE "billing_subscriptions"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "sub_test_123"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Subscription Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_subscriptions" WHERE "billing_subscriptions"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "sub_test_123"], ["LIMIT", 1]]
+  [1m[36mBilling::Subscription Create (0.3ms)[0m  [1m[32mINSERT INTO "billing_subscriptions" ("customer_ref", "plan_ref", "gateway_ref", "status", "current_period_end", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["customer_ref", "cus_test_123"], ["plan_ref", "price_test_pro"], ["gateway_ref", "sub_test_123"], ["status", "active"], ["current_period_end", "2024-11-27 03:33:20"], ["created_at", "2026-05-08 08:44:43.725822"], ["updated_at", "2026-05-08 08:44:43.725822"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mBilling::Subscription Load (0.2ms)[0m  [1m[34mSELECT "billing_subscriptions".* FROM "billing_subscriptions" WHERE "billing_subscriptions"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "sub_test_123"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (2.0ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mBilling::Subscription Load (0.3ms)[0m  [1m[34mSELECT "billing_subscriptions".* FROM "billing_subscriptions" WHERE "billing_subscriptions"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "sub_test_123"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Subscription Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_subscriptions" WHERE "billing_subscriptions"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "sub_test_123"], ["LIMIT", 1]]
+  [1m[36mBilling::Subscription Create (0.3ms)[0m  [1m[32mINSERT INTO "billing_subscriptions" ("customer_ref", "plan_ref", "gateway_ref", "status", "current_period_end", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["customer_ref", "cus_test_123"], ["plan_ref", "price_test_pro"], ["gateway_ref", "sub_test_123"], ["status", "trialing"], ["current_period_end", nil], ["created_at", "2026-05-08 08:44:43.731004"], ["updated_at", "2026-05-08 08:44:43.731004"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mBilling::Subscription Load (0.2ms)[0m  [1m[34mSELECT "billing_subscriptions".* FROM "billing_subscriptions" WHERE "billing_subscriptions"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "sub_test_123"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (1.9ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Invoice Exists? (2.9ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_invoices" WHERE "billing_invoices"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "in_test_123"], ["LIMIT", 1]]
+  [1m[36mBilling::Invoice Create (2.2ms)[0m  [1m[32mINSERT INTO "billing_invoices" ("gateway_ref", "customer_ref", "subscription_ref", "amount_cents", "currency", "status", "paid_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["gateway_ref", "in_test_123"], ["customer_ref", "cus_test_1"], ["subscription_ref", "sub_test_1"], ["amount_cents", 1299], ["currency", "GBP"], ["status", "draft"], ["paid_at", nil], ["created_at", "2026-05-08 08:44:43.735981"], ["updated_at", "2026-05-08 08:44:43.735981"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mBilling::Invoice Load (0.3ms)[0m  [1m[34mSELECT "billing_invoices".* FROM "billing_invoices" WHERE "billing_invoices"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "in_test_123"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Invoice Update (0.3ms)[0m  [1m[33mUPDATE "billing_invoices" SET "customer_ref" = $1, "subscription_ref" = $2, "status" = $3, "updated_at" = $4 WHERE "billing_invoices"."id" = $5[0m  [["customer_ref", "cus_test_123"], ["subscription_ref", "sub_test_123"], ["status", "open"], ["updated_at", "2026-05-08 08:44:43.741317"], ["id", 3]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mBilling::Invoice Load (0.2ms)[0m  [1m[34mSELECT "billing_invoices".* FROM "billing_invoices" WHERE "billing_invoices"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "in_test_123"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mBilling::Invoice Load (0.2ms)[0m  [1m[34mSELECT "billing_invoices".* FROM "billing_invoices" WHERE "billing_invoices"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "in_test_123"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Invoice Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_invoices" WHERE "billing_invoices"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "in_test_123"], ["LIMIT", 1]]
+  [1m[36mBilling::Invoice Create (2.4ms)[0m  [1m[32mINSERT INTO "billing_invoices" ("gateway_ref", "customer_ref", "subscription_ref", "amount_cents", "currency", "status", "paid_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["gateway_ref", "in_test_123"], ["customer_ref", "cus_test_123"], ["subscription_ref", "sub_test_123"], ["amount_cents", 1299], ["currency", "GBP"], ["status", "void"], ["paid_at", nil], ["created_at", "2026-05-08 08:44:43.744212"], ["updated_at", "2026-05-08 08:44:43.744212"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mBilling::Invoice Load (0.2ms)[0m  [1m[34mSELECT "billing_invoices".* FROM "billing_invoices" WHERE "billing_invoices"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "in_test_123"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mBilling::Invoice Load (0.2ms)[0m  [1m[34mSELECT "billing_invoices".* FROM "billing_invoices" WHERE "billing_invoices"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "in_test_123"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Invoice Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_invoices" WHERE "billing_invoices"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "in_test_123"], ["LIMIT", 1]]
+  [1m[36mBilling::Invoice Create (0.3ms)[0m  [1m[32mINSERT INTO "billing_invoices" ("gateway_ref", "customer_ref", "subscription_ref", "amount_cents", "currency", "status", "paid_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING "id"[0m  [["gateway_ref", "in_test_123"], ["customer_ref", "cus_test_123"], ["subscription_ref", "sub_test_123"], ["amount_cents", 1299], ["currency", "GBP"], ["status", "open"], ["paid_at", nil], ["created_at", "2026-05-08 08:44:43.750154"], ["updated_at", "2026-05-08 08:44:43.750154"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mBilling::Invoice Load (0.1ms)[0m  [1m[34mSELECT "billing_invoices".* FROM "billing_invoices" WHERE "billing_invoices"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "in_test_123"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Subscription Exists? (2.6ms)[0m  [1m[34mSELECT 1 AS one FROM "billing_subscriptions" WHERE "billing_subscriptions"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "sub_test_123"], ["LIMIT", 1]]
+  [1m[36mBilling::Subscription Create (0.3ms)[0m  [1m[32mINSERT INTO "billing_subscriptions" ("customer_ref", "plan_ref", "gateway_ref", "status", "current_period_end", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["customer_ref", "cus_test_123"], ["plan_ref", "price_test_pro"], ["gateway_ref", "sub_test_123"], ["status", "active"], ["current_period_end", "2026-06-07 08:44:43.752242"], ["created_at", "2026-05-08 08:44:43.755117"], ["updated_at", "2026-05-08 08:44:43.755117"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mBilling::Subscription Load (0.2ms)[0m  [1m[34mSELECT "billing_subscriptions".* FROM "billing_subscriptions" WHERE "billing_subscriptions"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "sub_test_123"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mBilling::Subscription Update (0.4ms)[0m  [1m[33mUPDATE "billing_subscriptions" SET "plan_ref" = $1, "current_period_end" = $2, "updated_at" = $3 WHERE "billing_subscriptions"."id" = $4[0m  [["plan_ref", "price_test_pro_annual"], ["current_period_end", "2024-12-27 03:33:20"], ["updated_at", "2026-05-08 08:44:43.756363"], ["id", 4]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mBilling::Subscription Load (0.2ms)[0m  [1m[34mSELECT "billing_subscriptions".* FROM "billing_subscriptions" WHERE "billing_subscriptions"."gateway_ref" = $1 LIMIT $2[0m  [["gateway_ref", "sub_test_123"], ["LIMIT", 1]]
+  [1m[36mBilling::Subscription Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "billing_subscriptions" WHERE "billing_subscriptions"."gateway_ref" = $1[0m  [["gateway_ref", "sub_test_123"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m

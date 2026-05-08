@@ -1,0 +1,216 @@
+# frozen_string_literal: true
+
+module Notifications
+  # Represents a scheduled notification belonging to an +owner+.
+  #
+  # Concrete delivery types are STI subclasses under
+  # +Notifications::Strategies+ — +InApp+, +Email+, +Sms+ — each
+  # implementing its own +#dispatch!+. They share this base's schema,
+  # scheduling, and audit logic.
+  #
+  # Scheduling is delegated to ice_cube. The schedule is persisted as
+  # a json hash via +schedule_data+ and exposed through
+  # +schedule+/+schedule=+. +next_delivery_at+ is an indexed cache so
+  # the recurring sweeper hits one query.
+  class Notification < ApplicationRecord
+    self.table_name = "notifications"
+
+    belongs_to :owner, polymorphic: true
+    has_many   :deliveries, class_name: "Notifications::Delivery",
+                            dependent: :destroy, inverse_of: :notification
+
+    # Concrete STI subclasses permitted for creation. Anything else
+    # fails validation rather than booting an unknown subclass.
+    PERMITTED_TYPES = [
+      "Notifications::Strategies::InApp",
+      "Notifications::Strategies::Email",
+      "Notifications::Strategies::Sms"
+    ].freeze
+
+    FREQUENCIES = %w[once daily weekly monthly].freeze
+
+    # Templates resolve to file reads via ERB. Lock the value down so a
+    # row can't reach outside the templates dir or evaluate arbitrary
+    # files. Allowed: lowercase letters, digits, underscores, dashes,
+    # forward slashes (so subdirs like "billing/invoice_paid" work).
+    # No leading slash, no `..`, no consecutive slashes.
+    TEMPLATE_NAME_PATTERN = %r{\A[a-z0-9_\-]+(?:/[a-z0-9_\-]+)*\z}
+
+    validates :type,     inclusion: { in: PERMITTED_TYPES }
+    validates :template, presence: true,
+                         format: { with: TEMPLATE_NAME_PATTERN, message: "must be a slash-separated lowercase identifier" }
+
+    scope :due,        -> { where(next_delivery_at: ..Time.current) }
+    scope :pending,    -> { where.not(next_delivery_at: nil) }
+    scope :completed,  -> { where(next_delivery_at: nil) }
+    scope :unread,     -> { where(read_at: nil) }
+    scope :recent,     -> { order(created_at: :desc) }
+
+    # Accept short type names ("Email", "Sms", "InApp") in API params
+    # and normalise to fully-qualified class names. Falls back to the
+    # base class so the inclusion validation returns 422 instead of
+    # raising a 500.
+    def self.find_sti_class(type_name)
+      super(expand_type(type_name))
+    rescue ::ActiveRecord::SubclassNotFound
+      self
+    end
+
+    def self.expand_type(type_name)
+      PERMITTED_TYPES.find { |t| t.demodulize == type_name } || type_name
+    end
+
+    def type=(value)
+      super(self.class.expand_type(value.to_s))
+    end
+
+    # Deserialises +schedule_data+ into an IceCube::Schedule instance.
+    def schedule
+      return nil if schedule_data.blank?
+
+      IceCube::Schedule.from_hash(schedule_data)
+    end
+
+    # Assigns an IceCube::Schedule, persisting it as json and setting
+    # +next_delivery_at+ to the schedule's first occurrence.
+    def schedule=(sched)
+      self.schedule_data    = sched&.to_hash
+      self.next_delivery_at = sched&.first
+    end
+
+    # Form-friendly schedule constructor. Accepts:
+    #   { starts_at:, frequency: once|daily|weekly|monthly,
+    #     interval: 1, count: 5, until: "2026-12-31" }
+    # so host code never has to import ice_cube.
+    def schedule_config=(config)
+      return if config.blank?
+
+      sched = IceCube::Schedule.new(Time.zone.parse(config[:starts_at].to_s))
+      rule  = build_recurrence_rule(config)
+      sched.add_recurrence_rule(rule) if rule
+      self.schedule = sched
+    end
+
+    # Renders the ERB template named by +template+ in the requested
+    # +format+ (`:text` (default) or `:html`). Looks first in the host's
+    # app/views/notifications/templates/<name>.<format>.erb, then falls
+    # back to the engine's bundled templates. Hosts override by
+    # dropping a file. Raises Notifications::Error if no template
+    # exists at the requested format — callers that want to probe
+    # without raising should use #template_exists?(format:).
+    def rendered_content(format: :text)
+      path = find_template_path(format: format) ||
+             raise(Notifications::Error,
+                   "Template #{template.inspect} (#{format}) not found under any allowed root")
+
+      ERB.new(File.read(path)).result_with_hash(notification: self)
+    end
+
+    def template_exists?(format: :text)
+      !find_template_path(format: format).nil?
+    end
+
+    def due?
+      next_delivery_at.present? && next_delivery_at <= Time.current
+    end
+
+    def read?
+      read_at.present?
+    end
+
+    def mark_as_read!
+      update!(read_at: Time.current) unless read?
+    end
+
+    def send_async
+      Notifications::SendNotificationJob.perform_later(id)
+    end
+
+    # Synchronous delivery. Publishes lifecycle events OUTSIDE the
+    # transaction so subscribers don't run inside the AR transaction
+    # (a slow subscriber would hold table locks; a raise would roll
+    # back the delivery write).
+    # No-ops if not yet due (defensive against duplicate enqueue).
+    def send!
+      return unless due?
+
+      Seams::Events::Publisher.publish(
+        "notification.queued.notifications", id: id, type: type, owner_id: owner_id
+      )
+
+      dispatch!
+      self.class.transaction do
+        deliveries.create!(sent_at: Time.current)
+        advance!
+      end
+
+      Seams::Events::Publisher.publish(
+        "notification.delivered.notifications", id: id, type: type, owner_id: owner_id
+      )
+    rescue StandardError => e
+      Seams::Events::Publisher.publish(
+        "notification.failed.notifications", id: id, type: type, error: "#{e.class}: #{e.message}"
+      )
+      raise
+    end
+
+    # Advances +next_delivery_at+ to the next ice_cube occurrence
+    # after now. nil when no further occurrences exist (one-shots
+    # become "completed").
+    def advance!
+      update!(next_delivery_at: schedule&.next_occurrence)
+    end
+
+    FREQUENCY_BUILDERS = {
+      "daily"   => ->(interval) { IceCube::Rule.daily(interval) },
+      "weekly"  => ->(interval) { IceCube::Rule.weekly(interval) },
+      "monthly" => ->(interval) { IceCube::Rule.monthly(interval) }
+    }.freeze
+    private_constant :FREQUENCY_BUILDERS
+
+    private
+
+    def build_recurrence_rule(config)
+      builder = FREQUENCY_BUILDERS[config[:frequency].to_s]
+      return unless builder
+
+      interval = [config[:interval].to_i, 1].max
+      apply_rule_constraints(builder.call(interval), config)
+    end
+
+    def apply_rule_constraints(rule, config)
+      rule = rule.count(config[:count].to_i)                  if config[:count].present?
+      rule = rule.until(Time.zone.parse(config[:until].to_s)) if config[:until].present?
+      rule
+    end
+
+    # Each strategy implements its own dispatch.
+    def dispatch!
+      raise NotImplementedError, "#{self.class} must implement #dispatch!"
+    end
+
+    PERMITTED_FORMATS = %i[text html].freeze
+
+    def find_template_path(format: :text)
+      raise ArgumentError, "format must be :text or :html" unless PERMITTED_FORMATS.include?(format)
+
+      # Realpath check — even though TEMPLATE_NAME_PATTERN already
+      # rejects "..", a defence-in-depth `realpath` confirms the
+      # resolved file lives under one of the two whitelisted roots.
+      host_root   = Rails.root.join("app/views/notifications/templates")
+      engine_root = Notifications::Engine.root.join("app/views/notifications/templates")
+
+      [host_root, engine_root].each do |root|
+        candidate = root.join("#{template}.#{format}.erb")
+        next unless candidate.exist?
+
+        resolved = candidate.realpath
+        return resolved if resolved.to_s.start_with?(root.realpath.to_s)
+      end
+
+      # No template at this format. Caller decides whether to fall back
+      # (e.g. mailer trying :html then :text) or raise.
+      nil
+    end
+  end
+end

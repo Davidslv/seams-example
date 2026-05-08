@@ -1,0 +1,32 @@
+# frozen_string_literal: true
+
+require "billing/version"
+require "billing/configuration"
+require "billing/engine"
+require "billing/concerns/billable"
+require "billing/gateways/abstract"
+require "billing/gateways/stripe"
+
+module Billing
+  class Error           < StandardError; end
+  class GatewayError    < Error; end
+  class WebhookError    < Error; end
+
+  class << self
+    def configuration
+      @configuration ||= Configuration.new
+    end
+
+    def configure
+      yield configuration
+    end
+
+    def gateway
+      configuration.gateway.constantize.new
+    rescue NameError => e
+      raise Billing::Error,
+            "Billing.configuration.gateway is set to #{configuration.gateway.inspect}, " \
+            "which could not be resolved: #{e.message}"
+    end
+  end
+end

@@ -1,0 +1,348 @@
+  [1m[35m (5.5ms)[0m  [1m[35mDROP TABLE "articles" CASCADE[0m
+  [1m[35m (4.3ms)[0m  [1m[35mDROP TABLE "core_audit_logs" CASCADE[0m
+  [1m[35m (4.0ms)[0m  [1m[35mDROP TABLE "teams" CASCADE[0m
+  [1m[35m (2.3ms)[0m  [1m[35mDROP TABLE "schema_migrations" CASCADE[0m
+  [1m[35m (3.2ms)[0m  [1m[35mDROP TABLE "ar_internal_metadata" CASCADE[0m
+  [1m[35m (7.4ms)[0m  [1m[35mCREATE TABLE "core_audit_logs" ("id" bigserial primary key, "action" character varying NOT NULL, "auditable_type" character varying, "auditable_id" bigint, "actor_id" bigint, "payload" jsonb DEFAULT '{}' NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (1.6ms)[0m  [1m[35mCREATE INDEX "index_core_audit_logs_on_auditable_type_and_auditable_id" ON "core_audit_logs" ("auditable_type", "auditable_id")[0m
+  [1m[35m (3.3ms)[0m  [1m[35mCREATE TABLE "articles" ("id" bigserial primary key, "title" character varying, "slug" character varying, "deleted_at" timestamp(6), "team_id" bigint, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (1.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_articles_on_slug" ON "articles" ("slug")[0m
+  [1m[35m (3.3ms)[0m  [1m[35mCREATE TABLE "teams" ("id" bigserial primary key, "name" character varying, "slug" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (0.9ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_teams_on_slug" ON "teams" ("slug")[0m
+  [1m[35m (2.5ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" character varying NOT NULL PRIMARY KEY)[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.7ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[35m (0.5ms)[0m  [1m[32mINSERT INTO "schema_migrations" (version) VALUES (0)[0m
+  [1m[35m (2.5ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" character varying NOT NULL PRIMARY KEY, "value" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[36mActiveRecord::InternalMetadata Load (1.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::InternalMetadata Create (0.5ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'test', '2026-05-08 08:14:34.667301', '2026-05-08 08:14:34.667302') RETURNING "key"[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36m Exists? (0.8ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."id" IS NOT NULL AND "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme-corp"], ["LIMIT", 1]]
+  [1m[36m Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme-corp"], ["LIMIT", 1]]
+  [1m[36m#<Class:0x000000012c875640> Create (0.6ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme Corp!"], ["slug", "acme-corp"], ["created_at", "2026-05-08 08:14:34.712577"], ["updated_at", "2026-05-08 08:14:34.712577"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36m Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."id" IS NOT NULL AND "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme"], ["LIMIT", 1]]
+  [1m[36m Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme"], ["LIMIT", 1]]
+  [1m[36m#<Class:0x000000012c9332a8> Create (0.2ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme"], ["slug", "acme"], ["created_at", "2026-05-08 08:14:34.716561"], ["updated_at", "2026-05-08 08:14:34.716561"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36m Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."id" IS NOT NULL AND "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme"], ["LIMIT", 1]]
+  [1m[36m Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."id" IS NOT NULL AND "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme-2"], ["LIMIT", 1]]
+  [1m[36m Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme-2"], ["LIMIT", 1]]
+  [1m[36m#<Class:0x000000012c9332a8> Create (0.3ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme"], ["slug", "acme-2"], ["created_at", "2026-05-08 08:14:34.718397"], ["updated_at", "2026-05-08 08:14:34.718397"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36m Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "my-custom"], ["LIMIT", 1]]
+  [1m[36m#<Class:0x000000012c9f6ff0> Create (0.3ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Whatever"], ["slug", "my-custom"], ["created_at", "2026-05-08 08:14:34.721679"], ["updated_at", "2026-05-08 08:14:34.721679"]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mArticle Create (1.1ms)[0m  [1m[32mINSERT INTO "articles" ("title", "slug", "deleted_at", "team_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["title", "Hi"], ["slug", nil], ["deleted_at", nil], ["team_id", nil], ["created_at", "2026-05-08 08:14:34.727431"], ["updated_at", "2026-05-08 08:14:34.727431"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mCore::AuditLog Create (1.9ms)[0m  [1m[32mINSERT INTO "core_audit_logs" ("action", "auditable_type", "auditable_id", "actor_id", "payload", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["action", "create"], ["auditable_type", "Article"], ["auditable_id", 1], ["actor_id", nil], ["payload", "{\"id\":1,\"title\":\"Hi\",\"slug\":null,\"deleted_at\":null,\"team_id\":null}"], ["created_at", "2026-05-08 08:14:34.733724"], ["updated_at", "2026-05-08 08:14:34.733724"]]
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mCore::AuditLog Count (0.5ms)[0m  [1m[34mSELECT COUNT(*) FROM "core_audit_logs"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mArticle Update (0.5ms)[0m  [1m[33mUPDATE "articles" SET "title" = $1, "updated_at" = $2 WHERE "articles"."id" = $3[0m  [["title", "Bye"], ["updated_at", "2026-05-08 08:14:34.738437"], ["id", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mCore::AuditLog Create (0.4ms)[0m  [1m[32mINSERT INTO "core_audit_logs" ("action", "auditable_type", "auditable_id", "actor_id", "payload", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["action", "update"], ["auditable_type", "Article"], ["auditable_id", 1], ["actor_id", nil], ["payload", "{\"title\":\"Bye\",\"updated_at\":\"2026-05-08T08:14:34.738Z\"}"], ["created_at", "2026-05-08 08:14:34.739695"], ["updated_at", "2026-05-08 08:14:34.739695"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mCore::AuditLog Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "core_audit_logs"[0m
+  [1m[36mCore::AuditLog Load (0.5ms)[0m  [1m[34mSELECT "core_audit_logs".* FROM "core_audit_logs" ORDER BY "core_audit_logs"."created_at" DESC LIMIT $1[0m  [["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mCore::AuditLog Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "core_audit_logs"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mArticle Create (0.5ms)[0m  [1m[32mINSERT INTO "articles" ("title", "slug", "deleted_at", "team_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["title", "Hi"], ["slug", nil], ["deleted_at", nil], ["team_id", nil], ["created_at", "2026-05-08 08:14:34.745462"], ["updated_at", "2026-05-08 08:14:34.745462"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mCore::AuditLog Create (0.6ms)[0m  [1m[32mINSERT INTO "core_audit_logs" ("action", "auditable_type", "auditable_id", "actor_id", "payload", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["action", "create"], ["auditable_type", "Article"], ["auditable_id", 2], ["actor_id", nil], ["payload", "{\"id\":2,\"title\":\"Hi\",\"slug\":null,\"deleted_at\":null,\"team_id\":null}"], ["created_at", "2026-05-08 08:14:34.746446"], ["updated_at", "2026-05-08 08:14:34.746446"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mCore::AuditLog Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "core_audit_logs"[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mArticle Create (0.9ms)[0m  [1m[32mINSERT INTO "articles" ("title", "slug", "deleted_at", "team_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["title", "Hi"], ["slug", nil], ["deleted_at", nil], ["team_id", nil], ["created_at", "2026-05-08 08:14:34.763499"], ["updated_at", "2026-05-08 08:14:34.763499"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mCore::AuditLog Create (0.9ms)[0m  [1m[32mINSERT INTO "core_audit_logs" ("action", "auditable_type", "auditable_id", "actor_id", "payload", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["action", "create"], ["auditable_type", "Article"], ["auditable_id", 3], ["actor_id", nil], ["payload", "{\"id\":3,\"title\":\"Hi\",\"slug\":null,\"deleted_at\":null,\"team_id\":null}"], ["created_at", "2026-05-08 08:14:34.765318"], ["updated_at", "2026-05-08 08:14:34.765318"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mCore::AuditLog Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "core_audit_logs"[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mCore::AuditLog Update All (0.9ms)[0m  [1m[33mUPDATE "core_audit_logs" SET "auditable_id" = $1, "auditable_type" = $2 WHERE "core_audit_logs"."auditable_id" = $3 AND "core_audit_logs"."auditable_type" = $4[0m  [["auditable_id", nil], ["auditable_type", nil], ["auditable_id", 3], ["auditable_type", "Article"]]
+  [1m[36mArticle Destroy (0.3ms)[0m  [1m[31mDELETE FROM "articles" WHERE "articles"."id" = $1[0m  [["id", 3]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mCore::AuditLog Create (0.6ms)[0m  [1m[32mINSERT INTO "core_audit_logs" ("action", "auditable_type", "auditable_id", "actor_id", "payload", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["action", "destroy"], ["auditable_type", "Article"], ["auditable_id", 3], ["actor_id", nil], ["payload", "{\"id\":3,\"title\":\"Hi\",\"slug\":null,\"deleted_at\":null,\"team_id\":null}"], ["created_at", "2026-05-08 08:14:34.773626"], ["updated_at", "2026-05-08 08:14:34.773626"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mCore::AuditLog Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "core_audit_logs"[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mCore::AuditLog Create (0.4ms)[0m  [1m[32mINSERT INTO "core_audit_logs" ("action", "auditable_type", "auditable_id", "actor_id", "payload", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["action", "create"], ["auditable_type", "Article"], ["auditable_id", 7], ["actor_id", nil], ["payload", "{}"], ["created_at", "2026-05-08 08:14:34.782420"], ["updated_at", "2026-05-08 08:14:34.782420"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mCore::AuditLog Create (0.3ms)[0m  [1m[32mINSERT INTO "core_audit_logs" ("action", "auditable_type", "auditable_id", "actor_id", "payload", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["action", "create"], ["auditable_type", "Article"], ["auditable_id", 8], ["actor_id", nil], ["payload", "{}"], ["created_at", "2026-05-08 08:14:34.783315"], ["updated_at", "2026-05-08 08:14:34.783315"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mCore::AuditLog Pluck (0.3ms)[0m  [1m[34mSELECT "core_audit_logs"."auditable_id" FROM "core_audit_logs" WHERE "core_audit_logs"."auditable_type" = $1 AND "core_audit_logs"."auditable_id" = $2[0m  [["auditable_type", "Article"], ["auditable_id", 7]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[35m (3.1ms)[0m  [1m[35mDROP TABLE "core_audit_logs" CASCADE[0m
+  [1m[35m (1.9ms)[0m  [1m[35mDROP TABLE "articles" CASCADE[0m
+  [1m[35m (2.2ms)[0m  [1m[35mDROP TABLE "teams" CASCADE[0m
+  [1m[35m (1.6ms)[0m  [1m[35mDROP TABLE "schema_migrations" CASCADE[0m
+  [1m[35m (1.5ms)[0m  [1m[35mDROP TABLE "ar_internal_metadata" CASCADE[0m
+  [1m[35m (5.0ms)[0m  [1m[35mCREATE TABLE "core_audit_logs" ("id" bigserial primary key, "action" character varying NOT NULL, "auditable_type" character varying, "auditable_id" bigint, "actor_id" bigint, "payload" jsonb DEFAULT '{}' NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (1.0ms)[0m  [1m[35mCREATE INDEX "index_core_audit_logs_on_auditable_type_and_auditable_id" ON "core_audit_logs" ("auditable_type", "auditable_id")[0m
+  [1m[35m (2.6ms)[0m  [1m[35mCREATE TABLE "articles" ("id" bigserial primary key, "title" character varying, "slug" character varying, "deleted_at" timestamp(6), "team_id" bigint, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (0.8ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_articles_on_slug" ON "articles" ("slug")[0m
+  [1m[35m (2.7ms)[0m  [1m[35mCREATE TABLE "teams" ("id" bigserial primary key, "name" character varying, "slug" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (0.9ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_teams_on_slug" ON "teams" ("slug")[0m
+  [1m[35m (2.3ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" character varying NOT NULL PRIMARY KEY)[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.6ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[35m (0.4ms)[0m  [1m[32mINSERT INTO "schema_migrations" (version) VALUES (0)[0m
+  [1m[35m (2.8ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" character varying NOT NULL PRIMARY KEY, "value" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.7ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::InternalMetadata Create (0.5ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'test', '2026-05-08 08:14:50.765663', '2026-05-08 08:14:50.765664') RETURNING "key"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36m Exists? (0.9ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."id" IS NOT NULL AND "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme-corp"], ["LIMIT", 1]]
+  [1m[36m Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme-corp"], ["LIMIT", 1]]
+  [1m[36m#<Class:0x0000000128dfbc30> Create (0.6ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme Corp!"], ["slug", "acme-corp"], ["created_at", "2026-05-08 08:14:50.810680"], ["updated_at", "2026-05-08 08:14:50.810680"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (1.6ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36m Exists? (2.1ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."id" IS NOT NULL AND "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme"], ["LIMIT", 1]]
+  [1m[36m Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme"], ["LIMIT", 1]]
+  [1m[36m#<Class:0x0000000128eb9cf8> Create (0.2ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme"], ["slug", "acme"], ["created_at", "2026-05-08 08:14:50.815746"], ["updated_at", "2026-05-08 08:14:50.815746"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36m Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."id" IS NOT NULL AND "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme"], ["LIMIT", 1]]
+  [1m[36m Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."id" IS NOT NULL AND "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme-2"], ["LIMIT", 1]]
+  [1m[36m Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme-2"], ["LIMIT", 1]]
+  [1m[36m#<Class:0x0000000128eb9cf8> Create (0.3ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme"], ["slug", "acme-2"], ["created_at", "2026-05-08 08:14:50.817714"], ["updated_at", "2026-05-08 08:14:50.817714"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36m Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "my-custom"], ["LIMIT", 1]]
+  [1m[36m#<Class:0x0000000128f5da38> Create (0.3ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Whatever"], ["slug", "my-custom"], ["created_at", "2026-05-08 08:14:50.820614"], ["updated_at", "2026-05-08 08:14:50.820614"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mCore::AuditLog Create (1.3ms)[0m  [1m[32mINSERT INTO "core_audit_logs" ("action", "auditable_type", "auditable_id", "actor_id", "payload", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["action", "create"], ["auditable_type", "Article"], ["auditable_id", 7], ["actor_id", nil], ["payload", "{}"], ["created_at", "2026-05-08 08:14:50.826844"], ["updated_at", "2026-05-08 08:14:50.826844"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mCore::AuditLog Create (0.3ms)[0m  [1m[32mINSERT INTO "core_audit_logs" ("action", "auditable_type", "auditable_id", "actor_id", "payload", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["action", "create"], ["auditable_type", "Article"], ["auditable_id", 8], ["actor_id", nil], ["payload", "{}"], ["created_at", "2026-05-08 08:14:50.828670"], ["updated_at", "2026-05-08 08:14:50.828670"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mCore::AuditLog Pluck (0.4ms)[0m  [1m[34mSELECT "core_audit_logs"."auditable_id" FROM "core_audit_logs" WHERE "core_audit_logs"."auditable_type" = $1 AND "core_audit_logs"."auditable_id" = $2[0m  [["auditable_type", "Article"], ["auditable_id", 7]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mArticle Create (1.1ms)[0m  [1m[32mINSERT INTO "articles" ("title", "slug", "deleted_at", "team_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["title", "Hi"], ["slug", nil], ["deleted_at", nil], ["team_id", nil], ["created_at", "2026-05-08 08:14:50.834778"], ["updated_at", "2026-05-08 08:14:50.834778"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mCore::AuditLog Create (0.4ms)[0m  [1m[32mINSERT INTO "core_audit_logs" ("action", "auditable_type", "auditable_id", "actor_id", "payload", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["action", "create"], ["auditable_type", "Article"], ["auditable_id", 1], ["actor_id", nil], ["payload", "{\"id\":1,\"title\":\"Hi\",\"slug\":null,\"deleted_at\":null,\"team_id\":null}"], ["created_at", "2026-05-08 08:14:50.836663"], ["updated_at", "2026-05-08 08:14:50.836663"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mCore::AuditLog Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "core_audit_logs"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mCore::AuditLog Update All (0.4ms)[0m  [1m[33mUPDATE "core_audit_logs" SET "auditable_id" = $1, "auditable_type" = $2 WHERE "core_audit_logs"."auditable_id" = $3 AND "core_audit_logs"."auditable_type" = $4[0m  [["auditable_id", nil], ["auditable_type", nil], ["auditable_id", 1], ["auditable_type", "Article"]]
+  [1m[36mArticle Destroy (0.2ms)[0m  [1m[31mDELETE FROM "articles" WHERE "articles"."id" = $1[0m  [["id", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mCore::AuditLog Create (0.5ms)[0m  [1m[32mINSERT INTO "core_audit_logs" ("action", "auditable_type", "auditable_id", "actor_id", "payload", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["action", "destroy"], ["auditable_type", "Article"], ["auditable_id", 1], ["actor_id", nil], ["payload", "{\"id\":1,\"title\":\"Hi\",\"slug\":null,\"deleted_at\":null,\"team_id\":null}"], ["created_at", "2026-05-08 08:14:50.843058"], ["updated_at", "2026-05-08 08:14:50.843058"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mCore::AuditLog Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "core_audit_logs"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mArticle Create (0.3ms)[0m  [1m[32mINSERT INTO "articles" ("title", "slug", "deleted_at", "team_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["title", "Hi"], ["slug", nil], ["deleted_at", nil], ["team_id", nil], ["created_at", "2026-05-08 08:14:50.859244"], ["updated_at", "2026-05-08 08:14:50.859244"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mCore::AuditLog Create (0.3ms)[0m  [1m[32mINSERT INTO "core_audit_logs" ("action", "auditable_type", "auditable_id", "actor_id", "payload", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["action", "create"], ["auditable_type", "Article"], ["auditable_id", 2], ["actor_id", nil], ["payload", "{\"id\":2,\"title\":\"Hi\",\"slug\":null,\"deleted_at\":null,\"team_id\":null}"], ["created_at", "2026-05-08 08:14:50.860324"], ["updated_at", "2026-05-08 08:14:50.860324"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mCore::AuditLog Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "core_audit_logs"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mArticle Update (0.3ms)[0m  [1m[33mUPDATE "articles" SET "title" = $1, "updated_at" = $2 WHERE "articles"."id" = $3[0m  [["title", "Bye"], ["updated_at", "2026-05-08 08:14:50.861238"], ["id", 2]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mCore::AuditLog Create (0.3ms)[0m  [1m[32mINSERT INTO "core_audit_logs" ("action", "auditable_type", "auditable_id", "actor_id", "payload", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["action", "update"], ["auditable_type", "Article"], ["auditable_id", 2], ["actor_id", nil], ["payload", "{\"title\":\"Bye\",\"updated_at\":\"2026-05-08T08:14:50.861Z\"}"], ["created_at", "2026-05-08 08:14:50.861948"], ["updated_at", "2026-05-08 08:14:50.861948"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mCore::AuditLog Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "core_audit_logs"[0m
+  [1m[36mCore::AuditLog Load (0.6ms)[0m  [1m[34mSELECT "core_audit_logs".* FROM "core_audit_logs" ORDER BY "core_audit_logs"."created_at" DESC LIMIT $1[0m  [["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mCore::AuditLog Count (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "core_audit_logs"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mArticle Create (0.4ms)[0m  [1m[32mINSERT INTO "articles" ("title", "slug", "deleted_at", "team_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["title", "Hi"], ["slug", nil], ["deleted_at", nil], ["team_id", nil], ["created_at", "2026-05-08 08:14:50.866783"], ["updated_at", "2026-05-08 08:14:50.866783"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mCore::AuditLog Create (0.5ms)[0m  [1m[32mINSERT INTO "core_audit_logs" ("action", "auditable_type", "auditable_id", "actor_id", "payload", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["action", "create"], ["auditable_type", "Article"], ["auditable_id", 3], ["actor_id", nil], ["payload", "{\"id\":3,\"title\":\"Hi\",\"slug\":null,\"deleted_at\":null,\"team_id\":null}"], ["created_at", "2026-05-08 08:14:50.867714"], ["updated_at", "2026-05-08 08:14:50.867714"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mCore::AuditLog Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "core_audit_logs"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[35m (6.4ms)[0m  [1m[35mDROP TABLE "core_audit_logs" CASCADE[0m
+  [1m[35m (4.1ms)[0m  [1m[35mDROP TABLE "articles" CASCADE[0m
+  [1m[35m (3.2ms)[0m  [1m[35mDROP TABLE "teams" CASCADE[0m
+  [1m[35m (2.1ms)[0m  [1m[35mDROP TABLE "schema_migrations" CASCADE[0m
+  [1m[35m (2.1ms)[0m  [1m[35mDROP TABLE "ar_internal_metadata" CASCADE[0m
+  [1m[35m (6.7ms)[0m  [1m[35mCREATE TABLE "core_audit_logs" ("id" bigserial primary key, "action" character varying NOT NULL, "auditable_type" character varying, "auditable_id" bigint, "actor_id" bigint, "payload" jsonb DEFAULT '{}' NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (1.4ms)[0m  [1m[35mCREATE INDEX "index_core_audit_logs_on_auditable_type_and_auditable_id" ON "core_audit_logs" ("auditable_type", "auditable_id")[0m
+  [1m[35m (3.3ms)[0m  [1m[35mCREATE TABLE "articles" ("id" bigserial primary key, "title" character varying, "slug" character varying, "deleted_at" timestamp(6), "team_id" bigint, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (1.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_articles_on_slug" ON "articles" ("slug")[0m
+  [1m[35m (2.7ms)[0m  [1m[35mCREATE TABLE "teams" ("id" bigserial primary key, "name" character varying, "slug" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (1.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_teams_on_slug" ON "teams" ("slug")[0m
+  [1m[35m (2.5ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" character varying NOT NULL PRIMARY KEY)[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.7ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[35m (0.5ms)[0m  [1m[32mINSERT INTO "schema_migrations" (version) VALUES (0)[0m
+  [1m[35m (3.0ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" character varying NOT NULL PRIMARY KEY, "value" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.9ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::InternalMetadata Create (0.5ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'test', '2026-05-08 08:44:38.498183', '2026-05-08 08:44:38.498184') RETURNING "key"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mCore::AuditLog Create (1.7ms)[0m  [1m[32mINSERT INTO "core_audit_logs" ("action", "auditable_type", "auditable_id", "actor_id", "payload", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["action", "create"], ["auditable_type", "Article"], ["auditable_id", 7], ["actor_id", nil], ["payload", "{}"], ["created_at", "2026-05-08 08:44:38.541383"], ["updated_at", "2026-05-08 08:44:38.541383"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mCore::AuditLog Create (0.5ms)[0m  [1m[32mINSERT INTO "core_audit_logs" ("action", "auditable_type", "auditable_id", "actor_id", "payload", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["action", "create"], ["auditable_type", "Article"], ["auditable_id", 8], ["actor_id", nil], ["payload", "{}"], ["created_at", "2026-05-08 08:44:38.543747"], ["updated_at", "2026-05-08 08:44:38.543747"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mCore::AuditLog Pluck (0.6ms)[0m  [1m[34mSELECT "core_audit_logs"."auditable_id" FROM "core_audit_logs" WHERE "core_audit_logs"."auditable_type" = $1 AND "core_audit_logs"."auditable_id" = $2[0m  [["auditable_type", "Article"], ["auditable_id", 7]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mArticle Create (1.6ms)[0m  [1m[32mINSERT INTO "articles" ("title", "slug", "deleted_at", "team_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["title", "Hi"], ["slug", nil], ["deleted_at", nil], ["team_id", nil], ["created_at", "2026-05-08 08:44:38.555862"], ["updated_at", "2026-05-08 08:44:38.555862"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mCore::AuditLog Create (0.5ms)[0m  [1m[32mINSERT INTO "core_audit_logs" ("action", "auditable_type", "auditable_id", "actor_id", "payload", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["action", "create"], ["auditable_type", "Article"], ["auditable_id", 1], ["actor_id", nil], ["payload", "{\"id\":1,\"title\":\"Hi\",\"slug\":null,\"deleted_at\":null,\"team_id\":null}"], ["created_at", "2026-05-08 08:44:38.558277"], ["updated_at", "2026-05-08 08:44:38.558277"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mCore::AuditLog Count (0.4ms)[0m  [1m[34mSELECT COUNT(*) FROM "core_audit_logs"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mArticle Update (0.5ms)[0m  [1m[33mUPDATE "articles" SET "title" = $1, "updated_at" = $2 WHERE "articles"."id" = $3[0m  [["title", "Bye"], ["updated_at", "2026-05-08 08:44:38.560442"], ["id", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mCore::AuditLog Create (0.5ms)[0m  [1m[32mINSERT INTO "core_audit_logs" ("action", "auditable_type", "auditable_id", "actor_id", "payload", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["action", "update"], ["auditable_type", "Article"], ["auditable_id", 1], ["actor_id", nil], ["payload", "{\"title\":\"Bye\",\"updated_at\":\"2026-05-08T08:44:38.560Z\"}"], ["created_at", "2026-05-08 08:44:38.561436"], ["updated_at", "2026-05-08 08:44:38.561436"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mCore::AuditLog Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "core_audit_logs"[0m
+  [1m[36mCore::AuditLog Load (0.8ms)[0m  [1m[34mSELECT "core_audit_logs".* FROM "core_audit_logs" ORDER BY "core_audit_logs"."created_at" DESC LIMIT $1[0m  [["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mCore::AuditLog Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "core_audit_logs"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mArticle Create (0.5ms)[0m  [1m[32mINSERT INTO "articles" ("title", "slug", "deleted_at", "team_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["title", "Hi"], ["slug", nil], ["deleted_at", nil], ["team_id", nil], ["created_at", "2026-05-08 08:44:38.566940"], ["updated_at", "2026-05-08 08:44:38.566940"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mCore::AuditLog Create (0.5ms)[0m  [1m[32mINSERT INTO "core_audit_logs" ("action", "auditable_type", "auditable_id", "actor_id", "payload", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["action", "create"], ["auditable_type", "Article"], ["auditable_id", 2], ["actor_id", nil], ["payload", "{\"id\":2,\"title\":\"Hi\",\"slug\":null,\"deleted_at\":null,\"team_id\":null}"], ["created_at", "2026-05-08 08:44:38.567899"], ["updated_at", "2026-05-08 08:44:38.567899"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mCore::AuditLog Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "core_audit_logs"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mArticle Create (0.6ms)[0m  [1m[32mINSERT INTO "articles" ("title", "slug", "deleted_at", "team_id", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["title", "Hi"], ["slug", nil], ["deleted_at", nil], ["team_id", nil], ["created_at", "2026-05-08 08:44:38.570810"], ["updated_at", "2026-05-08 08:44:38.570810"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mCore::AuditLog Create (0.5ms)[0m  [1m[32mINSERT INTO "core_audit_logs" ("action", "auditable_type", "auditable_id", "actor_id", "payload", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["action", "create"], ["auditable_type", "Article"], ["auditable_id", 3], ["actor_id", nil], ["payload", "{\"id\":3,\"title\":\"Hi\",\"slug\":null,\"deleted_at\":null,\"team_id\":null}"], ["created_at", "2026-05-08 08:44:38.571894"], ["updated_at", "2026-05-08 08:44:38.571894"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mCore::AuditLog Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "core_audit_logs"[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mCore::AuditLog Update All (0.6ms)[0m  [1m[33mUPDATE "core_audit_logs" SET "auditable_id" = $1, "auditable_type" = $2 WHERE "core_audit_logs"."auditable_id" = $3 AND "core_audit_logs"."auditable_type" = $4[0m  [["auditable_id", nil], ["auditable_type", nil], ["auditable_id", 3], ["auditable_type", "Article"]]
+  [1m[36mArticle Destroy (0.3ms)[0m  [1m[31mDELETE FROM "articles" WHERE "articles"."id" = $1[0m  [["id", 3]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mCore::AuditLog Create (0.5ms)[0m  [1m[32mINSERT INTO "core_audit_logs" ("action", "auditable_type", "auditable_id", "actor_id", "payload", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"[0m  [["action", "destroy"], ["auditable_type", "Article"], ["auditable_id", 3], ["actor_id", nil], ["payload", "{\"id\":3,\"title\":\"Hi\",\"slug\":null,\"deleted_at\":null,\"team_id\":null}"], ["created_at", "2026-05-08 08:44:38.578512"], ["updated_at", "2026-05-08 08:44:38.578512"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mCore::AuditLog Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "core_audit_logs"[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36m Exists? (1.2ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "my-custom"], ["LIMIT", 1]]
+  [1m[36m#<Class:0x000000012a206c20> Create (0.9ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Whatever"], ["slug", "my-custom"], ["created_at", "2026-05-08 08:44:38.601962"], ["updated_at", "2026-05-08 08:44:38.601962"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36m Exists? (0.6ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."id" IS NOT NULL AND "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme-corp"], ["LIMIT", 1]]
+  [1m[36m Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme-corp"], ["LIMIT", 1]]
+  [1m[36m#<Class:0x0000000129ca64b0> Create (0.3ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme Corp!"], ["slug", "acme-corp"], ["created_at", "2026-05-08 08:44:38.606456"], ["updated_at", "2026-05-08 08:44:38.606456"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36m Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."id" IS NOT NULL AND "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme"], ["LIMIT", 1]]
+  [1m[36m Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme"], ["LIMIT", 1]]
+  [1m[36m#<Class:0x000000012a9b0d40> Create (0.3ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme"], ["slug", "acme"], ["created_at", "2026-05-08 08:44:38.609891"], ["updated_at", "2026-05-08 08:44:38.609891"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36m Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."id" IS NOT NULL AND "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme"], ["LIMIT", 1]]
+  [1m[36m Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."id" IS NOT NULL AND "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme-2"], ["LIMIT", 1]]
+  [1m[36m Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme-2"], ["LIMIT", 1]]
+  [1m[36m#<Class:0x000000012a9b0d40> Create (0.3ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme"], ["slug", "acme-2"], ["created_at", "2026-05-08 08:44:38.611811"], ["updated_at", "2026-05-08 08:44:38.611811"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m

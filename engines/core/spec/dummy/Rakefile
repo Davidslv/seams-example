@@ -1,0 +1,6 @@
+# frozen_string_literal: true
+
+# Marker file so Rails::Engine.find_root anchors here, not
+# in the parent host application.
+require_relative "config/application"
+Rails.application.load_tasks if defined?(Rails.application)

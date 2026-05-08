@@ -1,0 +1,14 @@
+# Engine-scoped i18n. Every translation key SHOULD start with
+# `auth.` so two engines can never collide on a key (the host's
+# I18n.load_path picks up engines/*/config/locales/*.yml automatically
+# via Rails::Engine).
+#
+# Usage from inside the engine:
+#
+#   I18n.t("auth.welcome", name: "Ada")
+#
+# Override in the host by dropping a file at
+# config/locales/auth.en.yml — keys merge top-down, host wins.
+en:
+  auth:
+    placeholder: "Translate me — engines/auth/config/locales/en.yml"

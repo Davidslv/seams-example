@@ -1,0 +1,53 @@
+# frozen_string_literal: true
+
+require "rails_helper"
+
+RSpec.describe Billing::Gateways::Stripe do
+  let(:fake_client) { instance_double(Billing::Stripe::Client) }
+  let(:gateway)     { described_class.new(client: fake_client) }
+
+  describe "#create_subscription" do
+    let(:response) do
+      {
+        "id"     => "sub_x",
+        "status" => "active",
+        "items"  => { "data" => [{ "price" => { "id" => "price_x" }, "current_period_end" => 1_700_000_000 }] }
+      }
+    end
+
+    it "delegates to the Faraday client with the documented param shape" do
+      expect(fake_client).to receive(:create_subscription).with(
+        customer: "cus_x", items: [{ price: "price_x" }]
+      ).and_return(response)
+
+      result = gateway.create_subscription(customer_ref: "cus_x", plan_ref: "price_x")
+      expect(result).to include(id: "sub_x", status: "active", plan_ref: "price_x", current_period_end: 1_700_000_000)
+    end
+
+    it "lets Billing::GatewayError raised by the client propagate" do
+      allow(fake_client).to receive(:create_subscription).and_raise(Billing::GatewayError, "bad")
+      expect { gateway.create_subscription(customer_ref: "x", plan_ref: "y") }
+        .to raise_error(Billing::GatewayError, "bad")
+    end
+  end
+
+  describe "#verify_webhook" do
+    let(:secret)    { "whsec_test" }
+    let(:timestamp) { Time.now.to_i }
+    let(:payload)   { %({"id":"evt_1","type":"customer.subscription.created","livemode":false,"data":{"object":{"id":"sub_x"}}}) }
+    let(:signed)    { OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new("sha256"), secret, "#{timestamp}.#{payload}") }
+    let(:header)    { "t=#{timestamp},v1=#{signed}" }
+
+    it "verifies a valid signed payload + returns the normalised event" do
+      event = gateway.verify_webhook(payload: payload, signature: header, secret: secret)
+      expect(event).to include(id: "evt_1", type: "customer.subscription.created", livemode: false)
+      expect(event[:object]).to eq("id" => "sub_x")
+    end
+
+    it "raises Billing::WebhookError on a bad signature" do
+      bad_header = "t=#{timestamp},v1=deadbeef"
+      expect { gateway.verify_webhook(payload: payload, signature: bad_header, secret: secret) }
+        .to raise_error(Billing::WebhookError, /No signatures found matching/)
+    end
+  end
+end

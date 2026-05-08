@@ -1,0 +1,47 @@
+# frozen_string_literal: true
+
+module Notifications
+  class PreferencesController < ApplicationController
+    def show
+      @preferences = Notifications::NotificationPreference.where(user_id: current_user_id)
+    end
+
+    def update
+      # Whitelist the keys we accept. The form posts
+      # `preferences[<channel>:<type>] = "1" | "0"`. Allowed channels
+      # are the canonical CHANNELS list; type is either "any" (→ nil)
+      # or a NotificationPreference::TYPE-style identifier ([a-z0-9_]).
+      preference_params.each do |key, enabled|
+        channel, type = key.split(":", 2)
+        next unless Notifications::NotificationPreference::CHANNELS.include?(channel)
+        next unless type.nil? || type == "any" || type.match?(/\A[a-z0-9_]+\z/)
+
+        type = nil if type == "any"
+        pref = Notifications::NotificationPreference.find_or_initialize_by(
+          user_id:           current_user_id,
+          channel:           channel,
+          notification_type: type
+        )
+        pref.update!(enabled: enabled.to_s == "1")
+      end
+      redirect_to preferences_path, notice: "Preferences saved"
+    end
+
+    private
+
+    # `params[:preferences].to_h` raises ActionController::UnfilteredParameters
+    # in Rails default config. Use permit! after filtering to the
+    # `:preferences` key — the per-key channel/type validation above
+    # is the real safety net.
+    def preference_params
+      raw = params.require(:preferences)
+      raw.respond_to?(:permit!) ? raw.permit!.to_h : raw.to_h
+    end
+
+    def current_user_id
+      return nil unless respond_to?(:current_user)
+
+      current_user&.id
+    end
+  end
+end

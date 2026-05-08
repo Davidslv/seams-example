@@ -1,0 +1,34 @@
+# frozen_string_literal: true
+
+module Auth
+  class RegistrationsController < ApplicationController
+    # 5 sign-ups per hour per IP. Tighter than sign-in because each
+    # successful row also sends a welcome email + provisions side
+    # effects. Rails 8's built-in rate_limit uses Solid Cache.
+    rate_limit to: 5, within: 1.hour, only: %i[create],
+               with: -> { redirect_to auth.new_registration_path, alert: "Too many sign-ups from this IP. Try again later." }
+
+    def new
+      @user = Auth::User.new
+    end
+
+    def create
+      result = Auth::RegisterUser.call(
+        email:                 params.dig(:user, :email),
+        password:              params.dig(:user, :password),
+        password_confirmation: params.dig(:user, :password_confirmation)
+      )
+
+      if result.ok?
+        cookies.encrypted[Auth.configuration.cookie_name] = {
+          value: result.session.token, httponly: true, expires: result.session.expires_at
+        }
+        redirect_to Auth.configuration.after_sign_in_url, notice: "Welcome"
+      else
+        @user = Auth::User.new(email: params.dig(:user, :email))
+        flash.now[:alert] = result.error
+        render :new, status: :unprocessable_entity
+      end
+    end
+  end
+end

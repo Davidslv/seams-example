@@ -1,0 +1,38 @@
+# frozen_string_literal: true
+
+module Auth
+  # Engine-scoped configuration. Override in
+  # config/initializers/auth.rb of the host application:
+  #
+  #   Auth.configure do |c|
+  #     c.session_ttl       = 14.days
+  #     c.cookie_name       = :_my_app_session
+  #     c.after_sign_in_url = "/dashboard"
+  #   end
+  class Configuration
+    attr_accessor :session_ttl, :cookie_name, :after_sign_in_url, :after_sign_out_url,
+                  :password_min_length, :oauth_providers
+
+    def initialize
+      @session_ttl         = 30 * 24 * 60 * 60   # 30 days, in seconds
+      @cookie_name         = :auth_session
+      @after_sign_in_url   = "/"
+      @after_sign_out_url  = "/"
+      @password_min_length = 8
+      # OAuth providers — each entry maps a provider key to a config:
+      #   { adapter: "Auth::OAuth::Google", client_id:, client_secret:, scopes?: }
+      # Configure in config/initializers/auth.rb:
+      #   Auth.configure do |c|
+      #     c.oauth_providers = {
+      #       google: { adapter: "Auth::OAuth::Google",
+      #                 client_id: ENV.fetch("GOOGLE_OAUTH_CLIENT_ID"),
+      #                 client_secret: ENV.fetch("GOOGLE_OAUTH_CLIENT_SECRET") },
+      #       github: { adapter: "Auth::OAuth::Github",
+      #                 client_id: ENV.fetch("GITHUB_OAUTH_CLIENT_ID"),
+      #                 client_secret: ENV.fetch("GITHUB_OAUTH_CLIENT_SECRET") }
+      #     }
+      #   end
+      @oauth_providers     = {}
+    end
+  end
+end

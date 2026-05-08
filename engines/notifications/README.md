@@ -1,0 +1,187 @@
+# Notifications
+
+> In-app + email + SMS notifications, scheduled or recurring, for a
+> Seams-powered host. STI delivery strategies, ice_cube schedules,
+> swappable adapters.
+
+## Model
+
+`Notifications::Notification` is an STI base. Three concrete
+subclasses, each implementing its own `#dispatch!`:
+
+| Class                                | Channel | Dispatches via                                            |
+| ---                                  | ---     | ---                                                       |
+| `Notifications::Strategies::InApp`   | in-app  | ActionCable broadcast to the per-recipient channel        |
+| `Notifications::Strategies::Email`   | email   | `Notifications.email_adapter.deliver(notification:)`      |
+| `Notifications::Strategies::Sms`     | sms     | `Notifications.sms_adapter.deliver(notification:)`        |
+
+Every Notification belongs to an `owner` (polymorphic), names a
+`template` (an ERB filename), and carries an ice_cube schedule
+serialised to a `schedule_data` jsonb column. `next_delivery_at` is
+the indexed cache the recurring sweeper reads from.
+
+## Scheduling
+
+```ruby
+# Send right now (default if you skip schedule_config)
+user.notify(strategy: :email, template: "welcome")
+
+# Send in 24h
+user.notify(
+  strategy: :email,
+  template: "trial_ending",
+  schedule_config: { starts_at: 1.day.from_now, frequency: "once" }
+)
+
+# Weekly digest
+user.notify(
+  strategy: :email,
+  template: "weekly_digest",
+  schedule_config: {
+    starts_at: Time.current.next_week,
+    frequency: "weekly",
+    interval:  1
+  }
+)
+
+# Monthly, capped at 12 occurrences
+user.notify(
+  strategy: :email,
+  template: "anniversary",
+  schedule_config: {
+    starts_at: Time.current,
+    frequency: "monthly",
+    count:     12
+  }
+)
+```
+
+Or assemble the schedule yourself for richer rules (exception dates,
+"first Tuesday of the month", etc.):
+
+```ruby
+sched = IceCube::Schedule.new(Time.current)
+sched.add_recurrence_rule(
+  IceCube::Rule.weekly.day(:monday).hour_of_day(9)
+)
+notification = user.notifications.create!(
+  type:     "Notifications::Strategies::Email",
+  template: "monday_morning"
+)
+notification.schedule = sched
+notification.save!
+```
+
+## Sweeper
+
+`Notifications::SendDueNotificationsJob` is a plain `ApplicationJob`
+that finds every `Notification.due` and enqueues a per-row
+`SendNotificationJob`. Wire it into your queue's recurring
+scheduler. With Rails 8's Solid Queue:
+
+```yaml
+# config/recurring.yml
+production:
+  notifications_dispatcher:
+    class: Notifications::SendDueNotificationsJob
+    schedule: every minute
+```
+
+## Events emitted
+
+| Event name | Payload | Emitted when |
+| --- | --- | --- |
+| `notification.queued.notifications`     | `{ id:, type:, owner_id: }`           | `Notification#send!` begins |
+| `notification.delivered.notifications`  | `{ id:, type:, owner_id: }`           | `dispatch!` succeeded + Delivery recorded |
+| `notification.failed.notifications`     | `{ id:, type:, error: }`              | `dispatch!` raised |
+
+## Events consumed
+
+| Event name | Subscriber | What it does |
+| --- | --- | --- |
+| `user.signed_up.auth` | `Notifications::AuthSubscriber` | Creates an InApp + Email welcome notification (subject to NotificationPreference). |
+| `subscription.created.billing`  | `Notifications::BillingSubscriber` | InApp notification, template `billing/subscription_started`. |
+| `subscription.updated.billing`  | `Notifications::BillingSubscriber` | InApp notification, template `billing/subscription_updated`. |
+| `subscription.canceled.billing` | `Notifications::BillingSubscriber` | InApp notification, template `billing/subscription_canceled`. |
+| `invoice.paid.billing`          | `Notifications::BillingSubscriber` | InApp notification, template `billing/invoice_paid`. |
+| `invoice.failed.billing`        | `Notifications::BillingSubscriber` | InApp notification, template `billing/invoice_failed`. |
+| `lifetime.granted.billing`      | `Notifications::BillingSubscriber` | InApp notification, template `billing/lifetime_granted`. |
+| `lifetime.purchased.billing`    | `Notifications::BillingSubscriber` | InApp notification, template `billing/lifetime_purchased`. |
+
+The Billing subscriber resolves the host User by
+`stripe_customer_id` (the column the `Billing::Billable` concern
+documents). It only attaches when `Billing::Engine` is loaded.
+
+### Cross-engine dependencies
+
+The subscribers in this engine reach into other engines' models and
+the host User class. This dependency direction is intentional but
+worth documenting explicitly:
+
+| Subscriber | Reaches into | Why |
+| --- | --- | --- |
+| `Notifications::AuthSubscriber`    | host `::User` class    | resolve owner from `host_user_id` payload |
+| `Notifications::BillingSubscriber` | host `::User` class    | resolve owner from `customer_ref` via `stripe_customer_id` column |
+| `Notifications::CreateNotificationJob` | host `::User` class | resolve owner before creating the Notification |
+
+If you have a host whose user-facing class isn't `::User`, the
+default subscribers won't find owners. Override by writing your own
+subscriber that publishes `Notifications::CreateNotificationJob`
+with your class name in `owner_class:`.
+
+### Subscribers enqueue, never block the publisher
+
+`Seams::Events::Publisher` runs subscribers synchronously in the
+publisher's thread. Every subscriber here therefore enqueues
+`Notifications::CreateNotificationJob` (which does the actual DB
+write + send) rather than calling `Notification.create!` inline.
+Publishing should never wait on the bus.
+
+## Exposed concerns
+
+| Concern | Purpose |
+| --- | --- |
+| `Notifications::Notifiable` | Mix into the host's user model for `notifications` association + `#notify(strategy:, template:, schedule_config:)` helper. |
+
+## Adapters
+
+| Interface | Default                                  | Override via                                                                  |
+| ---       | ---                                      | ---                                                                           |
+| Email     | `Notifications::Adapters::ActionMailer`  | `Notifications.configure { \|c\| c.email_adapter = "MyApp::MailgunAdapter" }` |
+| SMS       | `Notifications::Adapters::NullSms`       | `Notifications.configure { \|c\| c.sms_adapter   = "MyApp::TwilioAdapter" }`  |
+
+To add a new adapter, subclass `Notifications::Adapters::Abstract`
+and implement `#deliver(notification:)`. The adapter receives the
+full Notification so it can read `recipient`, `template`,
+`rendered_content`, `owner` — whatever the gateway needs.
+
+## Templates
+
+Notifications are rendered via ERB files looked up in this order:
+
+1. `app/views/notifications/templates/<name>.erb` in the host
+2. `app/views/notifications/templates/<name>.erb` in the engine
+
+Drop a file in your host to override. The notification is exposed in
+the template via the local variable `notification` — use
+`notification.owner`, `notification.recipient`, etc.
+
+## Preferences
+
+`Notifications::NotificationPreference` lets a user opt out by
+channel + notification_type:
+
+```ruby
+Notifications::NotificationPreference.enabled?(
+  user_id: 42, channel: "email", notification_type: "weekly_digest"
+) # => true (default) | false (if a row says enabled: false)
+```
+
+The shipped `AuthSubscriber` consults this before creating the
+Email Notification at signup.
+
+## Running the specs
+
+```bash
+bin/rails seams:test[notifications]
+```

@@ -1,0 +1,68 @@
+# Self-contained — engines do not inherit from the host's .rubocop.yml
+# so a host using `rubocop-rails-omakase` (or any other style) doesn't
+# force engine code to follow rules written for application code.
+# Engine code is gem-shaped and uses default RuboCop styles.
+
+require:
+  - seams/cops
+
+AllCops:
+  TargetRubyVersion: 4.0
+  NewCops: enable
+  SuggestExtensions: false
+  Exclude:
+    - "spec/dummy/**/*"
+    - "db/migrate/**/*_create_*.rb"
+    - "tmp/**/*"
+    - "vendor/**/*"
+
+Style/Documentation:
+  Enabled: false
+
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+
+Layout/LineLength:
+  Max: 120
+
+Metrics/MethodLength:
+  Max: 25
+
+# Engine-scoped boundary enforcement. List every other engine in your
+# host application here so this engine cannot reach into them
+# accidentally. Add concerns the other engines expose (e.g.
+# `Billing::Billable`) to ExposedConcerns to allow `include` calls.
+Seams/NoCrossEngineModelAccess:
+  Enabled: true
+  OwnEngine: Core
+  OtherEngines:
+    - Auth
+    - Billing
+    - Notifications
+    - Teams
+  ExposedConcerns:
+    - Core::Auditable
+    - Core::SoftDeletable
+    - Core::Sluggable
+    - Core::TenantScoped
+    - Core::HasCurrentAttributes
+
+Seams/NoCrossEngineDependency:
+  Enabled: true
+  OwnEngine: core
+  OtherEngines:
+    - auth
+    - billing
+    - notifications
+    - teams
+
+Seams/KnownQueueNames:
+  Enabled: true
+  KnownQueues:
+    - default
+    - core
+
+Seams/MigrationComments:
+  Enabled: true
+  Include:
+    - "db/migrate/**/*.rb"

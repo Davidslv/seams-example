@@ -1,0 +1,43 @@
+# frozen_string_literal: true
+
+module Teams
+  # Engine-scoped configuration. Override in
+  # config/initializers/teams.rb of the host application.
+  class Configuration
+    attr_accessor :invitation_ttl, :max_members_per_team
+    attr_writer   :host_url, :invitation_mailer_from
+
+    def initialize
+      @invitation_ttl         = 7 * 24 * 60 * 60  # 7 days, in seconds
+      @max_members_per_team   = nil               # nil = unlimited
+      @invitation_mailer_from = nil
+      @host_url               = nil
+    end
+
+    # `host_url` is used to build the invitation accept link. Without
+    # it, invitation emails would carry a link to nowhere, so we raise
+    # at the first read rather than ship a broken email. Set in
+    # config/initializers/teams.rb.
+    def host_url
+      return @host_url if @host_url
+
+      raise Teams::ConfigurationError,
+            "Teams.configuration.host_url is not set. Add\n" \
+            "  Teams.configure { |c| c.host_url = \"https://your-app.com\" }\n" \
+            "to config/initializers/teams.rb so invitation emails can " \
+            "build the accept URL."
+    end
+
+    # `invitation_mailer_from` is the From: header on invitation emails.
+    # Same shape as `host_url` — nil-default, raises on read so the
+    # host can't accidentally ship mail from "no-reply@example.com".
+    def invitation_mailer_from
+      return @invitation_mailer_from if @invitation_mailer_from
+
+      raise Teams::ConfigurationError,
+            "Teams.configuration.invitation_mailer_from is not set. Add\n" \
+            "  Teams.configure { |c| c.invitation_mailer_from = \"team@your-app.com\" }\n" \
+            "to config/initializers/teams.rb."
+    end
+  end
+end

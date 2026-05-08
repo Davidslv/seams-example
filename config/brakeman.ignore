@@ -1,0 +1,27 @@
+{
+  "ignored_warnings": [
+    {
+      "warning_type": "Mass Assignment",
+      "warning_code": 70,
+      "fingerprint": "3f0ea97a612488d26ab51a343f90be63d7e0d0ee86eb675dcc0745de825e953b",
+      "check_name": "MassAssignment",
+      "message": "Specify exact keys allowed for mass assignment instead of using `permit!` which allows any keys",
+      "file": "engines/notifications/app/controllers/notifications/preferences_controller.rb",
+      "line": 38,
+      "link": "https://brakemanscanner.org/docs/warning_types/mass_assignment/",
+      "code": "params.require(:preferences).permit!",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "Notifications::PreferencesController",
+        "method": "preference_params"
+      },
+      "user_input": null,
+      "confidence": "Medium",
+      "cwe_id": [915],
+      "note": "Preferences are a flat hash whose keys are 'channel:type' strings (e.g. 'email:any', 'in_app:welcome'). The PreferencesController#update method itself does the validation inline before any DB write: channel is checked against Notifications::NotificationPreference::CHANNELS (frozen engine-internal whitelist), type is regex-matched against /\\A[a-z0-9_]+\\z/ or 'any', and the value is coerced to a boolean (==\"1\"). Only the single :enabled column is touched on the row, via find_or_initialize_by + update!. permit! is used because the channel:type keyset is dynamic; an exhaustive permit() list would have to enumerate every pair. Re-evaluate if a future code path lets user input flow into the channels list."
+    }
+  ],
+  "updated": "2026-05-08 09:17:00 +0100",
+  "brakeman_version": "8.0.4"
+}

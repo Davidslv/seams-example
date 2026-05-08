@@ -1,0 +1,82 @@
+# frozen_string_literal: true
+
+require "active_support/concern"
+
+module Notifications
+  # Mix into the host's user-facing model. Adds a +notifications+
+  # association and a +#notify+ helper that creates the right
+  # +Strategies::*+ subclass for the requested channel.
+  #
+  #   class User < ApplicationRecord
+  #     include Notifications::Notifiable
+  #   end
+  #
+  #   user.notify(strategy: :email,  template: "welcome")
+  #   user.notify(strategy: :sms,    template: "alert", schedule_config: { starts_at: 1.day.from_now, frequency: "once" })
+  #   user.notify(strategy: :in_app, template: "system")
+  module Notifiable
+    extend ActiveSupport::Concern
+
+    STRATEGY_CLASSES = {
+      email:  "Notifications::Strategies::Email",
+      sms:    "Notifications::Strategies::Sms",
+      in_app: "Notifications::Strategies::InApp"
+    }.freeze
+
+    included do
+      has_many :notifications, class_name: "Notifications::Notification",
+                               as: :owner, dependent: :destroy
+    end
+
+    def notify(strategy:, template:, schedule_config: nil, recipient: nil)
+      notif = notifications.build(
+        type:      STRATEGY_CLASSES.fetch(strategy.to_sym),
+        recipient: recipient,
+        template:  template
+      )
+      assign_schedule!(notif, schedule_config)
+      notif.save!
+      notif.send_async if notif.due?
+      notif
+    end
+
+    # Looks up a registered Notifications::TypeRegistry::Type by name
+    # and creates one Notification per channel the type supports
+    # (subject to the host's NotificationPreference rows). Returns the
+    # array of created notifications.
+    def notify_typed(type:, schedule_config: nil, recipient: nil)
+      record = Notifications::TypeRegistry.fetch(type)
+      record.channels.filter_map do |channel|
+        next unless STRATEGY_CLASSES.key?(channel.to_sym)
+        next unless Notifications::NotificationPreference.enabled?(
+          user_id:           id, channel: channel.to_s, notification_type: record.name
+        )
+
+        notify(strategy: channel, template: record.template,
+               schedule_config: schedule_config, recipient: recipient)
+      end
+    end
+
+    def email_notification_recipient
+      respond_to?(:email) ? email : nil
+    end
+
+    def sms_notification_recipient
+      respond_to?(:phone) ? phone : nil
+    end
+
+    def unread_in_app_notifications
+      notifications.where(type: "Notifications::Strategies::InApp").unread
+    end
+
+    private
+
+    def assign_schedule!(notif, schedule_config)
+      if schedule_config
+        notif.schedule_config = schedule_config
+      else
+        notif.schedule = IceCube::Schedule.new(Time.current)
+      end
+    end
+  end
+end

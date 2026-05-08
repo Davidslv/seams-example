@@ -1,0 +1,256 @@
+# Auth
+
+> Email + password authentication for a Seams-powered host application.
+
+## Events emitted
+
+| Event name | Payload | Emitted when |
+| --- | --- | --- |
+| `user.signed_up.auth`   | `{ auth_user_id:, host_user_id:, email: }`      | RegistrationsController#create succeeds |
+| `user.signed_in.auth`   | `{ auth_user_id:, host_user_id:, session_id: }` | SessionsController#create succeeds |
+| `user.signed_out.auth`  | `{ auth_user_id:, host_user_id:, session_id: }` | SessionsController#destroy runs |
+| `session.expired.auth`  | `{ auth_user_id:, host_user_id:, session_id: }` | (future) sweeper job revokes a stale session |
+
+> `auth_user_id` is the row id in the engine's `auth_users` table.
+> `host_user_id` is the host application's user id (may be nil if the
+> auth record isn't linked to a host User yet). Subscribers that
+> resolve host models should always use `host_user_id`.
+
+## Events consumed
+
+This engine does not subscribe to any other engine's events.
+
+## Exposed concerns
+
+| Concern | Purpose |
+| --- | --- |
+| `Auth::Authenticatable` | Mix into the host's user-facing model to get session-aware helpers (`signed_in?`, `sign_out_everywhere!`) without coupling to `Auth::User`. |
+
+## Adapters
+
+Password hashing is provided by `bcrypt` via Rails' `has_secure_password`.
+To swap in a different hasher, override `Auth::User`'s `password_digest=`
+setter in your host application.
+
+## OAuth (Sign in with Google / GitHub)
+
+Two adapters ship with the engine — `Auth::OAuth::Google` and
+`Auth::OAuth::Github` — both built on Faraday. **No `oauth2` gem
+dependency**, no `Net::HTTP`. Adapter contract lives in
+`lib/auth/oauth/abstract.rb`; subclass it for additional providers
+(Apple, GitLab, Microsoft, etc.).
+
+### Configure
+
+```ruby
+# config/initializers/auth.rb
+Auth.configure do |c|
+  c.oauth_providers = {
+    google: {
+      adapter:       "Auth::OAuth::Google",
+      client_id:     ENV.fetch("GOOGLE_OAUTH_CLIENT_ID"),
+      client_secret: ENV.fetch("GOOGLE_OAUTH_CLIENT_SECRET")
+    },
+    github: {
+      adapter:       "Auth::OAuth::Github",
+      client_id:     ENV.fetch("GITHUB_OAUTH_CLIENT_ID"),
+      client_secret: ENV.fetch("GITHUB_OAUTH_CLIENT_SECRET")
+    }
+  }
+end
+```
+
+The provider's redirect URI must match the URL Rails generates for
+`auth.oauth_callback_url(provider: :google)` (e.g.
+`https://your-app.com/auth/oauth/google/callback`).
+
+### Token storage + encryption
+
+`Auth::OAuth::Provider` rows store `access_token` + `refresh_token`
+encrypted at the column level via Rails 7+ ActiveRecord::Encryption.
+**One-time host setup:**
+
+```bash
+bin/rails db:encryption:init
+```
+
+This prints three keys (primary, deterministic, key derivation salt).
+Store them in Rails credentials (`bin/rails credentials:edit`) under
+`active_record_encryption.*` — see
+https://guides.rubyonrails.org/active_record_encryption.html.
+
+### Render the sign-in buttons
+
+Drop the partial into your sessions or registrations form:
+
+```erb
+<%= render "auth/sessions/oauth_buttons" %>
+```
+
+It iterates `Auth.configuration.oauth_providers` and renders one
+`auth.oauth_start_path(provider:)` link per configured provider.
+
+### Routes
+
+```
+GET  /auth/oauth/:provider/start    → redirect to provider's authorize URL
+GET  /auth/oauth/:provider/callback → exchange code, sign in, set cookie
+```
+
+Verified against:
+- https://developers.google.com/identity/protocols/oauth2/web-server
+- https://developers.google.com/identity/openid-connect/openid-connect
+- https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps
+- https://docs.github.com/en/rest/users/users
+- https://docs.github.com/en/rest/users/emails
+
+## API tokens (Bearer auth)
+
+`Auth::ApiToken` ships with the engine for programmatic access. Tokens
+are issued via `Auth::GenerateApiToken.call(user:, name:, expires_at:)`
+which returns a `Result` carrying both the persisted record and the
+**plaintext token** — the plaintext is shown ONCE and never recoverable
+from the DB (only a SHA-256 digest is stored).
+
+```ruby
+result = Auth::GenerateApiToken.call(user: current_user, name: "CI key")
+result.plaintext  # => "seam_tF9...xQ" — display once, then discard
+result.api_token  # => Auth::ApiToken row
+```
+
+Mix `Auth::ApiAuthenticatable` into API controllers and call
+`authenticate_api_token!` in a before_action:
+
+```ruby
+class Api::WidgetsController < ApplicationController
+  include Auth::ApiAuthenticatable
+  before_action :authenticate_api_token!
+end
+```
+
+Clients send `Authorization: Bearer seam_<token>`. On success the
+concern sets `current_user` + `current_api_token` and bumps the token's
+`last_used_at`. On failure it renders 401 JSON.
+
+Events emitted:
+
+| Event name | Payload |
+| --- | --- |
+| `api_token.issued.auth`  | `{ auth_user_id:, host_user_id:, api_token_id:, token_prefix: }` |
+| `api_token.revoked.auth` | `{ auth_user_id:, host_user_id:, api_token_id:, token_prefix: }` |
+
+## Rate limiting
+
+The engine uses Rails 8's built-in `rate_limit` (backed by Solid Cache):
+
+| Controller | Action | Limit |
+| --- | --- | --- |
+| `SessionsController`       | `create`         | 10 / minute |
+| `RegistrationsController`  | `create`         | 5 / hour    |
+| `PasswordResetsController` | `create`, `update` | 5 / hour  |
+
+Tune by overriding the `rate_limit` declaration in your host app
+controllers. Solid Cache is the default Rails 8 cache store; if your
+host uses a different store, the limit applies to whatever cache backs
+`Rails.cache`.
+
+## Cleanup expired sessions
+
+`Auth::CleanupExpiredSessionsJob` sweeps expired `Auth::Session` rows
+and emits `session.expired.auth` for each one. Wire it as a Solid Queue
+Recurring entry in `config/recurring.yml`:
+
+```yaml
+auth_cleanup_expired_sessions:
+  class: Auth::CleanupExpiredSessionsJob
+  schedule: "every 1 hour"
+```
+
+## GDPR / data protection
+
+Personal data the engine stores and how it's protected at rest:
+
+| Column                                  | At rest        | Why                                                  |
+| ---                                     | ---            | ---                                                  |
+| `auth_users.email`                      | encrypted (deterministic) | PII (Article 4); deterministic so `find_by(email:)` and the uniqueness index keep working |
+| `auth_users.password_digest`            | bcrypt one-way hash | not PII — never reversible to a password         |
+| `auth_oauth_providers.access_token`     | encrypted (non-deterministic) | credential                                |
+| `auth_oauth_providers.refresh_token`    | encrypted (non-deterministic) | credential                                |
+| `auth_oauth_providers.provider_uid`     | encrypted (deterministic) | online identifier (Article 4); deterministic so `(provider, provider_uid)` lookup + unique index keep working |
+| `auth_api_tokens.token_digest`          | SHA-256 hash   | not reversible to the plaintext token                |
+| `auth_api_tokens.token_prefix`          | plaintext      | first 12 chars only — display label, not a secret    |
+
+### One-time host setup
+
+```bash
+bin/rails db:encryption:init
+```
+
+Store the printed keys in Rails credentials
+(`bin/rails credentials:edit`) under `active_record_encryption.*`. See
+https://guides.rubyonrails.org/active_record_encryption.html.
+
+### Upgrading from Auth Wave ≤10 (existing hosts only)
+
+Hosts that deployed Auth before Wave 11 have plaintext `email` +
+`provider_uid` already in the database. Re-encrypt them in place:
+
+1. In `config/application.rb`, add the transitional flag so plaintext
+   rows are still readable while rotation runs:
+
+   ```ruby
+   config.active_record.encryption.support_unencrypted_data = true
+   ```
+
+2. Deploy + run:
+
+   ```bash
+   bin/rails seams:auth:rotate_pii_encryption
+   ```
+
+3. Once the task reports zero remaining unencrypted rows, remove the
+   flag (or set it back to `false`) and redeploy.
+
+The task is idempotent — re-running it on already-encrypted rows is a
+no-op. Fresh hosts skip steps 1 and 3 entirely.
+
+### Right to erasure (Article 17)
+
+```ruby
+Auth::User.find_by(email: "user@example.com").destroy
+```
+
+cascades to `sessions`, `api_tokens`, and `oauth_providers` via
+`dependent: :destroy`. Hosts must additionally erase rows in their own
+`User` table (linked by `host_user_id`) — the engine does not own that
+schema.
+
+### Logging
+
+Don't log `email`. Log `auth_user_id` instead. Encryption protects the
+DB at rest but is moot if PII leaks into log files. Add the column to
+`config.filter_parameters` in your host:
+
+```ruby
+config.filter_parameters += %i[email password password_digest]
+```
+
+### Right to access / portability (Article 15 / 20)
+
+Not yet shipped — `Auth::ExportUserData` is on the roadmap. For now,
+hosts can export with a direct query against the user's rows.
+
+## Mounting
+
+```ruby
+# config/routes.rb (host application)
+Rails.application.routes.draw do
+  mount Auth::Engine, at: "/auth"
+end
+```
+
+## Running the specs
+
+```bash
+bin/rails seams:test[auth]
+```
