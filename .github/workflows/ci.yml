@@ -19,7 +19,7 @@ jobs:
     name: RuboCop
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Clone the sibling seams gem (Gemfile uses path source)
         run: git clone --depth 1 https://github.com/Davidslv/seams.git ../seams
       - uses: ruby/setup-ruby@v1
@@ -32,7 +32,7 @@ jobs:
     name: Security (brakeman + bundle-audit)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Clone the sibling seams gem (Gemfile uses path source)
         run: git clone --depth 1 https://github.com/Davidslv/seams.git ../seams
       - uses: ruby/setup-ruby@v1
@@ -52,7 +52,7 @@ jobs:
     outputs:
       engines: ${{ steps.set.outputs.engines }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - id: set
         run: |
           if [ -d engines ]; then
@@ -91,7 +91,7 @@ jobs:
       PGUSER:     "postgres"
       PGPASSWORD: "postgres"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Clone the sibling seams gem (Gemfile uses path source)
         run: git clone --depth 1 https://github.com/Davidslv/seams.git ../seams
       - uses: ruby/setup-ruby@v1
@@ -121,7 +121,7 @@ jobs:
       PGUSER:     "postgres"
       PGPASSWORD: "postgres"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Clone the sibling seams gem (Gemfile uses path source)
         run: git clone --depth 1 https://github.com/Davidslv/seams.git ../seams
       - uses: ruby/setup-ruby@v1
