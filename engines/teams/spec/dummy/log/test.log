@@ -1,82 +1,416 @@
-  [1m[35m (4.0ms)[0m  [1m[35mDROP TABLE "teams" CASCADE[0m
-  [1m[35m (3.3ms)[0m  [1m[35mDROP TABLE "team_memberships" CASCADE[0m
-  [1m[35m (3.8ms)[0m  [1m[35mDROP TABLE "team_invitations" CASCADE[0m
-  [1m[35m (2.7ms)[0m  [1m[35mDROP TABLE "users" CASCADE[0m
+  [1m[35m (5.6ms)[0m  [1m[35mDROP TABLE "teams" CASCADE[0m
+  [1m[35m (3.1ms)[0m  [1m[35mDROP TABLE "team_memberships" CASCADE[0m
+  [1m[35m (4.1ms)[0m  [1m[35mDROP TABLE "team_invitations" CASCADE[0m
+  [1m[35m (2.6ms)[0m  [1m[35mDROP TABLE "users" CASCADE[0m
   [1m[35m (1.9ms)[0m  [1m[35mDROP TABLE "schema_migrations" CASCADE[0m
-  [1m[35m (1.9ms)[0m  [1m[35mDROP TABLE "ar_internal_metadata" CASCADE[0m
-  [1m[35m (6.7ms)[0m  [1m[35mCREATE TABLE "teams" ("id" bigserial primary key, "name" character varying NOT NULL, "slug" character varying NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
-  [1m[35m (2.5ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_teams_on_slug" ON "teams" ("slug")[0m
-  [1m[35m (5.5ms)[0m  [1m[35mCREATE TABLE "team_memberships" ("id" bigserial primary key, "team_id" bigint NOT NULL, "user_id" bigint NOT NULL, "role" character varying DEFAULT 'member' NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
-  [1m[35m (2.1ms)[0m  [1m[35mCREATE INDEX "index_team_memberships_on_team_id" ON "team_memberships" ("team_id")[0m
-  [1m[35m (1.3ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_team_memberships_on_team_id_and_user_id" ON "team_memberships" ("team_id", "user_id")[0m
-  [1m[35m (3.2ms)[0m  [1m[35mCREATE TABLE "team_invitations" ("id" bigserial primary key, "team_id" bigint NOT NULL, "email" character varying NOT NULL, "token" character varying NOT NULL, "role" character varying DEFAULT 'member' NOT NULL, "expires_at" timestamp(6) NOT NULL, "accepted_at" timestamp(6), "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (2.1ms)[0m  [1m[35mDROP TABLE "ar_internal_metadata" CASCADE[0m
+  [1m[35m (6.5ms)[0m  [1m[35mCREATE TABLE "auth_identities" ("id" bigserial primary key, "email" text NOT NULL, "password_digest" character varying NOT NULL, "staff" boolean DEFAULT FALSE NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (1.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_auth_identities_on_email" ON "auth_identities" ("email")[0m
+  [1m[35m (3.9ms)[0m  [1m[35mCREATE TABLE "teams" ("id" bigserial primary key, "name" character varying NOT NULL, "slug" character varying NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (1.2ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_teams_on_slug" ON "teams" ("slug")[0m
+  [1m[35m (4.3ms)[0m  [1m[35mCREATE TABLE "team_memberships" ("id" bigserial primary key, "team_id" bigint NOT NULL, "identity_id" bigint NOT NULL, "role" character varying DEFAULT 'member' NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (1.1ms)[0m  [1m[35mCREATE INDEX "index_team_memberships_on_team_id" ON "team_memberships" ("team_id")[0m
+  [1m[35m (0.6ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_team_memberships_on_team_id_and_identity_id" ON "team_memberships" ("team_id", "identity_id")[0m
+  [1m[35m (0.5ms)[0m  [1m[35mCREATE INDEX "index_team_memberships_on_identity_id" ON "team_memberships" ("identity_id")[0m
+  [1m[35m (1.4ms)[0m  [1m[35mCREATE TABLE "team_invitations" ("id" bigserial primary key, "team_id" bigint NOT NULL, "email" character varying NOT NULL, "token" character varying NOT NULL, "role" character varying DEFAULT 'member' NOT NULL, "expires_at" timestamp(6) NOT NULL, "accepted_at" timestamp(6), "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
   [1m[35m (0.5ms)[0m  [1m[35mCREATE INDEX "index_team_invitations_on_team_id" ON "team_invitations" ("team_id")[0m
   [1m[35m (0.4ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_team_invitations_on_token" ON "team_invitations" ("token")[0m
-  [1m[35m (0.7ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_team_invitations_on_team_id_and_email" ON "team_invitations" ("team_id", "email") WHERE accepted_at IS NULL[0m
-  [1m[35m (1.1ms)[0m  [1m[35mCREATE TABLE "users" ("id" bigserial primary key, "email" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (0.9ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_team_invitations_on_team_id_and_email" ON "team_invitations" ("team_id", "email") WHERE accepted_at IS NULL[0m
   [1m[35m (1.1ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" character varying NOT NULL PRIMARY KEY)[0m
   [1m[36mActiveRecord::SchemaMigration Load (0.4ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
   [1m[35m (0.3ms)[0m  [1m[32mINSERT INTO "schema_migrations" (version) VALUES (0)[0m
-  [1m[35m (1.2ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" character varying NOT NULL PRIMARY KEY, "value" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (1.3ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" character varying NOT NULL PRIMARY KEY, "value" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
   [1m[36mActiveRecord::InternalMetadata Load (0.3ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
-  [1m[36mActiveRecord::InternalMetadata Create (0.2ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'test', '2026-05-08 08:14:41.400014', '2026-05-08 08:14:41.400015') RETURNING "key"[0m
-  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mActiveRecord::InternalMetadata Create (0.5ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'test', '2026-05-08 11:55:20.681490', '2026-05-08 11:55:20.681492') RETURNING "key"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
   [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
-  [1m[36mTeams::Team Exists? (0.7ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme"], ["LIMIT", 1]]
-  [1m[36mTeams::Team Create (0.6ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme"], ["slug", "acme"], ["created_at", "2026-05-08 08:14:41.427942"], ["updated_at", "2026-05-08 08:14:41.427942"]]
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
-  [1m[36mTeams::Invitation Exists? (1.2ms)[0m  [1m[34mSELECT 1 AS one FROM "team_invitations" WHERE "team_invitations"."token" = $1 LIMIT $2[0m  [["token", "h1QfQNZl9emq7P50AGvOm-z1hQL36QvAyN3MgW0MOA8"], ["LIMIT", 1]]
-  [1m[36mTeams::Invitation Create (0.8ms)[0m  [1m[32mINSERT INTO "team_invitations" ("team_id", "email", "token", "role", "expires_at", "accepted_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["team_id", 1], ["email", "x@y.com"], ["token", "h1QfQNZl9emq7P50AGvOm-z1hQL36QvAyN3MgW0MOA8"], ["role", "member"], ["expires_at", "2026-05-08 08:13:41.432583"], ["accepted_at", nil], ["created_at", "2026-05-08 08:14:41.439336"], ["updated_at", "2026-05-08 08:14:41.439336"]]
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTeams::Team Exists? (1.0ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme-corp"], ["LIMIT", 1]]
+  [1m[36mTeams::Team Create (0.8ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme Corp"], ["slug", "acme-corp"], ["created_at", "2026-05-08 11:55:20.722039"], ["updated_at", "2026-05-08 11:55:20.722039"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
   [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
   [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
   [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
   [1m[36mTeams::Team Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme"], ["LIMIT", 1]]
-  [1m[36mTeams::Team Create (0.2ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme"], ["slug", "acme"], ["created_at", "2026-05-08 08:14:41.452131"], ["updated_at", "2026-05-08 08:14:41.452131"]]
+  [1m[36mTeams::Team Create (0.3ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme"], ["slug", "acme"], ["created_at", "2026-05-08 11:55:20.728139"], ["updated_at", "2026-05-08 11:55:20.728139"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mTeams::Invitation Exists? (1.7ms)[0m  [1m[34mSELECT 1 AS one FROM "team_invitations" WHERE "team_invitations"."token" = $1 LIMIT $2[0m  [["token", "P-rB1jbx_-SqRfI7jjFrPrT_6YC8hQwzNbsI4_Xq3-I"], ["LIMIT", 1]]
+  [1m[36mTeams::Invitation Create (1.2ms)[0m  [1m[32mINSERT INTO "team_invitations" ("team_id", "email", "token", "role", "expires_at", "accepted_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["team_id", 2], ["email", "x@y.com"], ["token", "P-rB1jbx_-SqRfI7jjFrPrT_6YC8hQwzNbsI4_Xq3-I"], ["role", "member"], ["expires_at", "2026-05-08 11:54:20.732166"], ["accepted_at", nil], ["created_at", "2026-05-08 11:55:20.740121"], ["updated_at", "2026-05-08 11:55:20.740121"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mTeams::Team Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme"], ["LIMIT", 1]]
+  [1m[36mTeams::Team Create (0.3ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme"], ["slug", "acme"], ["created_at", "2026-05-08 11:55:20.744266"], ["updated_at", "2026-05-08 11:55:20.744266"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mTeams::Invitation Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "team_invitations" WHERE "team_invitations"."token" = $1 LIMIT $2[0m  [["token", "baK2EUmjnpBYmFQG-hQyAWuf7f1daMF-gxTt4ScgxY0"], ["LIMIT", 1]]
+  [1m[36mTeams::Invitation Create (0.3ms)[0m  [1m[32mINSERT INTO "team_invitations" ("team_id", "email", "token", "role", "expires_at", "accepted_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["team_id", 3], ["email", "x@y.com"], ["token", "baK2EUmjnpBYmFQG-hQyAWuf7f1daMF-gxTt4ScgxY0"], ["role", "member"], ["expires_at", "2026-05-15 11:55:20.745161"], ["accepted_at", nil], ["created_at", "2026-05-08 11:55:20.745762"], ["updated_at", "2026-05-08 11:55:20.745762"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mTeams::Team Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme"], ["LIMIT", 1]]
+  [1m[36mTeams::Team Create (0.3ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme"], ["slug", "acme"], ["created_at", "2026-05-08 11:55:20.747875"], ["updated_at", "2026-05-08 11:55:20.747875"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mTeams::Invitation Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "team_invitations" WHERE "team_invitations"."token" = $1 LIMIT $2[0m  [["token", "edVB1bDg8IZe6wDT954T96urJXjIkV8GXb0uBnf4xHs"], ["LIMIT", 1]]
+  [1m[36mTeams::Invitation Create (0.4ms)[0m  [1m[32mINSERT INTO "team_invitations" ("team_id", "email", "token", "role", "expires_at", "accepted_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["team_id", 4], ["email", "x@y.com"], ["token", "edVB1bDg8IZe6wDT954T96urJXjIkV8GXb0uBnf4xHs"], ["role", "member"], ["expires_at", "2026-05-15 11:55:20.748625"], ["accepted_at", nil], ["created_at", "2026-05-08 11:55:20.749219"], ["updated_at", "2026-05-08 11:55:20.749219"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mTeams::Invitation Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "team_invitations" WHERE "team_invitations"."token" = $1 LIMIT $2[0m  [["token", "O17mdjPZYkckuaVJEzlIw0UIxNbujlPGPNuHlaBjE-w"], ["LIMIT", 1]]
+  [1m[36mTeams::Invitation Create (0.7ms)[0m  [1m[32mINSERT INTO "team_invitations" ("team_id", "email", "token", "role", "expires_at", "accepted_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["team_id", 4], ["email", "x@y.com"], ["token", "O17mdjPZYkckuaVJEzlIw0UIxNbujlPGPNuHlaBjE-w"], ["role", "admin"], ["expires_at", "2026-05-15 11:55:20.750569"], ["accepted_at", nil], ["created_at", "2026-05-08 11:55:20.751172"], ["updated_at", "2026-05-08 11:55:20.751172"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK TO SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mTeams::Team Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme"], ["LIMIT", 1]]
+  [1m[36mTeams::Team Create (0.3ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme"], ["slug", "acme"], ["created_at", "2026-05-08 11:55:20.754969"], ["updated_at", "2026-05-08 11:55:20.754969"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mTeams::Membership Exists? (1.5ms)[0m  [1m[34mSELECT 1 AS one FROM "team_memberships" WHERE "team_memberships"."identity_id" = $1 AND "team_memberships"."team_id" = $2 LIMIT $3[0m  [["identity_id", 1], ["team_id", 5], ["LIMIT", 1]]
+  [1m[36mTeams::Membership Create (1.1ms)[0m  [1m[32mINSERT INTO "team_memberships" ("team_id", "identity_id", "role", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["team_id", 5], ["identity_id", 1], ["role", "member"], ["created_at", "2026-05-08 11:55:20.760159"], ["updated_at", "2026-05-08 11:55:20.760159"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTeams::Membership Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "team_memberships" WHERE "team_memberships"."identity_id" = $1 AND "team_memberships"."team_id" = $2 LIMIT $3[0m  [["identity_id", 1], ["team_id", 5], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mTeams::Team Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme"], ["LIMIT", 1]]
+  [1m[36mTeams::Team Create (0.4ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme"], ["slug", "acme"], ["created_at", "2026-05-08 11:55:20.763835"], ["updated_at", "2026-05-08 11:55:20.763835"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTeams::Membership Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "team_memberships" WHERE "team_memberships"."identity_id" = $1 AND "team_memberships"."team_id" = $2 LIMIT $3[0m  [["identity_id", 1], ["team_id", 6], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTeams::Team Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", ""], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mTeams::Team Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme"], ["LIMIT", 1]]
+  [1m[36mTeams::Team Create (0.3ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme"], ["slug", "acme"], ["created_at", "2026-05-08 11:55:20.769113"], ["updated_at", "2026-05-08 11:55:20.769113"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTeams::Team Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTeams::Team Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "my-team"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[35m (4.3ms)[0m  [1m[35mDROP TABLE "ar_internal_metadata" CASCADE[0m
+  [1m[35m (4.2ms)[0m  [1m[35mDROP TABLE "auth_identities" CASCADE[0m
+  [1m[35m (4.2ms)[0m  [1m[35mDROP TABLE "teams" CASCADE[0m
+  [1m[35m (5.7ms)[0m  [1m[35mDROP TABLE "team_memberships" CASCADE[0m
+  [1m[35m (3.8ms)[0m  [1m[35mDROP TABLE "team_invitations" CASCADE[0m
+  [1m[35m (2.1ms)[0m  [1m[35mDROP TABLE "schema_migrations" CASCADE[0m
+  [1m[35m (5.8ms)[0m  [1m[35mCREATE TABLE "auth_identities" ("id" bigserial primary key, "email" text NOT NULL, "password_digest" character varying NOT NULL, "staff" boolean DEFAULT FALSE NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (1.3ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_auth_identities_on_email" ON "auth_identities" ("email")[0m
+  [1m[35m (3.1ms)[0m  [1m[35mCREATE TABLE "teams" ("id" bigserial primary key, "name" character varying NOT NULL, "slug" character varying NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (1.3ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_teams_on_slug" ON "teams" ("slug")[0m
+  [1m[35m (3.4ms)[0m  [1m[35mCREATE TABLE "team_memberships" ("id" bigserial primary key, "team_id" bigint NOT NULL, "identity_id" bigint NOT NULL, "role" character varying DEFAULT 'member' NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (1.1ms)[0m  [1m[35mCREATE INDEX "index_team_memberships_on_team_id" ON "team_memberships" ("team_id")[0m
+  [1m[35m (0.9ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_team_memberships_on_team_id_and_identity_id" ON "team_memberships" ("team_id", "identity_id")[0m
+  [1m[35m (0.8ms)[0m  [1m[35mCREATE INDEX "index_team_memberships_on_identity_id" ON "team_memberships" ("identity_id")[0m
+  [1m[35m (3.8ms)[0m  [1m[35mCREATE TABLE "team_invitations" ("id" bigserial primary key, "team_id" bigint NOT NULL, "email" character varying NOT NULL, "token" character varying NOT NULL, "role" character varying DEFAULT 'member' NOT NULL, "expires_at" timestamp(6) NOT NULL, "accepted_at" timestamp(6), "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (0.9ms)[0m  [1m[35mCREATE INDEX "index_team_invitations_on_team_id" ON "team_invitations" ("team_id")[0m
+  [1m[35m (0.8ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_team_invitations_on_token" ON "team_invitations" ("token")[0m
+  [1m[35m (1.2ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_team_invitations_on_team_id_and_email" ON "team_invitations" ("team_id", "email") WHERE accepted_at IS NULL[0m
+  [1m[35m (2.2ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" character varying NOT NULL PRIMARY KEY)[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.6ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[35m (0.6ms)[0m  [1m[32mINSERT INTO "schema_migrations" (version) VALUES (0)[0m
+  [1m[35m (2.0ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" character varying NOT NULL PRIMARY KEY, "value" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.5ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::InternalMetadata Create (0.4ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'test', '2026-05-08 12:03:42.874287', '2026-05-08 12:03:42.874289') RETURNING "key"[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mTeams::Team Exists? (1.0ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme"], ["LIMIT", 1]]
+  [1m[36mTeams::Team Create (0.9ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme"], ["slug", "acme"], ["created_at", "2026-05-08 12:03:42.905358"], ["updated_at", "2026-05-08 12:03:42.905358"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTeams::Membership Exists? (1.4ms)[0m  [1m[34mSELECT 1 AS one FROM "team_memberships" WHERE "team_memberships"."identity_id" = $1 AND "team_memberships"."team_id" = $2 LIMIT $3[0m  [["identity_id", 1], ["team_id", 1], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mTeams::Team Exists? (0.6ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme"], ["LIMIT", 1]]
+  [1m[36mTeams::Team Create (0.3ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme"], ["slug", "acme"], ["created_at", "2026-05-08 12:03:42.925188"], ["updated_at", "2026-05-08 12:03:42.925188"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mTeams::Membership Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "team_memberships" WHERE "team_memberships"."identity_id" = $1 AND "team_memberships"."team_id" = $2 LIMIT $3[0m  [["identity_id", 1], ["team_id", 2], ["LIMIT", 1]]
+  [1m[36mTeams::Membership Create (0.9ms)[0m  [1m[32mINSERT INTO "team_memberships" ("team_id", "identity_id", "role", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["team_id", 2], ["identity_id", 1], ["role", "member"], ["created_at", "2026-05-08 12:03:42.926671"], ["updated_at", "2026-05-08 12:03:42.926671"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTeams::Membership Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "team_memberships" WHERE "team_memberships"."identity_id" = $1 AND "team_memberships"."team_id" = $2 LIMIT $3[0m  [["identity_id", 1], ["team_id", 2], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mTeams::Team Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme"], ["LIMIT", 1]]
+  [1m[36mTeams::Team Create (0.4ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme"], ["slug", "acme"], ["created_at", "2026-05-08 12:03:42.932248"], ["updated_at", "2026-05-08 12:03:42.932248"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mTeams::Invitation Exists? (1.6ms)[0m  [1m[34mSELECT 1 AS one FROM "team_invitations" WHERE "team_invitations"."token" = $1 LIMIT $2[0m  [["token", "56oZnnsMyOq9_O8o25UhRtKRFhvF6R6UQXZZVq6ZDv0"], ["LIMIT", 1]]
+  [1m[36mTeams::Invitation Create (1.0ms)[0m  [1m[32mINSERT INTO "team_invitations" ("team_id", "email", "token", "role", "expires_at", "accepted_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["team_id", 3], ["email", "x@y.com"], ["token", "56oZnnsMyOq9_O8o25UhRtKRFhvF6R6UQXZZVq6ZDv0"], ["role", "member"], ["expires_at", "2026-05-15 12:03:42.940882"], ["accepted_at", nil], ["created_at", "2026-05-08 12:03:42.942793"], ["updated_at", "2026-05-08 12:03:42.942793"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mTeams::Invitation Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "team_invitations" WHERE "team_invitations"."token" = $1 LIMIT $2[0m  [["token", "voCbos69eznavas3IwvKV0kB2irO_hiBLYCIKRbQsOs"], ["LIMIT", 1]]
+  [1m[36mTeams::Invitation Create (0.7ms)[0m  [1m[32mINSERT INTO "team_invitations" ("team_id", "email", "token", "role", "expires_at", "accepted_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["team_id", 3], ["email", "x@y.com"], ["token", "voCbos69eznavas3IwvKV0kB2irO_hiBLYCIKRbQsOs"], ["role", "admin"], ["expires_at", "2026-05-15 12:03:42.945017"], ["accepted_at", nil], ["created_at", "2026-05-08 12:03:42.945623"], ["updated_at", "2026-05-08 12:03:42.945623"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK TO SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mTeams::Team Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme"], ["LIMIT", 1]]
+  [1m[36mTeams::Team Create (0.3ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme"], ["slug", "acme"], ["created_at", "2026-05-08 12:03:42.948488"], ["updated_at", "2026-05-08 12:03:42.948488"]]
   [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
   [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
-  [1m[36mTeams::Invitation Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "team_invitations" WHERE "team_invitations"."token" = $1 LIMIT $2[0m  [["token", "lVhLumvdgwGDOGDt8bTHpkv04Gh8ZjsVKimVFJCQhHE"], ["LIMIT", 1]]
-  [1m[36mTeams::Invitation Create (0.3ms)[0m  [1m[32mINSERT INTO "team_invitations" ("team_id", "email", "token", "role", "expires_at", "accepted_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["team_id", 2], ["email", "x@y.com"], ["token", "lVhLumvdgwGDOGDt8bTHpkv04Gh8ZjsVKimVFJCQhHE"], ["role", "member"], ["expires_at", "2026-05-15 08:14:41.452904"], ["accepted_at", nil], ["created_at", "2026-05-08 08:14:41.453499"], ["updated_at", "2026-05-08 08:14:41.453499"]]
+  [1m[36mTeams::Invitation Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "team_invitations" WHERE "team_invitations"."token" = $1 LIMIT $2[0m  [["token", "7joL_dJU97m2U7xbpa6qRL5ubFVl0bMBRBpHQ_O8Zls"], ["LIMIT", 1]]
+  [1m[36mTeams::Invitation Create (0.4ms)[0m  [1m[32mINSERT INTO "team_invitations" ("team_id", "email", "token", "role", "expires_at", "accepted_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["team_id", 4], ["email", "x@y.com"], ["token", "7joL_dJU97m2U7xbpa6qRL5ubFVl0bMBRBpHQ_O8Zls"], ["role", "member"], ["expires_at", "2026-05-15 12:03:42.949263"], ["accepted_at", nil], ["created_at", "2026-05-08 12:03:42.949852"], ["updated_at", "2026-05-08 12:03:42.949852"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mTeams::Team Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme"], ["LIMIT", 1]]
+  [1m[36mTeams::Team Create (0.3ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme"], ["slug", "acme"], ["created_at", "2026-05-08 12:03:42.952104"], ["updated_at", "2026-05-08 12:03:42.952104"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mTeams::Invitation Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "team_invitations" WHERE "team_invitations"."token" = $1 LIMIT $2[0m  [["token", "T5mgDaGz0t5wy7ofQQtcVJK6x-SU5sHvvmaSz7bzR6g"], ["LIMIT", 1]]
+  [1m[36mTeams::Invitation Create (0.3ms)[0m  [1m[32mINSERT INTO "team_invitations" ("team_id", "email", "token", "role", "expires_at", "accepted_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["team_id", 5], ["email", "x@y.com"], ["token", "T5mgDaGz0t5wy7ofQQtcVJK6x-SU5sHvvmaSz7bzR6g"], ["role", "member"], ["expires_at", "2026-05-08 12:02:42.952750"], ["accepted_at", nil], ["created_at", "2026-05-08 12:03:42.953466"], ["updated_at", "2026-05-08 12:03:42.953466"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mTeams::Team Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme-corp"], ["LIMIT", 1]]
+  [1m[36mTeams::Team Create (0.3ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme Corp"], ["slug", "acme-corp"], ["created_at", "2026-05-08 12:03:42.956567"], ["updated_at", "2026-05-08 12:03:42.956567"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTeams::Team Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "my-team"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mTeams::Team Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme"], ["LIMIT", 1]]
+  [1m[36mTeams::Team Create (0.3ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme"], ["slug", "acme"], ["created_at", "2026-05-08 12:03:42.964808"], ["updated_at", "2026-05-08 12:03:42.964808"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTeams::Team Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTeams::Team Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", ""], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[35m (9.2ms)[0m  [1m[35mDROP TABLE "team_memberships" CASCADE[0m
+  [1m[35m (3.2ms)[0m  [1m[35mDROP TABLE "auth_identities" CASCADE[0m
+  [1m[35m (2.9ms)[0m  [1m[35mDROP TABLE "teams" CASCADE[0m
+  [1m[35m (2.8ms)[0m  [1m[35mDROP TABLE "team_invitations" CASCADE[0m
+  [1m[35m (1.5ms)[0m  [1m[35mDROP TABLE "schema_migrations" CASCADE[0m
+  [1m[35m (1.2ms)[0m  [1m[35mDROP TABLE "ar_internal_metadata" CASCADE[0m
+  [1m[35m (2.7ms)[0m  [1m[35mCREATE TABLE "auth_identities" ("id" bigserial primary key, "email" text NOT NULL, "password_digest" character varying NOT NULL, "staff" boolean DEFAULT FALSE NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (0.5ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_auth_identities_on_email" ON "auth_identities" ("email")[0m
+  [1m[35m (1.2ms)[0m  [1m[35mCREATE TABLE "teams" ("id" bigserial primary key, "name" character varying NOT NULL, "slug" character varying NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (0.5ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_teams_on_slug" ON "teams" ("slug")[0m
+  [1m[35m (1.4ms)[0m  [1m[35mCREATE TABLE "team_memberships" ("id" bigserial primary key, "team_id" bigint NOT NULL, "identity_id" bigint NOT NULL, "role" character varying DEFAULT 'member' NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (0.5ms)[0m  [1m[35mCREATE INDEX "index_team_memberships_on_team_id" ON "team_memberships" ("team_id")[0m
+  [1m[35m (0.5ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_team_memberships_on_team_id_and_identity_id" ON "team_memberships" ("team_id", "identity_id")[0m
+  [1m[35m (0.5ms)[0m  [1m[35mCREATE INDEX "index_team_memberships_on_identity_id" ON "team_memberships" ("identity_id")[0m
+  [1m[35m (1.7ms)[0m  [1m[35mCREATE TABLE "team_invitations" ("id" bigserial primary key, "team_id" bigint NOT NULL, "email" character varying NOT NULL, "token" character varying NOT NULL, "role" character varying DEFAULT 'member' NOT NULL, "expires_at" timestamp(6) NOT NULL, "accepted_at" timestamp(6), "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (0.6ms)[0m  [1m[35mCREATE INDEX "index_team_invitations_on_team_id" ON "team_invitations" ("team_id")[0m
+  [1m[35m (0.6ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_team_invitations_on_token" ON "team_invitations" ("token")[0m
+  [1m[35m (0.5ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_team_invitations_on_team_id_and_email" ON "team_invitations" ("team_id", "email") WHERE accepted_at IS NULL[0m
+  [1m[35m (4.3ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" character varying NOT NULL PRIMARY KEY)[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.3ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[35m (0.3ms)[0m  [1m[32mINSERT INTO "schema_migrations" (version) VALUES (0)[0m
+  [1m[35m (0.9ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" character varying NOT NULL PRIMARY KEY, "value" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.2ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::InternalMetadata Create (0.2ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'test', '2026-05-08 12:50:24.594308', '2026-05-08 12:50:24.594309') RETURNING "key"[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mTeams::Team Exists? (1.1ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme"], ["LIMIT", 1]]
+  [1m[36mTeams::Team Create (2.3ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme"], ["slug", "acme"], ["created_at", "2026-05-08 12:50:24.619127"], ["updated_at", "2026-05-08 12:50:24.619127"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mTeams::Membership Exists? (1.2ms)[0m  [1m[34mSELECT 1 AS one FROM "team_memberships" WHERE "team_memberships"."identity_id" = $1 AND "team_memberships"."team_id" = $2 LIMIT $3[0m  [["identity_id", 1], ["team_id", 1], ["LIMIT", 1]]
+  [1m[36mTeams::Membership Create (1.0ms)[0m  [1m[32mINSERT INTO "team_memberships" ("team_id", "identity_id", "role", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["team_id", 1], ["identity_id", 1], ["role", "member"], ["created_at", "2026-05-08 12:50:24.628478"], ["updated_at", "2026-05-08 12:50:24.628478"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTeams::Membership Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "team_memberships" WHERE "team_memberships"."identity_id" = $1 AND "team_memberships"."team_id" = $2 LIMIT $3[0m  [["identity_id", 1], ["team_id", 1], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mTeams::Team Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme"], ["LIMIT", 1]]
+  [1m[36mTeams::Team Create (0.3ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme"], ["slug", "acme"], ["created_at", "2026-05-08 12:50:24.641762"], ["updated_at", "2026-05-08 12:50:24.641762"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTeams::Membership Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "team_memberships" WHERE "team_memberships"."identity_id" = $1 AND "team_memberships"."team_id" = $2 LIMIT $3[0m  [["identity_id", 1], ["team_id", 2], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (1.7ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mTeams::Team Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme"], ["LIMIT", 1]]
+  [1m[36mTeams::Team Create (0.4ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme"], ["slug", "acme"], ["created_at", "2026-05-08 12:50:24.648755"], ["updated_at", "2026-05-08 12:50:24.648755"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mTeams::Invitation Exists? (1.5ms)[0m  [1m[34mSELECT 1 AS one FROM "team_invitations" WHERE "team_invitations"."token" = $1 LIMIT $2[0m  [["token", "RQbtgqkcU6WGUtoST8QHyeGU8hyNeRhXxdCQqjgmbJs"], ["LIMIT", 1]]
+  [1m[36mTeams::Invitation Create (0.9ms)[0m  [1m[32mINSERT INTO "team_invitations" ("team_id", "email", "token", "role", "expires_at", "accepted_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["team_id", 3], ["email", "x@y.com"], ["token", "RQbtgqkcU6WGUtoST8QHyeGU8hyNeRhXxdCQqjgmbJs"], ["role", "member"], ["expires_at", "2026-05-08 12:49:24.652165"], ["accepted_at", nil], ["created_at", "2026-05-08 12:50:24.657902"], ["updated_at", "2026-05-08 12:50:24.657902"]]
   [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
   [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
   [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
   [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
-  [1m[36mTeams::Team Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme"], ["LIMIT", 1]]
-  [1m[36mTeams::Team Create (0.2ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme"], ["slug", "acme"], ["created_at", "2026-05-08 08:14:41.455680"], ["updated_at", "2026-05-08 08:14:41.455680"]]
+  [1m[36mTeams::Team Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme"], ["LIMIT", 1]]
+  [1m[36mTeams::Team Create (1.9ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme"], ["slug", "acme"], ["created_at", "2026-05-08 12:50:24.660753"], ["updated_at", "2026-05-08 12:50:24.660753"]]
   [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
   [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
-  [1m[36mTeams::Invitation Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "team_invitations" WHERE "team_invitations"."token" = $1 LIMIT $2[0m  [["token", "ULHAYjBooJseuOjjv3mwH6XVaPU1_cUF-B4x1lUy9Ts"], ["LIMIT", 1]]
-  [1m[36mTeams::Invitation Create (0.5ms)[0m  [1m[32mINSERT INTO "team_invitations" ("team_id", "email", "token", "role", "expires_at", "accepted_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["team_id", 3], ["email", "x@y.com"], ["token", "ULHAYjBooJseuOjjv3mwH6XVaPU1_cUF-B4x1lUy9Ts"], ["role", "member"], ["expires_at", "2026-05-15 08:14:41.456419"], ["accepted_at", nil], ["created_at", "2026-05-08 08:14:41.456923"], ["updated_at", "2026-05-08 08:14:41.456923"]]
+  [1m[36mTeams::Invitation Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "team_invitations" WHERE "team_invitations"."token" = $1 LIMIT $2[0m  [["token", "EQVUvbYcRpuxtaNnQK3a27BX1G06USs30rJLhV-dCHo"], ["LIMIT", 1]]
+  [1m[36mTeams::Invitation Create (0.3ms)[0m  [1m[32mINSERT INTO "team_invitations" ("team_id", "email", "token", "role", "expires_at", "accepted_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["team_id", 4], ["email", "x@y.com"], ["token", "EQVUvbYcRpuxtaNnQK3a27BX1G06USs30rJLhV-dCHo"], ["role", "member"], ["expires_at", "2026-05-15 12:50:24.663105"], ["accepted_at", nil], ["created_at", "2026-05-08 12:50:24.663646"], ["updated_at", "2026-05-08 12:50:24.663646"]]
   [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
-  [1m[36mTeams::Invitation Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "team_invitations" WHERE "team_invitations"."token" = $1 LIMIT $2[0m  [["token", "Z7aG_yLK1uGkDToFBNgagfpkFe21d8GdIGSKRhF19JI"], ["LIMIT", 1]]
-  [1m[36mTeams::Invitation Create (0.7ms)[0m  [1m[32mINSERT INTO "team_invitations" ("team_id", "email", "token", "role", "expires_at", "accepted_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["team_id", 3], ["email", "x@y.com"], ["token", "Z7aG_yLK1uGkDToFBNgagfpkFe21d8GdIGSKRhF19JI"], ["role", "admin"], ["expires_at", "2026-05-15 08:14:41.458567"], ["accepted_at", nil], ["created_at", "2026-05-08 08:14:41.459222"], ["updated_at", "2026-05-08 08:14:41.459222"]]
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK TO SAVEPOINT active_record_1[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
-  [1m[36mTeams::Team Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme"], ["LIMIT", 1]]
-  [1m[36mTeams::Team Create (0.2ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme"], ["slug", "acme"], ["created_at", "2026-05-08 08:14:41.461786"], ["updated_at", "2026-05-08 08:14:41.461786"]]
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
-  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
-  [1m[36mTeams::Membership Exists? (1.2ms)[0m  [1m[34mSELECT 1 AS one FROM "team_memberships" WHERE "team_memberships"."user_id" = $1 AND "team_memberships"."team_id" = $2 LIMIT $3[0m  [["user_id", 1], ["team_id", 4], ["LIMIT", 1]]
-  [1m[36mTeams::Membership Create (0.8ms)[0m  [1m[32mINSERT INTO "team_memberships" ("team_id", "user_id", "role", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["team_id", 4], ["user_id", 1], ["role", "member"], ["created_at", "2026-05-08 08:14:41.466792"], ["updated_at", "2026-05-08 08:14:41.466792"]]
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
-  [1m[36mTeams::Membership Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "team_memberships" WHERE "team_memberships"."user_id" = $1 AND "team_memberships"."team_id" = $2 LIMIT $3[0m  [["user_id", 1], ["team_id", 4], ["LIMIT", 1]]
   [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
   [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
   [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
   [1m[36mTeams::Team Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme"], ["LIMIT", 1]]
-  [1m[36mTeams::Team Create (0.2ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme"], ["slug", "acme"], ["created_at", "2026-05-08 08:14:41.469814"], ["updated_at", "2026-05-08 08:14:41.469814"]]
+  [1m[36mTeams::Team Create (0.2ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme"], ["slug", "acme"], ["created_at", "2026-05-08 12:50:24.665711"], ["updated_at", "2026-05-08 12:50:24.665711"]]
   [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
-  [1m[36mTeams::Membership Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "team_memberships" WHERE "team_memberships"."user_id" = $1 AND "team_memberships"."team_id" = $2 LIMIT $3[0m  [["user_id", 1], ["team_id", 5], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mTeams::Invitation Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "team_invitations" WHERE "team_invitations"."token" = $1 LIMIT $2[0m  [["token", "J8RvA6dFkgZd_sAi_10FeOmwXV4bP67mxrA5u5Uf9j8"], ["LIMIT", 1]]
+  [1m[36mTeams::Invitation Create (0.3ms)[0m  [1m[32mINSERT INTO "team_invitations" ("team_id", "email", "token", "role", "expires_at", "accepted_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["team_id", 5], ["email", "x@y.com"], ["token", "J8RvA6dFkgZd_sAi_10FeOmwXV4bP67mxrA5u5Uf9j8"], ["role", "member"], ["expires_at", "2026-05-15 12:50:24.666389"], ["accepted_at", nil], ["created_at", "2026-05-08 12:50:24.666971"], ["updated_at", "2026-05-08 12:50:24.666971"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mTeams::Invitation Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "team_invitations" WHERE "team_invitations"."token" = $1 LIMIT $2[0m  [["token", "N3XEZy6vP8nk1q9QVHWciAUB7SOO-F9BJ9IskIPqevA"], ["LIMIT", 1]]
+  [1m[36mTeams::Invitation Create (0.6ms)[0m  [1m[32mINSERT INTO "team_invitations" ("team_id", "email", "token", "role", "expires_at", "accepted_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["team_id", 5], ["email", "x@y.com"], ["token", "N3XEZy6vP8nk1q9QVHWciAUB7SOO-F9BJ9IskIPqevA"], ["role", "admin"], ["expires_at", "2026-05-15 12:50:24.668247"], ["accepted_at", nil], ["created_at", "2026-05-08 12:50:24.668712"], ["updated_at", "2026-05-08 12:50:24.668712"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK TO SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mTeams::Team Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme-corp"], ["LIMIT", 1]]
+  [1m[36mTeams::Team Create (0.3ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme Corp"], ["slug", "acme-corp"], ["created_at", "2026-05-08 12:50:24.674581"], ["updated_at", "2026-05-08 12:50:24.674581"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
   [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
   [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
   [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
   [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
   [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
   [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTeams::Team Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "my-team"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mTeams::Team Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme"], ["LIMIT", 1]]
+  [1m[36mTeams::Team Create (0.2ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme"], ["slug", "acme"], ["created_at", "2026-05-08 12:50:24.679113"], ["updated_at", "2026-05-08 12:50:24.679113"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTeams::Team Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTeams::Team Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", ""], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[35m (8.2ms)[0m  [1m[35mDROP TABLE "auth_identities" CASCADE[0m
+  [1m[35m (6.7ms)[0m  [1m[35mDROP TABLE "teams" CASCADE[0m
+  [1m[35m (2.7ms)[0m  [1m[35mDROP TABLE "team_memberships" CASCADE[0m
+  [1m[35m (2.5ms)[0m  [1m[35mDROP TABLE "team_invitations" CASCADE[0m
+  [1m[35m (1.7ms)[0m  [1m[35mDROP TABLE "schema_migrations" CASCADE[0m
+  [1m[35m (1.5ms)[0m  [1m[35mDROP TABLE "ar_internal_metadata" CASCADE[0m
+  [1m[35m (6.2ms)[0m  [1m[35mCREATE TABLE "auth_identities" ("id" bigserial primary key, "email" text NOT NULL, "password_digest" character varying NOT NULL, "staff" boolean DEFAULT FALSE NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (3.5ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_auth_identities_on_email" ON "auth_identities" ("email")[0m
+  [1m[35m (3.4ms)[0m  [1m[35mCREATE TABLE "teams" ("id" bigserial primary key, "name" character varying NOT NULL, "slug" character varying NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (0.6ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_teams_on_slug" ON "teams" ("slug")[0m
+  [1m[35m (1.5ms)[0m  [1m[35mCREATE TABLE "team_memberships" ("id" bigserial primary key, "team_id" bigint NOT NULL, "identity_id" bigint NOT NULL, "role" character varying DEFAULT 'member' NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (0.5ms)[0m  [1m[35mCREATE INDEX "index_team_memberships_on_team_id" ON "team_memberships" ("team_id")[0m
+  [1m[35m (0.4ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_team_memberships_on_team_id_and_identity_id" ON "team_memberships" ("team_id", "identity_id")[0m
+  [1m[35m (0.4ms)[0m  [1m[35mCREATE INDEX "index_team_memberships_on_identity_id" ON "team_memberships" ("identity_id")[0m
+  [1m[35m (1.3ms)[0m  [1m[35mCREATE TABLE "team_invitations" ("id" bigserial primary key, "team_id" bigint NOT NULL, "email" character varying NOT NULL, "token" character varying NOT NULL, "role" character varying DEFAULT 'member' NOT NULL, "expires_at" timestamp(6) NOT NULL, "accepted_at" timestamp(6), "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (0.4ms)[0m  [1m[35mCREATE INDEX "index_team_invitations_on_team_id" ON "team_invitations" ("team_id")[0m
+  [1m[35m (0.4ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_team_invitations_on_token" ON "team_invitations" ("token")[0m
+  [1m[35m (0.5ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_team_invitations_on_team_id_and_email" ON "team_invitations" ("team_id", "email") WHERE accepted_at IS NULL[0m
+  [1m[35m (1.2ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" character varying NOT NULL PRIMARY KEY)[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.4ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[35m (0.4ms)[0m  [1m[32mINSERT INTO "schema_migrations" (version) VALUES (0)[0m
+  [1m[35m (3.6ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" character varying NOT NULL PRIMARY KEY, "value" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.6ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::InternalMetadata Create (0.7ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'test', '2026-05-08 12:50:33.487253', '2026-05-08 12:50:33.487254') RETURNING "key"[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mTeams::Team Exists? (0.8ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme"], ["LIMIT", 1]]
+  [1m[36mTeams::Team Create (0.6ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme"], ["slug", "acme"], ["created_at", "2026-05-08 12:50:33.515169"], ["updated_at", "2026-05-08 12:50:33.515169"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mTeams::Invitation Exists? (1.1ms)[0m  [1m[34mSELECT 1 AS one FROM "team_invitations" WHERE "team_invitations"."token" = $1 LIMIT $2[0m  [["token", "h_kTREAdPEmeHO0H1pVNB3y7BbToicclInYrKwX_Ejc"], ["LIMIT", 1]]
+  [1m[36mTeams::Invitation Create (0.7ms)[0m  [1m[32mINSERT INTO "team_invitations" ("team_id", "email", "token", "role", "expires_at", "accepted_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["team_id", 1], ["email", "x@y.com"], ["token", "h_kTREAdPEmeHO0H1pVNB3y7BbToicclInYrKwX_Ejc"], ["role", "member"], ["expires_at", "2026-05-08 12:49:33.519620"], ["accepted_at", nil], ["created_at", "2026-05-08 12:50:33.526129"], ["updated_at", "2026-05-08 12:50:33.526129"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mTeams::Team Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme"], ["LIMIT", 1]]
+  [1m[36mTeams::Team Create (0.2ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme"], ["slug", "acme"], ["created_at", "2026-05-08 12:50:33.537892"], ["updated_at", "2026-05-08 12:50:33.537892"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mTeams::Invitation Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "team_invitations" WHERE "team_invitations"."token" = $1 LIMIT $2[0m  [["token", "kLG8kdMxu1GEE7ToDGC5ircN2tFX4sHiH1IfzJWYg9o"], ["LIMIT", 1]]
+  [1m[36mTeams::Invitation Create (0.3ms)[0m  [1m[32mINSERT INTO "team_invitations" ("team_id", "email", "token", "role", "expires_at", "accepted_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["team_id", 2], ["email", "x@y.com"], ["token", "kLG8kdMxu1GEE7ToDGC5ircN2tFX4sHiH1IfzJWYg9o"], ["role", "member"], ["expires_at", "2026-05-15 12:50:33.538623"], ["accepted_at", nil], ["created_at", "2026-05-08 12:50:33.539106"], ["updated_at", "2026-05-08 12:50:33.539106"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mTeams::Team Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme"], ["LIMIT", 1]]
+  [1m[36mTeams::Team Create (0.2ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme"], ["slug", "acme"], ["created_at", "2026-05-08 12:50:33.540785"], ["updated_at", "2026-05-08 12:50:33.540785"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mTeams::Invitation Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "team_invitations" WHERE "team_invitations"."token" = $1 LIMIT $2[0m  [["token", "CmvxdNJLUIuYiJtVcvftWpq852KLzHIu9Vj8D2NkbQA"], ["LIMIT", 1]]
+  [1m[36mTeams::Invitation Create (0.3ms)[0m  [1m[32mINSERT INTO "team_invitations" ("team_id", "email", "token", "role", "expires_at", "accepted_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["team_id", 3], ["email", "x@y.com"], ["token", "CmvxdNJLUIuYiJtVcvftWpq852KLzHIu9Vj8D2NkbQA"], ["role", "member"], ["expires_at", "2026-05-15 12:50:33.541373"], ["accepted_at", nil], ["created_at", "2026-05-08 12:50:33.541825"], ["updated_at", "2026-05-08 12:50:33.541825"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mTeams::Invitation Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "team_invitations" WHERE "team_invitations"."token" = $1 LIMIT $2[0m  [["token", "nEM1ShpdePj9R4M4m_ZIuP5MPzU1434oBRWvF-9366s"], ["LIMIT", 1]]
+  [1m[36mTeams::Invitation Create (0.8ms)[0m  [1m[32mINSERT INTO "team_invitations" ("team_id", "email", "token", "role", "expires_at", "accepted_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["team_id", 3], ["email", "x@y.com"], ["token", "nEM1ShpdePj9R4M4m_ZIuP5MPzU1434oBRWvF-9366s"], ["role", "admin"], ["expires_at", "2026-05-15 12:50:33.542973"], ["accepted_at", nil], ["created_at", "2026-05-08 12:50:33.543550"], ["updated_at", "2026-05-08 12:50:33.543550"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK TO SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mTeams::Team Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme"], ["LIMIT", 1]]
+  [1m[36mTeams::Team Create (0.3ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme"], ["slug", "acme"], ["created_at", "2026-05-08 12:50:33.546653"], ["updated_at", "2026-05-08 12:50:33.546653"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mTeams::Membership Exists? (1.0ms)[0m  [1m[34mSELECT 1 AS one FROM "team_memberships" WHERE "team_memberships"."identity_id" = $1 AND "team_memberships"."team_id" = $2 LIMIT $3[0m  [["identity_id", 1], ["team_id", 4], ["LIMIT", 1]]
+  [1m[36mTeams::Membership Create (0.6ms)[0m  [1m[32mINSERT INTO "team_memberships" ("team_id", "identity_id", "role", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["team_id", 4], ["identity_id", 1], ["role", "member"], ["created_at", "2026-05-08 12:50:33.552143"], ["updated_at", "2026-05-08 12:50:33.552143"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTeams::Membership Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "team_memberships" WHERE "team_memberships"."identity_id" = $1 AND "team_memberships"."team_id" = $2 LIMIT $3[0m  [["identity_id", 1], ["team_id", 4], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mTeams::Team Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme"], ["LIMIT", 1]]
+  [1m[36mTeams::Team Create (0.2ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme"], ["slug", "acme"], ["created_at", "2026-05-08 12:50:33.554594"], ["updated_at", "2026-05-08 12:50:33.554594"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTeams::Membership Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "team_memberships" WHERE "team_memberships"."identity_id" = $1 AND "team_memberships"."team_id" = $2 LIMIT $3[0m  [["identity_id", 1], ["team_id", 5], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mTeams::Team Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme"], ["LIMIT", 1]]
+  [1m[36mTeams::Team Create (0.2ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme"], ["slug", "acme"], ["created_at", "2026-05-08 12:50:33.557794"], ["updated_at", "2026-05-08 12:50:33.557794"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTeams::Team Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTeams::Team Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "my-team"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTeams::Team Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", ""], ["LIMIT", 1]]
   [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
   [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
   [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
@@ -85,231 +419,10 @@
   [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
   [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
   [1m[36mTeams::Team Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme-corp"], ["LIMIT", 1]]
-  [1m[36mTeams::Team Create (0.2ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme Corp"], ["slug", "acme-corp"], ["created_at", "2026-05-08 08:14:41.477523"], ["updated_at", "2026-05-08 08:14:41.477523"]]
+  [1m[36mTeams::Team Create (0.2ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme Corp"], ["slug", "acme-corp"], ["created_at", "2026-05-08 12:50:33.565008"], ["updated_at", "2026-05-08 12:50:33.565008"]]
   [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
   [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
   [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
   [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
   [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
-  [1m[36mTeams::Team Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme"], ["LIMIT", 1]]
-  [1m[36mTeams::Team Create (0.2ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme"], ["slug", "acme"], ["created_at", "2026-05-08 08:14:41.479879"], ["updated_at", "2026-05-08 08:14:41.479879"]]
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
-  [1m[36mTeams::Team Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme"], ["LIMIT", 1]]
   [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
-  [1m[36mTeams::Team Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", ""], ["LIMIT", 1]]
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
-  [1m[36mTeams::Team Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "my-team"], ["LIMIT", 1]]
-  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
-  [1m[35m (3.6ms)[0m  [1m[35mDROP TABLE "teams" CASCADE[0m
-  [1m[35m (3.2ms)[0m  [1m[35mDROP TABLE "team_memberships" CASCADE[0m
-  [1m[35m (2.9ms)[0m  [1m[35mDROP TABLE "team_invitations" CASCADE[0m
-  [1m[35m (2.2ms)[0m  [1m[35mDROP TABLE "users" CASCADE[0m
-  [1m[35m (2.4ms)[0m  [1m[35mDROP TABLE "schema_migrations" CASCADE[0m
-  [1m[35m (1.8ms)[0m  [1m[35mDROP TABLE "ar_internal_metadata" CASCADE[0m
-  [1m[35m (5.6ms)[0m  [1m[35mCREATE TABLE "teams" ("id" bigserial primary key, "name" character varying NOT NULL, "slug" character varying NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
-  [1m[35m (1.2ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_teams_on_slug" ON "teams" ("slug")[0m
-  [1m[35m (2.9ms)[0m  [1m[35mCREATE TABLE "team_memberships" ("id" bigserial primary key, "team_id" bigint NOT NULL, "user_id" bigint NOT NULL, "role" character varying DEFAULT 'member' NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
-  [1m[35m (0.8ms)[0m  [1m[35mCREATE INDEX "index_team_memberships_on_team_id" ON "team_memberships" ("team_id")[0m
-  [1m[35m (0.9ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_team_memberships_on_team_id_and_user_id" ON "team_memberships" ("team_id", "user_id")[0m
-  [1m[35m (2.8ms)[0m  [1m[35mCREATE TABLE "team_invitations" ("id" bigserial primary key, "team_id" bigint NOT NULL, "email" character varying NOT NULL, "token" character varying NOT NULL, "role" character varying DEFAULT 'member' NOT NULL, "expires_at" timestamp(6) NOT NULL, "accepted_at" timestamp(6), "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
-  [1m[35m (0.8ms)[0m  [1m[35mCREATE INDEX "index_team_invitations_on_team_id" ON "team_invitations" ("team_id")[0m
-  [1m[35m (0.8ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_team_invitations_on_token" ON "team_invitations" ("token")[0m
-  [1m[35m (0.6ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_team_invitations_on_team_id_and_email" ON "team_invitations" ("team_id", "email") WHERE accepted_at IS NULL[0m
-  [1m[35m (1.3ms)[0m  [1m[35mCREATE TABLE "users" ("id" bigserial primary key, "email" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
-  [1m[35m (1.1ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" character varying NOT NULL PRIMARY KEY)[0m
-  [1m[36mActiveRecord::SchemaMigration Load (0.3ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
-  [1m[35m (0.3ms)[0m  [1m[32mINSERT INTO "schema_migrations" (version) VALUES (0)[0m
-  [1m[35m (1.1ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" character varying NOT NULL PRIMARY KEY, "value" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
-  [1m[36mActiveRecord::InternalMetadata Load (0.2ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
-  [1m[36mActiveRecord::InternalMetadata Create (0.3ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'test', '2026-05-08 08:14:57.448756', '2026-05-08 08:14:57.448757') RETURNING "key"[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
-  [1m[36mTeams::Team Exists? (2.8ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", ""], ["LIMIT", 1]]
-  [1m[36mTRANSACTION (0.3ms)[0m  [1m[31mROLLBACK[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
-  [1m[36mTeams::Team Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "my-team"], ["LIMIT", 1]]
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
-  [1m[36mTeams::Team Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme"], ["LIMIT", 1]]
-  [1m[36mTeams::Team Create (0.8ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme"], ["slug", "acme"], ["created_at", "2026-05-08 08:14:57.487506"], ["updated_at", "2026-05-08 08:14:57.487506"]]
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
-  [1m[36mTeams::Team Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme"], ["LIMIT", 1]]
-  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
-  [1m[36mTeams::Team Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme"], ["LIMIT", 1]]
-  [1m[36mTeams::Team Create (0.3ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme"], ["slug", "acme"], ["created_at", "2026-05-08 08:14:57.490586"], ["updated_at", "2026-05-08 08:14:57.490586"]]
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
-  [1m[36mTeams::Membership Exists? (1.2ms)[0m  [1m[34mSELECT 1 AS one FROM "team_memberships" WHERE "team_memberships"."user_id" = $1 AND "team_memberships"."team_id" = $2 LIMIT $3[0m  [["user_id", 1], ["team_id", 2], ["LIMIT", 1]]
-  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
-  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
-  [1m[36mTeams::Team Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme"], ["LIMIT", 1]]
-  [1m[36mTeams::Team Create (0.4ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme"], ["slug", "acme"], ["created_at", "2026-05-08 08:14:57.500270"], ["updated_at", "2026-05-08 08:14:57.500270"]]
-  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
-  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
-  [1m[36mTeams::Membership Exists? (0.8ms)[0m  [1m[34mSELECT 1 AS one FROM "team_memberships" WHERE "team_memberships"."user_id" = $1 AND "team_memberships"."team_id" = $2 LIMIT $3[0m  [["user_id", 1], ["team_id", 3], ["LIMIT", 1]]
-  [1m[36mTeams::Membership Create (1.6ms)[0m  [1m[32mINSERT INTO "team_memberships" ("team_id", "user_id", "role", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["team_id", 3], ["user_id", 1], ["role", "member"], ["created_at", "2026-05-08 08:14:57.502094"], ["updated_at", "2026-05-08 08:14:57.502094"]]
-  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
-  [1m[36mTeams::Membership Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "team_memberships" WHERE "team_memberships"."user_id" = $1 AND "team_memberships"."team_id" = $2 LIMIT $3[0m  [["user_id", 1], ["team_id", 3], ["LIMIT", 1]]
-  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
-  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
-  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
-  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
-  [1m[36mTeams::Team Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme-corp"], ["LIMIT", 1]]
-  [1m[36mTeams::Team Create (0.3ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme Corp"], ["slug", "acme-corp"], ["created_at", "2026-05-08 08:14:57.511613"], ["updated_at", "2026-05-08 08:14:57.511613"]]
-  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
-  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
-  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
-  [1m[36mTeams::Team Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme"], ["LIMIT", 1]]
-  [1m[36mTeams::Team Create (0.3ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme"], ["slug", "acme"], ["created_at", "2026-05-08 08:14:57.514361"], ["updated_at", "2026-05-08 08:14:57.514361"]]
-  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
-  [1m[36mTeams::Invitation Exists? (1.5ms)[0m  [1m[34mSELECT 1 AS one FROM "team_invitations" WHERE "team_invitations"."token" = $1 LIMIT $2[0m  [["token", "DsFCuCm_o_b4xvA0E5qg9Prua-qaWGfQV4V7-RfY8uQ"], ["LIMIT", 1]]
-  [1m[36mTeams::Invitation Create (1.1ms)[0m  [1m[32mINSERT INTO "team_invitations" ("team_id", "email", "token", "role", "expires_at", "accepted_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["team_id", 5], ["email", "x@y.com"], ["token", "DsFCuCm_o_b4xvA0E5qg9Prua-qaWGfQV4V7-RfY8uQ"], ["role", "member"], ["expires_at", "2026-05-08 08:13:57.517554"], ["accepted_at", nil], ["created_at", "2026-05-08 08:14:57.523865"], ["updated_at", "2026-05-08 08:14:57.523865"]]
-  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
-  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
-  [1m[36mTeams::Team Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme"], ["LIMIT", 1]]
-  [1m[36mTeams::Team Create (0.3ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme"], ["slug", "acme"], ["created_at", "2026-05-08 08:14:57.526776"], ["updated_at", "2026-05-08 08:14:57.526776"]]
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
-  [1m[36mTeams::Invitation Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "team_invitations" WHERE "team_invitations"."token" = $1 LIMIT $2[0m  [["token", "4ttLwUBpnf6S2wWl9MOuX99kbpOhgyqfRGkjkY59a3w"], ["LIMIT", 1]]
-  [1m[36mTeams::Invitation Create (0.3ms)[0m  [1m[32mINSERT INTO "team_invitations" ("team_id", "email", "token", "role", "expires_at", "accepted_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["team_id", 6], ["email", "x@y.com"], ["token", "4ttLwUBpnf6S2wWl9MOuX99kbpOhgyqfRGkjkY59a3w"], ["role", "member"], ["expires_at", "2026-05-15 08:14:57.527560"], ["accepted_at", nil], ["created_at", "2026-05-08 08:14:57.528122"], ["updated_at", "2026-05-08 08:14:57.528122"]]
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
-  [1m[36mTeams::Invitation Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "team_invitations" WHERE "team_invitations"."token" = $1 LIMIT $2[0m  [["token", "mClvrJSy21OIBEZYWhTVWTviZgnmSsdVyB-14gMX0Os"], ["LIMIT", 1]]
-  [1m[36mTeams::Invitation Create (0.7ms)[0m  [1m[32mINSERT INTO "team_invitations" ("team_id", "email", "token", "role", "expires_at", "accepted_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["team_id", 6], ["email", "x@y.com"], ["token", "mClvrJSy21OIBEZYWhTVWTviZgnmSsdVyB-14gMX0Os"], ["role", "admin"], ["expires_at", "2026-05-15 08:14:57.529362"], ["accepted_at", nil], ["created_at", "2026-05-08 08:14:57.529926"], ["updated_at", "2026-05-08 08:14:57.529926"]]
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK TO SAVEPOINT active_record_1[0m
-  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
-  [1m[36mTeams::Team Exists? (0.6ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme"], ["LIMIT", 1]]
-  [1m[36mTeams::Team Create (0.3ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme"], ["slug", "acme"], ["created_at", "2026-05-08 08:14:57.532616"], ["updated_at", "2026-05-08 08:14:57.532616"]]
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
-  [1m[36mTeams::Invitation Exists? (0.6ms)[0m  [1m[34mSELECT 1 AS one FROM "team_invitations" WHERE "team_invitations"."token" = $1 LIMIT $2[0m  [["token", "mNv5c_47QyaXXrPcvxrsZhj-eKkB80YShzbWl2LSq6c"], ["LIMIT", 1]]
-  [1m[36mTeams::Invitation Create (0.3ms)[0m  [1m[32mINSERT INTO "team_invitations" ("team_id", "email", "token", "role", "expires_at", "accepted_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["team_id", 7], ["email", "x@y.com"], ["token", "mNv5c_47QyaXXrPcvxrsZhj-eKkB80YShzbWl2LSq6c"], ["role", "member"], ["expires_at", "2026-05-15 08:14:57.533400"], ["accepted_at", nil], ["created_at", "2026-05-08 08:14:57.534093"], ["updated_at", "2026-05-08 08:14:57.534093"]]
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
-  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
-  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
-  [1m[35m (5.3ms)[0m  [1m[35mDROP TABLE "users" CASCADE[0m
-  [1m[35m (1.5ms)[0m  [1m[35mDROP TABLE "schema_migrations" CASCADE[0m
-  [1m[35m (1.6ms)[0m  [1m[35mDROP TABLE "ar_internal_metadata" CASCADE[0m
-  [1m[35m (4.1ms)[0m  [1m[35mDROP TABLE "teams" CASCADE[0m
-  [1m[35m (2.5ms)[0m  [1m[35mDROP TABLE "team_memberships" CASCADE[0m
-  [1m[35m (4.2ms)[0m  [1m[35mDROP TABLE "team_invitations" CASCADE[0m
-  [1m[35m (5.9ms)[0m  [1m[35mCREATE TABLE "teams" ("id" bigserial primary key, "name" character varying NOT NULL, "slug" character varying NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
-  [1m[35m (0.7ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_teams_on_slug" ON "teams" ("slug")[0m
-  [1m[35m (1.4ms)[0m  [1m[35mCREATE TABLE "team_memberships" ("id" bigserial primary key, "team_id" bigint NOT NULL, "user_id" bigint NOT NULL, "role" character varying DEFAULT 'member' NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
-  [1m[35m (0.4ms)[0m  [1m[35mCREATE INDEX "index_team_memberships_on_team_id" ON "team_memberships" ("team_id")[0m
-  [1m[35m (0.4ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_team_memberships_on_team_id_and_user_id" ON "team_memberships" ("team_id", "user_id")[0m
-  [1m[35m (1.5ms)[0m  [1m[35mCREATE TABLE "team_invitations" ("id" bigserial primary key, "team_id" bigint NOT NULL, "email" character varying NOT NULL, "token" character varying NOT NULL, "role" character varying DEFAULT 'member' NOT NULL, "expires_at" timestamp(6) NOT NULL, "accepted_at" timestamp(6), "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
-  [1m[35m (0.4ms)[0m  [1m[35mCREATE INDEX "index_team_invitations_on_team_id" ON "team_invitations" ("team_id")[0m
-  [1m[35m (0.4ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_team_invitations_on_token" ON "team_invitations" ("token")[0m
-  [1m[35m (0.5ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_team_invitations_on_team_id_and_email" ON "team_invitations" ("team_id", "email") WHERE accepted_at IS NULL[0m
-  [1m[35m (1.4ms)[0m  [1m[35mCREATE TABLE "users" ("id" bigserial primary key, "email" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
-  [1m[35m (1.3ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" character varying NOT NULL PRIMARY KEY)[0m
-  [1m[36mActiveRecord::SchemaMigration Load (2.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
-  [1m[35m (0.7ms)[0m  [1m[32mINSERT INTO "schema_migrations" (version) VALUES (0)[0m
-  [1m[35m (3.2ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" character varying NOT NULL PRIMARY KEY, "value" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
-  [1m[36mActiveRecord::InternalMetadata Load (0.3ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
-  [1m[36mActiveRecord::InternalMetadata Create (0.8ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'test', '2026-05-08 08:44:45.120529', '2026-05-08 08:44:45.120530') RETURNING "key"[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
-  [1m[36mTRANSACTION (0.3ms)[0m  [1m[31mROLLBACK[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
-  [1m[36mTRANSACTION (0.5ms)[0m  [1m[31mROLLBACK[0m
-  [1m[36mTRANSACTION (1.3ms)[0m  [1m[35mBEGIN[0m
-  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
-  [1m[36mTeams::Team Exists? (1.1ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme-corp"], ["LIMIT", 1]]
-  [1m[36mTeams::Team Create (0.7ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme Corp"], ["slug", "acme-corp"], ["created_at", "2026-05-08 08:44:45.164381"], ["updated_at", "2026-05-08 08:44:45.164381"]]
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
-  [1m[36mTeams::Team Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme"], ["LIMIT", 1]]
-  [1m[36mTeams::Team Create (0.3ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme"], ["slug", "acme"], ["created_at", "2026-05-08 08:44:45.168036"], ["updated_at", "2026-05-08 08:44:45.168036"]]
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
-  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
-  [1m[36mTeams::Membership Exists? (3.6ms)[0m  [1m[34mSELECT 1 AS one FROM "team_memberships" WHERE "team_memberships"."user_id" = $1 AND "team_memberships"."team_id" = $2 LIMIT $3[0m  [["user_id", 1], ["team_id", 2], ["LIMIT", 1]]
-  [1m[36mTeams::Membership Create (1.0ms)[0m  [1m[32mINSERT INTO "team_memberships" ("team_id", "user_id", "role", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["team_id", 2], ["user_id", 1], ["role", "member"], ["created_at", "2026-05-08 08:44:45.180353"], ["updated_at", "2026-05-08 08:44:45.180353"]]
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
-  [1m[36mTeams::Membership Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "team_memberships" WHERE "team_memberships"."user_id" = $1 AND "team_memberships"."team_id" = $2 LIMIT $3[0m  [["user_id", 1], ["team_id", 2], ["LIMIT", 1]]
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
-  [1m[36mTeams::Team Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme"], ["LIMIT", 1]]
-  [1m[36mTeams::Team Create (0.3ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme"], ["slug", "acme"], ["created_at", "2026-05-08 08:44:45.183555"], ["updated_at", "2026-05-08 08:44:45.183555"]]
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
-  [1m[36mTeams::Membership Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "team_memberships" WHERE "team_memberships"."user_id" = $1 AND "team_memberships"."team_id" = $2 LIMIT $3[0m  [["user_id", 1], ["team_id", 3], ["LIMIT", 1]]
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
-  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
-  [1m[36mTRANSACTION (2.2ms)[0m  [1m[31mROLLBACK[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
-  [1m[36mTeams::Team Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", ""], ["LIMIT", 1]]
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
-  [1m[36mTeams::Team Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme"], ["LIMIT", 1]]
-  [1m[36mTeams::Team Create (0.3ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme"], ["slug", "acme"], ["created_at", "2026-05-08 08:44:45.191117"], ["updated_at", "2026-05-08 08:44:45.191117"]]
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
-  [1m[36mTeams::Team Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme"], ["LIMIT", 1]]
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
-  [1m[36mTeams::Team Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "my-team"], ["LIMIT", 1]]
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
-  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
-  [1m[36mTeams::Team Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme"], ["LIMIT", 1]]
-  [1m[36mTeams::Team Create (2.5ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme"], ["slug", "acme"], ["created_at", "2026-05-08 08:44:45.194399"], ["updated_at", "2026-05-08 08:44:45.194399"]]
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
-  [1m[36mTRANSACTION (0.9ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
-  [1m[36mTeams::Invitation Exists? (2.1ms)[0m  [1m[34mSELECT 1 AS one FROM "team_invitations" WHERE "team_invitations"."token" = $1 LIMIT $2[0m  [["token", "ZKVC1NVAIShIZBNYcBHIHgod2cAV88I2bRJOi7R-8LU"], ["LIMIT", 1]]
-  [1m[36mTeams::Invitation Create (0.9ms)[0m  [1m[32mINSERT INTO "team_invitations" ("team_id", "email", "token", "role", "expires_at", "accepted_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["team_id", 5], ["email", "x@y.com"], ["token", "ZKVC1NVAIShIZBNYcBHIHgod2cAV88I2bRJOi7R-8LU"], ["role", "member"], ["expires_at", "2026-05-15 08:44:45.203780"], ["accepted_at", nil], ["created_at", "2026-05-08 08:44:45.206049"], ["updated_at", "2026-05-08 08:44:45.206049"]]
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
-  [1m[36mTeams::Invitation Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "team_invitations" WHERE "team_invitations"."token" = $1 LIMIT $2[0m  [["token", "x05H9x1NCs3By6Ik9YkNFhozK741fZlc06sjVp5MAJ8"], ["LIMIT", 1]]
-  [1m[36mTeams::Invitation Create (0.6ms)[0m  [1m[32mINSERT INTO "team_invitations" ("team_id", "email", "token", "role", "expires_at", "accepted_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["team_id", 5], ["email", "x@y.com"], ["token", "x05H9x1NCs3By6Ik9YkNFhozK741fZlc06sjVp5MAJ8"], ["role", "admin"], ["expires_at", "2026-05-15 08:44:45.207968"], ["accepted_at", nil], ["created_at", "2026-05-08 08:44:45.208496"], ["updated_at", "2026-05-08 08:44:45.208496"]]
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK TO SAVEPOINT active_record_1[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
-  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
-  [1m[36mTeams::Team Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme"], ["LIMIT", 1]]
-  [1m[36mTeams::Team Create (0.8ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme"], ["slug", "acme"], ["created_at", "2026-05-08 08:44:45.210868"], ["updated_at", "2026-05-08 08:44:45.210868"]]
-  [1m[36mTRANSACTION (1.5ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
-  [1m[36mTeams::Invitation Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "team_invitations" WHERE "team_invitations"."token" = $1 LIMIT $2[0m  [["token", "34-6ggH-i4XCMJQL9962Fp3JNbcUrq2NXtpIFIwGX9E"], ["LIMIT", 1]]
-  [1m[36mTeams::Invitation Create (0.5ms)[0m  [1m[32mINSERT INTO "team_invitations" ("team_id", "email", "token", "role", "expires_at", "accepted_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["team_id", 6], ["email", "x@y.com"], ["token", "34-6ggH-i4XCMJQL9962Fp3JNbcUrq2NXtpIFIwGX9E"], ["role", "member"], ["expires_at", "2026-05-08 08:43:45.213343"], ["accepted_at", nil], ["created_at", "2026-05-08 08:44:45.214085"], ["updated_at", "2026-05-08 08:44:45.214085"]]
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
-  [1m[36mTeams::Team Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "teams" WHERE "teams"."slug" = $1 LIMIT $2[0m  [["slug", "acme"], ["LIMIT", 1]]
-  [1m[36mTeams::Team Create (0.3ms)[0m  [1m[32mINSERT INTO "teams" ("name", "slug", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "id"[0m  [["name", "Acme"], ["slug", "acme"], ["created_at", "2026-05-08 08:44:45.216154"], ["updated_at", "2026-05-08 08:44:45.216154"]]
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
-  [1m[36mTeams::Invitation Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "team_invitations" WHERE "team_invitations"."token" = $1 LIMIT $2[0m  [["token", "citboQSDF-QPrpZNfQ9JcQUDrmHv7JSVKlIJPEMeaMg"], ["LIMIT", 1]]
-  [1m[36mTeams::Invitation Create (0.3ms)[0m  [1m[32mINSERT INTO "team_invitations" ("team_id", "email", "token", "role", "expires_at", "accepted_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["team_id", 7], ["email", "x@y.com"], ["token", "citboQSDF-QPrpZNfQ9JcQUDrmHv7JSVKlIJPEMeaMg"], ["role", "member"], ["expires_at", "2026-05-15 08:44:45.216964"], ["accepted_at", nil], ["created_at", "2026-05-08 08:44:45.217482"], ["updated_at", "2026-05-08 08:44:45.217482"]]
-  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
-  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m

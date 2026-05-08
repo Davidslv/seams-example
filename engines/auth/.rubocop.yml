@@ -36,6 +36,7 @@ Seams/NoCrossEngineModelAccess:
   Enabled: true
   OwnEngine: Auth
   OtherEngines:
+    - Accounts
     - Billing
     - Core
     - Notifications
@@ -48,6 +49,7 @@ Seams/NoCrossEngineDependency:
   Enabled: true
   OwnEngine: auth
   OtherEngines:
+    - accounts
     - billing
     - core
     - notifications

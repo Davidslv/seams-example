@@ -36,12 +36,12 @@ Seams/NoCrossEngineModelAccess:
   Enabled: true
   OwnEngine: Teams
   OtherEngines:
+    - Accounts
     - Auth
     - Billing
     - Core
     - Notifications
   ExposedConcerns:
-    - Teams::Teamable
     - Teams::AccountScoped
     - Teams::Authorization
 
@@ -49,6 +49,7 @@ Seams/NoCrossEngineDependency:
   Enabled: true
   OwnEngine: teams
   OtherEngines:
+    - accounts
     - auth
     - billing
     - core

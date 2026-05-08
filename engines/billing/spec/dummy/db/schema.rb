@@ -1,7 +1,15 @@
 # frozen_string_literal: true
 
 ActiveRecord::Schema[8.1].define(version: 0) do
+  enable_extension "pgcrypto"
+  
+  create_table :accounts, id: :uuid do |t|
+    t.string :name, null: false
+    t.timestamps
+  end
+  
   create_table :billing_subscriptions do |t|
+    t.uuid     :account_id,         null: false
     t.string   :customer_ref,       null: false
     t.string   :plan_ref,           null: false
     t.string   :gateway_ref,        null: false
@@ -9,9 +17,11 @@ ActiveRecord::Schema[8.1].define(version: 0) do
     t.datetime :current_period_end
     t.timestamps
   end
+  add_index :billing_subscriptions, :account_id
   add_index :billing_subscriptions, :gateway_ref, unique: true
   
   create_table :billing_invoices do |t|
+    t.uuid       :account_id,       null: false
     t.string     :gateway_ref,      null: false
     t.string     :customer_ref,     null: false
     t.string     :subscription_ref
@@ -21,6 +31,7 @@ ActiveRecord::Schema[8.1].define(version: 0) do
     t.datetime   :paid_at
     t.timestamps
   end
+  add_index :billing_invoices, :account_id
   add_index :billing_invoices, :gateway_ref, unique: true
   
   create_table :billing_webhook_events do |t|
@@ -47,22 +58,18 @@ ActiveRecord::Schema[8.1].define(version: 0) do
   end
   
   create_table :billing_lifetime_passes do |t|
-    t.string   :customer_ref,        null: false
-    t.string   :plan_ref,            null: false
+    t.uuid     :account_id,                null: false
+    t.string   :customer_ref,              null: false
+    t.string   :plan_ref,                  null: false
     t.string   :gateway_ref
-    t.bigint   :granted_by_user_id
-    t.datetime :granted_at,          null: false
+    t.bigint   :granted_by_identity_id
+    t.datetime :granted_at,                null: false
     t.datetime :revoked_at
-    t.bigint   :revoked_by_user_id
+    t.bigint   :revoked_by_identity_id
     t.text     :notes
     t.timestamps
   end
-  add_index :billing_lifetime_passes, %i[customer_ref plan_ref], unique: true,
-                                                                 name: "index_billing_ltd_unique"
-  
-  create_table :users do |t|
-    t.string :email
-    t.string :stripe_customer_id
-    t.timestamps
-  end
+  add_index :billing_lifetime_passes, :account_id
+  add_index :billing_lifetime_passes, %i[account_id plan_ref], unique: true,
+                                                               name: "index_billing_ltd_unique"
 end

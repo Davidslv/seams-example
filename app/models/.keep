@@ -1,0 +1,20 @@
+# Why this directory has no `user.rb`
+#
+# Wave 9 of seams split the conflated "who logs in / who pays / who
+# has a profile" trio into three peer engines. The canonical demo
+# addresses humans through `Auth::Identity` (engines/auth) and
+# tenants through `Accounts::Account` (engines/accounts). Neither
+# lives in this directory; both ship inside their engine.
+#
+# Hosts that need a domain User on top of `Auth::Identity` (extra
+# columns: display name, avatar, locale, etc.) drop one in here and
+# include the optional concerns:
+#
+#   class User < ApplicationRecord
+#     belongs_to :identity, class_name: "Auth::Identity"
+#     include Auth::Authenticatable        # credentials shim
+#     include Notifications::Notifiable    # notify_email / notify_sms
+#   end
+#
+# This demo doesn't need the extra columns, so it leaves the slot
+# empty. See README.md and CHANGELOG.md for the rationale.

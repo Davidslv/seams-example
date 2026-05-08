@@ -1,0 +1,32 @@
+# frozen_string_literal: true
+
+# What: creates the notifications table for the STI Notification model.
+# Why:  every channel (in-app, email, SMS) shares the same scheduling +
+#       audit semantics. STI keeps that DRY: one table, one indexed
+#       next_delivery_at, three subclasses with their own dispatch!.
+# Risk: append + per-row updates (read_at flips, next_delivery_at
+#       advances). Indexed by (next_delivery_at) for the due sweeper
+#       and (owner) for the bell view.
+class CreateNotifications < ActiveRecord::Migration[7.1]
+  def change
+    create_table :notifications do |t|
+      t.string  :type,             null: false   # STI discriminator
+      # Polymorphic owner: can be Auth::Identity (bigint), an
+      # Accounts::Account (UUID post-Wave-9), or any other host model.
+      # `owner_id` is stored as a string so the column accommodates
+      # both PK types without needing two separate FKs.
+      t.string  :owner_type, null: false
+      t.string  :owner_id,   null: false
+      t.string  :recipient                       # destination address (override of owner default)
+      t.string  :template,         null: false
+      t.jsonb   :schedule_data                   # IceCube::Schedule#to_hash
+      t.datetime :next_delivery_at
+      t.datetime :read_at                        # InApp only
+      t.timestamps
+    end
+
+    add_index :notifications, %i[owner_type owner_id]
+    add_index :notifications, :next_delivery_at
+    add_index :notifications, %i[type next_delivery_at]
+  end
+end

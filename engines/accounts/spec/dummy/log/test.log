@@ -1,0 +1,998 @@
+  [1m[35mSQL (9.7ms)[0m  [1m[35mCREATE EXTENSION IF NOT EXISTS "pgcrypto"[0m
+  [1m[35m (6.7ms)[0m  [1m[35mCREATE TABLE "auth_identities" ("id" bigserial primary key, "email" text NOT NULL, "password_digest" character varying NOT NULL, "staff" boolean DEFAULT FALSE NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (1.2ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_auth_identities_on_email" ON "auth_identities" ("email")[0m
+  [1m[35m (2.6ms)[0m  [1m[35mCREATE TABLE "accounts" ("id" uuid DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY, "name" character varying NOT NULL, "external_account_id" bigint NOT NULL, "cancelled_at" timestamp(6), "incinerated_at" timestamp(6), "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (0.8ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_accounts_on_external_account_id" ON "accounts" ("external_account_id")[0m
+  [1m[35m (1.0ms)[0m  [1m[35mCREATE INDEX "index_accounts_on_cancelled_at" ON "accounts" ("cancelled_at")[0m
+  [1m[35m (3.0ms)[0m  [1m[35mCREATE TABLE "accounts_memberships" ("id" uuid DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY, "account_id" uuid NOT NULL, "identity_id" bigint, "name" character varying NOT NULL, "role" character varying DEFAULT 'member' NOT NULL, "active" boolean DEFAULT TRUE NOT NULL, "verified_at" timestamp(6), "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL, CONSTRAINT "fk_rails_8d43abd265"
+FOREIGN KEY ("account_id")
+  REFERENCES "accounts" ("id")
+)[0m
+  [1m[35m (1.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_accounts_memberships_unique" ON "accounts_memberships" ("account_id", "identity_id")[0m
+  [1m[35m (2.0ms)[0m  [1m[35mCREATE INDEX "index_accounts_memberships_on_account_id_and_role" ON "accounts_memberships" ("account_id", "role")[0m
+  [1m[35m (0.5ms)[0m  [1m[35mCREATE INDEX "index_accounts_memberships_on_identity_id" ON "accounts_memberships" ("identity_id")[0m
+  [1m[35m (1.8ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" character varying NOT NULL PRIMARY KEY)[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.4ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[35m (0.3ms)[0m  [1m[32mINSERT INTO "schema_migrations" (version) VALUES (0)[0m
+  [1m[35m (1.4ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" character varying NOT NULL PRIMARY KEY, "value" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.4ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::InternalMetadata Create (0.3ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'test', '2026-05-08 11:55:15.784895', '2026-05-08 11:55:15.784897') RETURNING "key"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (1.7ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 2353018468742712275], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (1.2ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Acme"], ["external_account_id", 2353018468742712275], ["cancelled_at", nil], ["incinerated_at", nil], ["created_at", "2026-05-08 11:55:15.836571"], ["updated_at", "2026-05-08 11:55:15.836571"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Pluck (1.6ms)[0m  [1m[34mSELECT "accounts_memberships"."identity_id" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "87d13723-5ea2-4a6d-a91b-8b6593c5aac6"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (0.6ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 3544601545523038328], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (0.4ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Acme"], ["external_account_id", 3544601545523038328], ["cancelled_at", nil], ["incinerated_at", nil], ["created_at", "2026-05-08 11:55:15.874387"], ["updated_at", "2026-05-08 11:55:15.874387"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Pluck (0.3ms)[0m  [1m[34mSELECT "accounts_memberships"."identity_id" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "ccb894d9-6d7d-4a87-a4bf-6bc820f23868"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 2922030426560571751], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (0.3ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Acme"], ["external_account_id", 2922030426560571751], ["cancelled_at", nil], ["incinerated_at", nil], ["created_at", "2026-05-08 11:55:15.877470"], ["updated_at", "2026-05-08 11:55:15.877470"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Pluck (0.2ms)[0m  [1m[34mSELECT "accounts_memberships"."identity_id" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "46f7a438-3215-4b01-a9f9-b2a52521216a"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 773882756443874799], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (0.3ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Acme"], ["external_account_id", 773882756443874799], ["cancelled_at", nil], ["incinerated_at", nil], ["created_at", "2026-05-08 11:55:15.881392"], ["updated_at", "2026-05-08 11:55:15.881392"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Pluck (0.3ms)[0m  [1m[34mSELECT "accounts_memberships"."identity_id" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "6b0d95cc-7fc9-4f7e-8ff2-6fdea54f0ddc"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Create (1.3ms)[0m  [1m[32mINSERT INTO "accounts_memberships" ("account_id", "identity_id", "name", "role", "active", "verified_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["account_id", "6b0d95cc-7fc9-4f7e-8ff2-6fdea54f0ddc"], ["identity_id", nil], ["name", "System"], ["role", "system"], ["active", true], ["verified_at", nil], ["created_at", "2026-05-08 11:55:15.883271"], ["updated_at", "2026-05-08 11:55:15.883271"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 4183928008534045145], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (0.3ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Acme"], ["external_account_id", 4183928008534045145], ["cancelled_at", nil], ["incinerated_at", nil], ["created_at", "2026-05-08 11:55:15.886481"], ["updated_at", "2026-05-08 11:55:15.886481"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Pluck (0.3ms)[0m  [1m[34mSELECT "accounts_memberships"."identity_id" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "9dfd9cd7-b264-4993-a159-56e62c194c76"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 1368537991936697380], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (0.3ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Acme"], ["external_account_id", 1368537991936697380], ["cancelled_at", nil], ["incinerated_at", nil], ["created_at", "2026-05-08 11:55:15.889167"], ["updated_at", "2026-05-08 11:55:15.889167"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Pluck (0.3ms)[0m  [1m[34mSELECT "accounts_memberships"."identity_id" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "0501b4eb-2150-42ae-8ff1-3cbb2515ed67"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 4463845807991665733], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (0.3ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Live"], ["external_account_id", 4463845807991665733], ["cancelled_at", nil], ["incinerated_at", nil], ["created_at", "2026-05-08 11:55:15.895415"], ["updated_at", "2026-05-08 11:55:15.895415"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Pluck (0.2ms)[0m  [1m[34mSELECT "accounts_memberships"."identity_id" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "0721ead8-5412-4023-9273-3746fa663de1"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 1745956893403719587], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (0.3ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Cancelled"], ["external_account_id", 1745956893403719587], ["cancelled_at", "2026-05-07 11:55:15.897066"], ["incinerated_at", nil], ["created_at", "2026-05-08 11:55:15.897184"], ["updated_at", "2026-05-08 11:55:15.897184"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Pluck (0.2ms)[0m  [1m[34mSELECT "accounts_memberships"."identity_id" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "1a9fcafb-2f22-44f6-9d57-409f78fc0d68"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."cancelled_at" IS NULL AND "accounts"."id" = $1 LIMIT $2[0m  [["id", "0721ead8-5412-4023-9273-3746fa663de1"], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."cancelled_at" IS NULL AND "accounts"."id" = $1 LIMIT $2[0m  [["id", "1a9fcafb-2f22-44f6-9d57-409f78fc0d68"], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Load (0.4ms)[0m  [1m[34mSELECT "accounts".* FROM "accounts" WHERE "accounts"."cancelled_at" IS NULL[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 744257842289875573], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (0.3ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Acme"], ["external_account_id", 744257842289875573], ["cancelled_at", nil], ["incinerated_at", nil], ["created_at", "2026-05-08 11:55:15.904112"], ["updated_at", "2026-05-08 11:55:15.904112"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Pluck (0.2ms)[0m  [1m[34mSELECT "accounts_memberships"."identity_id" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "832805c6-4d09-4641-9363-d2fafd0413a4"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[35m (6.9ms)[0m  [1m[35mDROP TABLE "auth_identities" CASCADE[0m
+  [1m[35m (4.1ms)[0m  [1m[35mDROP TABLE "accounts" CASCADE[0m
+  [1m[35m (4.7ms)[0m  [1m[35mDROP TABLE "accounts_memberships" CASCADE[0m
+  [1m[35m (2.2ms)[0m  [1m[35mDROP TABLE "schema_migrations" CASCADE[0m
+  [1m[35m (1.6ms)[0m  [1m[35mDROP TABLE "ar_internal_metadata" CASCADE[0m
+  [1m[35mSQL (0.4ms)[0m  [1m[35mCREATE EXTENSION IF NOT EXISTS "pgcrypto"[0m
+  [1m[35m (4.4ms)[0m  [1m[35mCREATE TABLE "auth_identities" ("id" bigserial primary key, "email" text NOT NULL, "password_digest" character varying NOT NULL, "staff" boolean DEFAULT FALSE NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (1.6ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_auth_identities_on_email" ON "auth_identities" ("email")[0m
+  [1m[35m (4.4ms)[0m  [1m[35mCREATE TABLE "accounts" ("id" uuid DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY, "name" character varying NOT NULL, "external_account_id" bigint NOT NULL, "cancelled_at" timestamp(6), "incinerated_at" timestamp(6), "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (1.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_accounts_on_external_account_id" ON "accounts" ("external_account_id")[0m
+  [1m[35m (1.2ms)[0m  [1m[35mCREATE INDEX "index_accounts_on_cancelled_at" ON "accounts" ("cancelled_at")[0m
+  [1m[35m (4.3ms)[0m  [1m[35mCREATE TABLE "accounts_memberships" ("id" uuid DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY, "account_id" uuid NOT NULL, "identity_id" bigint, "name" character varying NOT NULL, "role" character varying DEFAULT 'member' NOT NULL, "active" boolean DEFAULT TRUE NOT NULL, "verified_at" timestamp(6), "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL, CONSTRAINT "fk_rails_8d43abd265"
+FOREIGN KEY ("account_id")
+  REFERENCES "accounts" ("id")
+)[0m
+  [1m[35m (1.5ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_accounts_memberships_unique" ON "accounts_memberships" ("account_id", "identity_id")[0m
+  [1m[35m (1.2ms)[0m  [1m[35mCREATE INDEX "index_accounts_memberships_on_account_id_and_role" ON "accounts_memberships" ("account_id", "role")[0m
+  [1m[35m (1.1ms)[0m  [1m[35mCREATE INDEX "index_accounts_memberships_on_identity_id" ON "accounts_memberships" ("identity_id")[0m
+  [1m[35m (3.5ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" character varying NOT NULL PRIMARY KEY)[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.6ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[35m (0.4ms)[0m  [1m[32mINSERT INTO "schema_migrations" (version) VALUES (0)[0m
+  [1m[35m (3.2ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" character varying NOT NULL PRIMARY KEY, "value" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.9ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::InternalMetadata Create (0.5ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'test', '2026-05-08 11:55:26.190001', '2026-05-08 11:55:26.190003') RETURNING "key"[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (1.4ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 1687495883810229706], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (1.0ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Live"], ["external_account_id", 1687495883810229706], ["cancelled_at", nil], ["incinerated_at", nil], ["created_at", "2026-05-08 11:55:26.243064"], ["updated_at", "2026-05-08 11:55:26.243064"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Pluck (1.5ms)[0m  [1m[34mSELECT "accounts_memberships"."identity_id" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "aa43d1e5-eee1-4bae-988d-3e6070d8c008"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 255800552501526206], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (0.4ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Cancelled"], ["external_account_id", 255800552501526206], ["cancelled_at", "2026-05-07 11:55:26.257486"], ["incinerated_at", nil], ["created_at", "2026-05-08 11:55:26.257684"], ["updated_at", "2026-05-08 11:55:26.257684"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Pluck (0.3ms)[0m  [1m[34mSELECT "accounts_memberships"."identity_id" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "955bf2e0-a580-4745-afc8-d1f31edea8aa"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."cancelled_at" IS NULL AND "accounts"."id" = $1 LIMIT $2[0m  [["id", "aa43d1e5-eee1-4bae-988d-3e6070d8c008"], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."cancelled_at" IS NULL AND "accounts"."id" = $1 LIMIT $2[0m  [["id", "955bf2e0-a580-4745-afc8-d1f31edea8aa"], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Load (0.4ms)[0m  [1m[34mSELECT "accounts".* FROM "accounts" WHERE "accounts"."cancelled_at" IS NULL[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 833847305376141686], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (0.3ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Acme"], ["external_account_id", 833847305376141686], ["cancelled_at", nil], ["incinerated_at", nil], ["created_at", "2026-05-08 11:55:26.262257"], ["updated_at", "2026-05-08 11:55:26.262257"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Pluck (0.2ms)[0m  [1m[34mSELECT "accounts_memberships"."identity_id" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "e8928a50-4de7-4c23-b582-877b802678f3"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 29340845482331388], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (0.4ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Acme"], ["external_account_id", 29340845482331388], ["cancelled_at", nil], ["incinerated_at", nil], ["created_at", "2026-05-08 11:55:26.290004"], ["updated_at", "2026-05-08 11:55:26.290004"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Pluck (0.3ms)[0m  [1m[34mSELECT "accounts_memberships"."identity_id" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "13cf5301-48c2-4513-bd8a-7dad547e99bc"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Create (1.4ms)[0m  [1m[32mINSERT INTO "accounts_memberships" ("account_id", "identity_id", "name", "role", "active", "verified_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["account_id", "13cf5301-48c2-4513-bd8a-7dad547e99bc"], ["identity_id", nil], ["name", "System"], ["role", "system"], ["active", true], ["verified_at", nil], ["created_at", "2026-05-08 11:55:26.293599"], ["updated_at", "2026-05-08 11:55:26.293599"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 1813138018771994438], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (0.3ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Acme"], ["external_account_id", 1813138018771994438], ["cancelled_at", nil], ["incinerated_at", nil], ["created_at", "2026-05-08 11:55:26.296299"], ["updated_at", "2026-05-08 11:55:26.296299"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Pluck (0.3ms)[0m  [1m[34mSELECT "accounts_memberships"."identity_id" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "396490a7-e63b-45b0-a217-14d148a5eee7"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 867255340196979859], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (0.3ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Acme"], ["external_account_id", 867255340196979859], ["cancelled_at", nil], ["incinerated_at", nil], ["created_at", "2026-05-08 11:55:26.299512"], ["updated_at", "2026-05-08 11:55:26.299512"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Pluck (0.3ms)[0m  [1m[34mSELECT "accounts_memberships"."identity_id" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "fca3802a-0c15-4615-9086-9cce7f11639c"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 1931847312103328544], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (0.3ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Acme"], ["external_account_id", 1931847312103328544], ["cancelled_at", nil], ["incinerated_at", nil], ["created_at", "2026-05-08 11:55:26.302121"], ["updated_at", "2026-05-08 11:55:26.302121"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Pluck (0.2ms)[0m  [1m[34mSELECT "accounts_memberships"."identity_id" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "b3d3e808-d4ee-4415-977e-5deba6841120"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 2598458856231268555], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (0.4ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Acme"], ["external_account_id", 2598458856231268555], ["cancelled_at", nil], ["incinerated_at", nil], ["created_at", "2026-05-08 11:55:26.305404"], ["updated_at", "2026-05-08 11:55:26.305404"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Pluck (0.2ms)[0m  [1m[34mSELECT "accounts_memberships"."identity_id" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "1b894bd7-0008-44fb-859a-e84bd8d31507"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 3363092759388019679], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (0.3ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Acme"], ["external_account_id", 3363092759388019679], ["cancelled_at", nil], ["incinerated_at", nil], ["created_at", "2026-05-08 11:55:26.308423"], ["updated_at", "2026-05-08 11:55:26.308423"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Pluck (0.2ms)[0m  [1m[34mSELECT "accounts_memberships"."identity_id" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "cf4548ec-ebf5-4f56-a04e-23a3a7cb5579"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[35m (3.9ms)[0m  [1m[35mDROP TABLE "auth_identities" CASCADE[0m
+  [1m[35m (3.7ms)[0m  [1m[35mDROP TABLE "accounts" CASCADE[0m
+  [1m[35m (3.6ms)[0m  [1m[35mDROP TABLE "accounts_memberships" CASCADE[0m
+  [1m[35m (2.2ms)[0m  [1m[35mDROP TABLE "schema_migrations" CASCADE[0m
+  [1m[35m (2.2ms)[0m  [1m[35mDROP TABLE "ar_internal_metadata" CASCADE[0m
+  [1m[35mSQL (0.3ms)[0m  [1m[35mCREATE EXTENSION IF NOT EXISTS "pgcrypto"[0m
+  [1m[35m (7.6ms)[0m  [1m[35mCREATE TABLE "auth_identities" ("id" bigserial primary key, "email" text NOT NULL, "password_digest" character varying NOT NULL, "staff" boolean DEFAULT FALSE NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (1.3ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_auth_identities_on_email" ON "auth_identities" ("email")[0m
+  [1m[35m (3.4ms)[0m  [1m[35mCREATE TABLE "accounts" ("id" uuid DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY, "name" character varying NOT NULL, "external_account_id" bigint NOT NULL, "cancelled_at" timestamp(6), "incinerated_at" timestamp(6), "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (1.2ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_accounts_on_external_account_id" ON "accounts" ("external_account_id")[0m
+  [1m[35m (1.3ms)[0m  [1m[35mCREATE INDEX "index_accounts_on_cancelled_at" ON "accounts" ("cancelled_at")[0m
+  [1m[35m (4.2ms)[0m  [1m[35mCREATE TABLE "accounts_memberships" ("id" uuid DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY, "account_id" uuid NOT NULL, "identity_id" bigint, "name" character varying NOT NULL, "role" character varying DEFAULT 'member' NOT NULL, "active" boolean DEFAULT TRUE NOT NULL, "verified_at" timestamp(6), "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL, CONSTRAINT "fk_rails_8d43abd265"
+FOREIGN KEY ("account_id")
+  REFERENCES "accounts" ("id")
+)[0m
+  [1m[35m (1.5ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_accounts_memberships_unique" ON "accounts_memberships" ("account_id", "identity_id")[0m
+  [1m[35m (1.3ms)[0m  [1m[35mCREATE INDEX "index_accounts_memberships_on_account_id_and_role" ON "accounts_memberships" ("account_id", "role")[0m
+  [1m[35m (1.5ms)[0m  [1m[35mCREATE INDEX "index_accounts_memberships_on_identity_id" ON "accounts_memberships" ("identity_id")[0m
+  [1m[35m (3.6ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" character varying NOT NULL PRIMARY KEY)[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.8ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[35m (0.5ms)[0m  [1m[32mINSERT INTO "schema_migrations" (version) VALUES (0)[0m
+  [1m[35m (3.6ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" character varying NOT NULL PRIMARY KEY, "value" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.9ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::InternalMetadata Create (0.6ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'test', '2026-05-08 11:56:30.038314', '2026-05-08 11:56:30.038316') RETURNING "key"[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAuth::Identity Create (1.2ms)[0m  [1m[32mINSERT INTO "auth_identities" ("email", "password_digest", "staff", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["email", "owner-b2ced4fc@example.com"], ["password_digest", "$2a$04$bqw6deiJJBK6iQqqWbUtyeGQB3caPXy47D0I5K8mhdDNs0iAxO4wm"], ["staff", false], ["created_at", "2026-05-08 11:56:30.085892"], ["updated_at", "2026-05-08 11:56:30.085892"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (1.7ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 2133313651526510562], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (1.4ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Acme"], ["external_account_id", 2133313651526510562], ["cancelled_at", nil], ["incinerated_at", nil], ["created_at", "2026-05-08 11:56:30.091126"], ["updated_at", "2026-05-08 11:56:30.091126"]]
+  [1m[36mAccounts::Account Load (0.5ms)[0m  [1m[34mSELECT "accounts".* FROM "accounts" WHERE "accounts"."id" = $1 LIMIT $2[0m  [["id", "00ba8121-3435-480a-a310-6a2102a2149e"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Create (1.6ms)[0m  [1m[32mINSERT INTO "accounts_memberships" ("account_id", "identity_id", "name", "role", "active", "verified_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["account_id", "00ba8121-3435-480a-a310-6a2102a2149e"], ["identity_id", nil], ["name", "System"], ["role", "system"], ["active", true], ["verified_at", nil], ["created_at", "2026-05-08 11:56:30.108541"], ["updated_at", "2026-05-08 11:56:30.108541"]]
+  [1m[36mAccounts::Account Load (0.2ms)[0m  [1m[34mSELECT "accounts".* FROM "accounts" WHERE "accounts"."id" = $1 LIMIT $2[0m  [["id", "00ba8121-3435-480a-a310-6a2102a2149e"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts_memberships" WHERE "accounts_memberships"."identity_id" = $1 AND "accounts_memberships"."account_id" = $2 LIMIT $3[0m  [["identity_id", 1], ["account_id", "00ba8121-3435-480a-a310-6a2102a2149e"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Create (0.3ms)[0m  [1m[32mINSERT INTO "accounts_memberships" ("account_id", "identity_id", "name", "role", "active", "verified_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["account_id", "00ba8121-3435-480a-a310-6a2102a2149e"], ["identity_id", 1], ["name", "Ada Lovelace"], ["role", "owner"], ["active", true], ["verified_at", "2026-05-08 11:56:30.110409"], ["created_at", "2026-05-08 11:56:30.111354"], ["updated_at", "2026-05-08 11:56:30.111354"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Pluck (0.3ms)[0m  [1m[34mSELECT "accounts_memberships"."identity_id" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "00ba8121-3435-480a-a310-6a2102a2149e"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Count (0.8ms)[0m  [1m[34mSELECT COUNT(*) FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1[0m  [["account_id", "00ba8121-3435-480a-a310-6a2102a2149e"]]
+  [1m[36mAccounts::Membership Load (0.7ms)[0m  [1m[34mSELECT "accounts_memberships".* FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "00ba8121-3435-480a-a310-6a2102a2149e"], ["role", "system"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Load (0.2ms)[0m  [1m[34mSELECT "accounts_memberships".* FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "00ba8121-3435-480a-a310-6a2102a2149e"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAuth::Identity Create (0.4ms)[0m  [1m[32mINSERT INTO "auth_identities" ("email", "password_digest", "staff", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["email", "owner-3f1b2447@example.com"], ["password_digest", "$2a$04$o6SfpjPsg9tJidi29mwlw.uNswmhDe9TjXz/Ct9RrqaDaQqTjdyn2"], ["staff", false], ["created_at", "2026-05-08 11:56:30.117506"], ["updated_at", "2026-05-08 11:56:30.117506"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 406850874791926302], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (0.2ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Acme"], ["external_account_id", 406850874791926302], ["cancelled_at", nil], ["incinerated_at", nil], ["created_at", "2026-05-08 11:56:30.118279"], ["updated_at", "2026-05-08 11:56:30.118279"]]
+  [1m[36mAccounts::Account Load (0.2ms)[0m  [1m[34mSELECT "accounts".* FROM "accounts" WHERE "accounts"."id" = $1 LIMIT $2[0m  [["id", "ddfd8ac5-af52-46f4-8fcd-e1b363d0b87e"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Create (0.3ms)[0m  [1m[32mINSERT INTO "accounts_memberships" ("account_id", "identity_id", "name", "role", "active", "verified_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["account_id", "ddfd8ac5-af52-46f4-8fcd-e1b363d0b87e"], ["identity_id", nil], ["name", "System"], ["role", "system"], ["active", true], ["verified_at", nil], ["created_at", "2026-05-08 11:56:30.119600"], ["updated_at", "2026-05-08 11:56:30.119600"]]
+  [1m[36mAccounts::Account Load (0.2ms)[0m  [1m[34mSELECT "accounts".* FROM "accounts" WHERE "accounts"."id" = $1 LIMIT $2[0m  [["id", "ddfd8ac5-af52-46f4-8fcd-e1b363d0b87e"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts_memberships" WHERE "accounts_memberships"."identity_id" = $1 AND "accounts_memberships"."account_id" = $2 LIMIT $3[0m  [["identity_id", 2], ["account_id", "ddfd8ac5-af52-46f4-8fcd-e1b363d0b87e"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Create (0.3ms)[0m  [1m[32mINSERT INTO "accounts_memberships" ("account_id", "identity_id", "name", "role", "active", "verified_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["account_id", "ddfd8ac5-af52-46f4-8fcd-e1b363d0b87e"], ["identity_id", 2], ["name", "Ada Lovelace"], ["role", "owner"], ["active", true], ["verified_at", "2026-05-08 11:56:30.120080"], ["created_at", "2026-05-08 11:56:30.120866"], ["updated_at", "2026-05-08 11:56:30.120866"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Pluck (0.2ms)[0m  [1m[34mSELECT "accounts_memberships"."identity_id" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "ddfd8ac5-af52-46f4-8fcd-e1b363d0b87e"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAuth::Identity Create (0.4ms)[0m  [1m[32mINSERT INTO "auth_identities" ("email", "password_digest", "staff", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["email", "u-deed5ac1@example.com"], ["password_digest", "$2a$04$7fLfM9A5.Vnx8dgREQFrJeQT3mJK.o/A6EZ0yjd4pLp1D3rdx83ru"], ["staff", false], ["created_at", "2026-05-08 11:56:30.124715"], ["updated_at", "2026-05-08 11:56:30.124715"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 1117107140591551433], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (0.2ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Acme 2"], ["external_account_id", 1117107140591551433], ["cancelled_at", nil], ["incinerated_at", nil], ["created_at", "2026-05-08 11:56:30.125503"], ["updated_at", "2026-05-08 11:56:30.125503"]]
+  [1m[36mAccounts::Account Load (0.2ms)[0m  [1m[34mSELECT "accounts".* FROM "accounts" WHERE "accounts"."id" = $1 LIMIT $2[0m  [["id", "527effc7-272a-461e-953f-9aa1884e65ef"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Create (0.3ms)[0m  [1m[32mINSERT INTO "accounts_memberships" ("account_id", "identity_id", "name", "role", "active", "verified_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["account_id", "527effc7-272a-461e-953f-9aa1884e65ef"], ["identity_id", nil], ["name", "System"], ["role", "system"], ["active", true], ["verified_at", nil], ["created_at", "2026-05-08 11:56:30.126862"], ["updated_at", "2026-05-08 11:56:30.126862"]]
+  [1m[36mAccounts::Account Load (0.2ms)[0m  [1m[34mSELECT "accounts".* FROM "accounts" WHERE "accounts"."id" = $1 LIMIT $2[0m  [["id", "527effc7-272a-461e-953f-9aa1884e65ef"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts_memberships" WHERE "accounts_memberships"."identity_id" = $1 AND "accounts_memberships"."account_id" = $2 LIMIT $3[0m  [["identity_id", 3], ["account_id", "527effc7-272a-461e-953f-9aa1884e65ef"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Create (0.3ms)[0m  [1m[32mINSERT INTO "accounts_memberships" ("account_id", "identity_id", "name", "role", "active", "verified_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["account_id", "527effc7-272a-461e-953f-9aa1884e65ef"], ["identity_id", 3], ["name", "Tester"], ["role", "owner"], ["active", true], ["verified_at", "2026-05-08 11:56:30.127341"], ["created_at", "2026-05-08 11:56:30.128136"], ["updated_at", "2026-05-08 11:56:30.128136"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Pluck (0.2ms)[0m  [1m[34mSELECT "accounts_memberships"."identity_id" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "527effc7-272a-461e-953f-9aa1884e65ef"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Load (0.3ms)[0m  [1m[34mSELECT "accounts_memberships".* FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."identity_id" = $2 LIMIT $3[0m  [["account_id", "527effc7-272a-461e-953f-9aa1884e65ef"], ["identity_id", 3], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 2885425773745664845], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (0.3ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Live"], ["external_account_id", 2885425773745664845], ["cancelled_at", nil], ["incinerated_at", nil], ["created_at", "2026-05-08 11:56:30.145334"], ["updated_at", "2026-05-08 11:56:30.145334"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Pluck (0.3ms)[0m  [1m[34mSELECT "accounts_memberships"."identity_id" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "dbce808a-3103-47ae-9ec2-622af8a32860"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (0.6ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 3169312531118300266], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (0.4ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Cancelled"], ["external_account_id", 3169312531118300266], ["cancelled_at", "2026-05-07 11:56:30.147315"], ["incinerated_at", nil], ["created_at", "2026-05-08 11:56:30.147440"], ["updated_at", "2026-05-08 11:56:30.147440"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Pluck (0.3ms)[0m  [1m[34mSELECT "accounts_memberships"."identity_id" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "c8172731-2c2c-471b-a55e-ae2c3bc8cbfd"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."cancelled_at" IS NULL AND "accounts"."id" = $1 LIMIT $2[0m  [["id", "dbce808a-3103-47ae-9ec2-622af8a32860"], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."cancelled_at" IS NULL AND "accounts"."id" = $1 LIMIT $2[0m  [["id", "c8172731-2c2c-471b-a55e-ae2c3bc8cbfd"], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Load (0.5ms)[0m  [1m[34mSELECT "accounts".* FROM "accounts" WHERE "accounts"."cancelled_at" IS NULL[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 541898944133452419], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (0.4ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Acme"], ["external_account_id", 541898944133452419], ["cancelled_at", nil], ["incinerated_at", nil], ["created_at", "2026-05-08 11:56:30.152712"], ["updated_at", "2026-05-08 11:56:30.152712"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Pluck (0.4ms)[0m  [1m[34mSELECT "accounts_memberships"."identity_id" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "74e78ca6-abeb-4195-992e-14fd459c894f"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAuth::Identity Create (0.7ms)[0m  [1m[32mINSERT INTO "auth_identities" ("email", "password_digest", "staff", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["email", "owner-079ff306@example.com"], ["password_digest", "$2a$04$3U8WMl2t.o927wWRlTH9PuvRqyi3WfFsCYrUeKVedMn2RAbR4P6yq"], ["staff", false], ["created_at", "2026-05-08 11:56:30.157699"], ["updated_at", "2026-05-08 11:56:30.157699"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Count (0.4ms)[0m  [1m[34mSELECT COUNT(*) FROM "accounts"[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 3902764341881445601], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (0.3ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Bad"], ["external_account_id", 3902764341881445601], ["cancelled_at", nil], ["incinerated_at", nil], ["created_at", "2026-05-08 11:56:30.161380"], ["updated_at", "2026-05-08 11:56:30.161380"]]
+  [1m[36mAccounts::Account Load (0.2ms)[0m  [1m[34mSELECT "accounts".* FROM "accounts" WHERE "accounts"."id" = $1 LIMIT $2[0m  [["id", "dfb12aa9-dd92-42eb-aa1c-eacb909c685e"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Create (0.4ms)[0m  [1m[32mINSERT INTO "accounts_memberships" ("account_id", "identity_id", "name", "role", "active", "verified_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["account_id", "dfb12aa9-dd92-42eb-aa1c-eacb909c685e"], ["identity_id", nil], ["name", "System"], ["role", "system"], ["active", true], ["verified_at", nil], ["created_at", "2026-05-08 11:56:30.163140"], ["updated_at", "2026-05-08 11:56:30.163140"]]
+  [1m[36mAccounts::Account Load (0.2ms)[0m  [1m[34mSELECT "accounts".* FROM "accounts" WHERE "accounts"."id" = $1 LIMIT $2[0m  [["id", "dfb12aa9-dd92-42eb-aa1c-eacb909c685e"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts_memberships" WHERE "accounts_memberships"."identity_id" = $1 AND "accounts_memberships"."account_id" = $2 LIMIT $3[0m  [["identity_id", 4], ["account_id", "dfb12aa9-dd92-42eb-aa1c-eacb909c685e"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK TO SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "accounts"[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAuth::Identity Create (0.5ms)[0m  [1m[32mINSERT INTO "auth_identities" ("email", "password_digest", "staff", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["email", "owner-992f2853@example.com"], ["password_digest", "$2a$04$yxebwuvvwyAMbDc69aG.fuCFg6heeYxEm22Lvv./qiwZSvgQhf1Ia"], ["staff", false], ["created_at", "2026-05-08 11:56:30.174965"], ["updated_at", "2026-05-08 11:56:30.174965"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 822645819555928903], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (0.3ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Acme"], ["external_account_id", 822645819555928903], ["cancelled_at", nil], ["incinerated_at", nil], ["created_at", "2026-05-08 11:56:30.175935"], ["updated_at", "2026-05-08 11:56:30.175935"]]
+  [1m[36mAccounts::Account Load (0.2ms)[0m  [1m[34mSELECT "accounts".* FROM "accounts" WHERE "accounts"."id" = $1 LIMIT $2[0m  [["id", "ebf6f4ab-10a6-472f-9a6d-edfa231ddaa3"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Create (0.3ms)[0m  [1m[32mINSERT INTO "accounts_memberships" ("account_id", "identity_id", "name", "role", "active", "verified_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["account_id", "ebf6f4ab-10a6-472f-9a6d-edfa231ddaa3"], ["identity_id", nil], ["name", "System"], ["role", "system"], ["active", true], ["verified_at", nil], ["created_at", "2026-05-08 11:56:30.177472"], ["updated_at", "2026-05-08 11:56:30.177472"]]
+  [1m[36mAccounts::Account Load (0.2ms)[0m  [1m[34mSELECT "accounts".* FROM "accounts" WHERE "accounts"."id" = $1 LIMIT $2[0m  [["id", "ebf6f4ab-10a6-472f-9a6d-edfa231ddaa3"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts_memberships" WHERE "accounts_memberships"."identity_id" = $1 AND "accounts_memberships"."account_id" = $2 LIMIT $3[0m  [["identity_id", 5], ["account_id", "ebf6f4ab-10a6-472f-9a6d-edfa231ddaa3"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Create (0.4ms)[0m  [1m[32mINSERT INTO "accounts_memberships" ("account_id", "identity_id", "name", "role", "active", "verified_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["account_id", "ebf6f4ab-10a6-472f-9a6d-edfa231ddaa3"], ["identity_id", 5], ["name", "Ada"], ["role", "owner"], ["active", true], ["verified_at", "2026-05-08 11:56:30.177973"], ["created_at", "2026-05-08 11:56:30.178826"], ["updated_at", "2026-05-08 11:56:30.178826"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Pluck (0.2ms)[0m  [1m[34mSELECT "accounts_memberships"."identity_id" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "ebf6f4ab-10a6-472f-9a6d-edfa231ddaa3"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Pluck (0.4ms)[0m  [1m[34mSELECT "accounts_memberships"."role" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1[0m  [["account_id", "ebf6f4ab-10a6-472f-9a6d-edfa231ddaa3"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 1842513385001530277], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (0.3ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Acme"], ["external_account_id", 1842513385001530277], ["cancelled_at", nil], ["incinerated_at", nil], ["created_at", "2026-05-08 11:56:30.184719"], ["updated_at", "2026-05-08 11:56:30.184719"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Pluck (0.2ms)[0m  [1m[34mSELECT "accounts_memberships"."identity_id" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "3c8163d1-713e-426f-83ca-298ec570a3a2"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 1998016051568211551], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (0.3ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Acme"], ["external_account_id", 1998016051568211551], ["cancelled_at", nil], ["incinerated_at", nil], ["created_at", "2026-05-08 11:56:30.187291"], ["updated_at", "2026-05-08 11:56:30.187291"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Pluck (0.2ms)[0m  [1m[34mSELECT "accounts_memberships"."identity_id" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "0fd47901-2638-4ad6-9894-a332fde62585"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 1219834418479785417], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (0.3ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Acme"], ["external_account_id", 1219834418479785417], ["cancelled_at", nil], ["incinerated_at", nil], ["created_at", "2026-05-08 11:56:30.189655"], ["updated_at", "2026-05-08 11:56:30.189655"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Pluck (0.2ms)[0m  [1m[34mSELECT "accounts_memberships"."identity_id" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "0c93496b-f9a8-4618-ba83-64baec01dae4"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAuth::Identity Create (0.4ms)[0m  [1m[32mINSERT INTO "auth_identities" ("email", "password_digest", "staff", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["email", "x-3032543f@example.com"], ["password_digest", "$2a$04$Z8Uhw0UjmkMQokV6neEfJuSnxiWBnqEOdCVHefYXWGpkYBijTLSAW"], ["staff", false], ["created_at", "2026-05-08 11:56:30.192390"], ["updated_at", "2026-05-08 11:56:30.192390"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts_memberships" WHERE "accounts_memberships"."identity_id" = $1 AND "accounts_memberships"."account_id" = $2 LIMIT $3[0m  [["identity_id", 6], ["account_id", "0c93496b-f9a8-4618-ba83-64baec01dae4"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Create (0.3ms)[0m  [1m[32mINSERT INTO "accounts_memberships" ("account_id", "identity_id", "name", "role", "active", "verified_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["account_id", "0c93496b-f9a8-4618-ba83-64baec01dae4"], ["identity_id", 6], ["name", "First"], ["role", "member"], ["active", true], ["verified_at", nil], ["created_at", "2026-05-08 11:56:30.193769"], ["updated_at", "2026-05-08 11:56:30.193769"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts_memberships" WHERE "accounts_memberships"."identity_id" = $1 AND "accounts_memberships"."account_id" = $2 LIMIT $3[0m  [["identity_id", 6], ["account_id", "0c93496b-f9a8-4618-ba83-64baec01dae4"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 403559211934087921], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (0.2ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Acme"], ["external_account_id", 403559211934087921], ["cancelled_at", nil], ["incinerated_at", nil], ["created_at", "2026-05-08 11:56:30.195826"], ["updated_at", "2026-05-08 11:56:30.195826"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Pluck (0.1ms)[0m  [1m[34mSELECT "accounts_memberships"."identity_id" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "2037892d-257b-48ab-97f0-49e72ca2f60f"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Create (0.4ms)[0m  [1m[32mINSERT INTO "accounts_memberships" ("account_id", "identity_id", "name", "role", "active", "verified_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["account_id", "2037892d-257b-48ab-97f0-49e72ca2f60f"], ["identity_id", nil], ["name", "System"], ["role", "system"], ["active", true], ["verified_at", nil], ["created_at", "2026-05-08 11:56:30.197269"], ["updated_at", "2026-05-08 11:56:30.197269"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 3805021091016814452], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (0.2ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Acme"], ["external_account_id", 3805021091016814452], ["cancelled_at", nil], ["incinerated_at", nil], ["created_at", "2026-05-08 11:56:30.199733"], ["updated_at", "2026-05-08 11:56:30.199733"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Pluck (0.1ms)[0m  [1m[34mSELECT "accounts_memberships"."identity_id" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "fb788fc3-6ce2-413b-8b13-5f1790d9b42e"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAuth::Identity Create (0.3ms)[0m  [1m[32mINSERT INTO "auth_identities" ("email", "password_digest", "staff", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["email", "x-f0cd0d14@example.com"], ["password_digest", "$2a$04$h9KvBCdOLwXIINForJYKgO3OSOnqnSdtu/mDTWIES7z4bDCCT/DeO"], ["staff", false], ["created_at", "2026-05-08 11:56:30.202248"], ["updated_at", "2026-05-08 11:56:30.202248"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts_memberships" WHERE "accounts_memberships"."identity_id" = $1 AND "accounts_memberships"."account_id" = $2 LIMIT $3[0m  [["identity_id", 7], ["account_id", "fb788fc3-6ce2-413b-8b13-5f1790d9b42e"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Create (0.2ms)[0m  [1m[32mINSERT INTO "accounts_memberships" ("account_id", "identity_id", "name", "role", "active", "verified_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["account_id", "fb788fc3-6ce2-413b-8b13-5f1790d9b42e"], ["identity_id", 7], ["name", "O"], ["role", "owner"], ["active", true], ["verified_at", nil], ["created_at", "2026-05-08 11:56:30.203463"], ["updated_at", "2026-05-08 11:56:30.203463"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAuth::Identity Create (0.3ms)[0m  [1m[32mINSERT INTO "auth_identities" ("email", "password_digest", "staff", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["email", "y-7b27075c@example.com"], ["password_digest", "$2a$04$jCHILU2zMBNdXZNj2VsPRO.O3Z5zz5aRASIgA1WlgePImquRecRXG"], ["staff", false], ["created_at", "2026-05-08 11:56:30.205288"], ["updated_at", "2026-05-08 11:56:30.205288"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts_memberships" WHERE "accounts_memberships"."identity_id" = $1 AND "accounts_memberships"."account_id" = $2 LIMIT $3[0m  [["identity_id", 8], ["account_id", "fb788fc3-6ce2-413b-8b13-5f1790d9b42e"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Create (0.2ms)[0m  [1m[32mINSERT INTO "accounts_memberships" ("account_id", "identity_id", "name", "role", "active", "verified_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["account_id", "fb788fc3-6ce2-413b-8b13-5f1790d9b42e"], ["identity_id", 8], ["name", "A"], ["role", "admin"], ["active", true], ["verified_at", nil], ["created_at", "2026-05-08 11:56:30.206390"], ["updated_at", "2026-05-08 11:56:30.206390"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Create (0.3ms)[0m  [1m[32mINSERT INTO "accounts_memberships" ("account_id", "identity_id", "name", "role", "active", "verified_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["account_id", "fb788fc3-6ce2-413b-8b13-5f1790d9b42e"], ["identity_id", nil], ["name", "System"], ["role", "system"], ["active", true], ["verified_at", nil], ["created_at", "2026-05-08 11:56:30.206967"], ["updated_at", "2026-05-08 11:56:30.206967"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts_memberships" WHERE "accounts_memberships"."role" IN ($1, $2) AND "accounts_memberships"."id" = $3 LIMIT $4[0m  [["role", "owner"], ["role", "admin"], ["id", "034b3aad-c332-4513-b512-c56a647db5ef"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts_memberships" WHERE "accounts_memberships"."role" IN ($1, $2) AND "accounts_memberships"."id" = $3 LIMIT $4[0m  [["role", "owner"], ["role", "admin"], ["id", "4ea0a0dc-b8c4-4dd4-879d-1cda23981c45"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts_memberships" WHERE "accounts_memberships"."role" IN ($1, $2) AND "accounts_memberships"."id" = $3 LIMIT $4[0m  [["role", "owner"], ["role", "admin"], ["id", "cc0d04bf-ac83-450c-9442-aabefa0b2f26"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Load (0.2ms)[0m  [1m[34mSELECT "accounts_memberships".* FROM "accounts_memberships" WHERE "accounts_memberships"."role" IN ($1, $2)[0m  [["role", "owner"], ["role", "admin"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 3724277471226848041], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (0.2ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Acme"], ["external_account_id", 3724277471226848041], ["cancelled_at", nil], ["incinerated_at", nil], ["created_at", "2026-05-08 11:56:30.209636"], ["updated_at", "2026-05-08 11:56:30.209636"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Pluck (0.1ms)[0m  [1m[34mSELECT "accounts_memberships"."identity_id" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "be144a7e-c829-48ef-9beb-1049b5b1a9eb"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAuth::Identity Create (0.3ms)[0m  [1m[32mINSERT INTO "auth_identities" ("email", "password_digest", "staff", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["email", "x-5e5b79c1@example.com"], ["password_digest", "$2a$04$614mPZPEaOQcJl1sCWEhiujDntCy0DnhemyKujHG0stR7SGFrlfOi"], ["staff", false], ["created_at", "2026-05-08 11:56:30.212047"], ["updated_at", "2026-05-08 11:56:30.212047"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts_memberships" WHERE "accounts_memberships"."identity_id" = $1 AND "accounts_memberships"."account_id" = $2 LIMIT $3[0m  [["identity_id", 9], ["account_id", "be144a7e-c829-48ef-9beb-1049b5b1a9eb"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Create (0.2ms)[0m  [1m[32mINSERT INTO "accounts_memberships" ("account_id", "identity_id", "name", "role", "active", "verified_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["account_id", "be144a7e-c829-48ef-9beb-1049b5b1a9eb"], ["identity_id", 9], ["name", "O"], ["role", "owner"], ["active", true], ["verified_at", nil], ["created_at", "2026-05-08 11:56:30.213030"], ["updated_at", "2026-05-08 11:56:30.213030"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAuth::Identity Create (0.3ms)[0m  [1m[32mINSERT INTO "auth_identities" ("email", "password_digest", "staff", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["email", "y-1dbd5fd1@example.com"], ["password_digest", "$2a$04$EkinfjlK4864kmq5LWxz4un/11ZZu9SMpbXUfHieZ09M.V3itC3W2"], ["staff", false], ["created_at", "2026-05-08 11:56:30.214613"], ["updated_at", "2026-05-08 11:56:30.214613"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts_memberships" WHERE "accounts_memberships"."identity_id" = $1 AND "accounts_memberships"."account_id" = $2 LIMIT $3[0m  [["identity_id", 10], ["account_id", "be144a7e-c829-48ef-9beb-1049b5b1a9eb"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Create (0.2ms)[0m  [1m[32mINSERT INTO "accounts_memberships" ("account_id", "identity_id", "name", "role", "active", "verified_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["account_id", "be144a7e-c829-48ef-9beb-1049b5b1a9eb"], ["identity_id", 10], ["name", "A"], ["role", "admin"], ["active", true], ["verified_at", nil], ["created_at", "2026-05-08 11:56:30.215635"], ["updated_at", "2026-05-08 11:56:30.215635"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Create (0.3ms)[0m  [1m[32mINSERT INTO "accounts_memberships" ("account_id", "identity_id", "name", "role", "active", "verified_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["account_id", "be144a7e-c829-48ef-9beb-1049b5b1a9eb"], ["identity_id", nil], ["name", "System"], ["role", "system"], ["active", true], ["verified_at", nil], ["created_at", "2026-05-08 11:56:30.216164"], ["updated_at", "2026-05-08 11:56:30.216164"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts_memberships" WHERE "accounts_memberships"."active" = $1 AND "accounts_memberships"."role" != $2 AND "accounts_memberships"."id" = $3 LIMIT $4[0m  [["active", true], ["role", "system"], ["id", "3179b25c-68c0-47e9-8c8a-87fd19ab008f"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts_memberships" WHERE "accounts_memberships"."active" = $1 AND "accounts_memberships"."role" != $2 AND "accounts_memberships"."id" = $3 LIMIT $4[0m  [["active", true], ["role", "system"], ["id", "42abf6b5-6d78-47fb-b13e-3908f2e2bc9b"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts_memberships" WHERE "accounts_memberships"."active" = $1 AND "accounts_memberships"."role" != $2 AND "accounts_memberships"."id" = $3 LIMIT $4[0m  [["active", true], ["role", "system"], ["id", "078ee640-b477-4bac-9a8c-2d8f7cbe37eb"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Load (0.2ms)[0m  [1m[34mSELECT "accounts_memberships".* FROM "accounts_memberships" WHERE "accounts_memberships"."active" = $1 AND "accounts_memberships"."role" != $2[0m  [["active", true], ["role", "system"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[35m (3.4ms)[0m  [1m[35mDROP TABLE "auth_identities" CASCADE[0m
+  [1m[35m (2.5ms)[0m  [1m[35mDROP TABLE "accounts" CASCADE[0m
+  [1m[35m (1.7ms)[0m  [1m[35mDROP TABLE "schema_migrations" CASCADE[0m
+  [1m[35m (2.6ms)[0m  [1m[35mDROP TABLE "accounts_memberships" CASCADE[0m
+  [1m[35m (1.6ms)[0m  [1m[35mDROP TABLE "ar_internal_metadata" CASCADE[0m
+  [1m[35mSQL (0.3ms)[0m  [1m[35mCREATE EXTENSION IF NOT EXISTS "pgcrypto"[0m
+  [1m[35m (4.7ms)[0m  [1m[35mCREATE TABLE "auth_identities" ("id" bigserial primary key, "email" text NOT NULL, "password_digest" character varying NOT NULL, "staff" boolean DEFAULT FALSE NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (1.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_auth_identities_on_email" ON "auth_identities" ("email")[0m
+  [1m[35m (2.8ms)[0m  [1m[35mCREATE TABLE "accounts" ("id" uuid DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY, "name" character varying NOT NULL, "external_account_id" bigint NOT NULL, "cancelled_at" timestamp(6), "incinerated_at" timestamp(6), "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (1.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_accounts_on_external_account_id" ON "accounts" ("external_account_id")[0m
+  [1m[35m (1.5ms)[0m  [1m[35mCREATE INDEX "index_accounts_on_cancelled_at" ON "accounts" ("cancelled_at")[0m
+  [1m[35m (3.0ms)[0m  [1m[35mCREATE TABLE "accounts_memberships" ("id" uuid DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY, "account_id" uuid NOT NULL, "identity_id" bigint, "name" character varying NOT NULL, "role" character varying DEFAULT 'member' NOT NULL, "active" boolean DEFAULT TRUE NOT NULL, "verified_at" timestamp(6), "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL, CONSTRAINT "fk_rails_8d43abd265"
+FOREIGN KEY ("account_id")
+  REFERENCES "accounts" ("id")
+)[0m
+  [1m[35m (0.9ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_accounts_memberships_unique" ON "accounts_memberships" ("account_id", "identity_id")[0m
+  [1m[35m (1.2ms)[0m  [1m[35mCREATE INDEX "index_accounts_memberships_on_account_id_and_role" ON "accounts_memberships" ("account_id", "role")[0m
+  [1m[35m (1.1ms)[0m  [1m[35mCREATE INDEX "index_accounts_memberships_on_identity_id" ON "accounts_memberships" ("identity_id")[0m
+  [1m[35m (2.6ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" character varying NOT NULL PRIMARY KEY)[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.7ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[35m (0.5ms)[0m  [1m[32mINSERT INTO "schema_migrations" (version) VALUES (0)[0m
+  [1m[35m (2.5ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" character varying NOT NULL PRIMARY KEY, "value" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.8ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::InternalMetadata Create (0.5ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'test', '2026-05-08 12:03:37.959072', '2026-05-08 12:03:37.959074') RETURNING "key"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (1.2ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 4047004220131000051], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (0.7ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Acme"], ["external_account_id", 4047004220131000051], ["cancelled_at", nil], ["incinerated_at", nil], ["created_at", "2026-05-08 12:03:37.986567"], ["updated_at", "2026-05-08 12:03:37.986567"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Pluck (1.2ms)[0m  [1m[34mSELECT "accounts_memberships"."identity_id" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "ca99b159-eba8-4a1c-ad04-4540124529bb"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAuth::Identity Create (1.6ms)[0m  [1m[32mINSERT INTO "auth_identities" ("email", "password_digest", "staff", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["email", "x-6408a575@example.com"], ["password_digest", "$2a$04$KQvQ1gSPg3gQeN2HxccuI.aq0j29oK3nnXl73Hsowsh7hPic02Ndm"], ["staff", false], ["created_at", "2026-05-08 12:03:38.005673"], ["updated_at", "2026-05-08 12:03:38.005673"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Exists? (0.6ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts_memberships" WHERE "accounts_memberships"."identity_id" = $1 AND "accounts_memberships"."account_id" = $2 LIMIT $3[0m  [["identity_id", 1], ["account_id", "ca99b159-eba8-4a1c-ad04-4540124529bb"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Create (1.2ms)[0m  [1m[32mINSERT INTO "accounts_memberships" ("account_id", "identity_id", "name", "role", "active", "verified_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["account_id", "ca99b159-eba8-4a1c-ad04-4540124529bb"], ["identity_id", 1], ["name", "O"], ["role", "owner"], ["active", true], ["verified_at", nil], ["created_at", "2026-05-08 12:03:38.011495"], ["updated_at", "2026-05-08 12:03:38.011495"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAuth::Identity Create (0.5ms)[0m  [1m[32mINSERT INTO "auth_identities" ("email", "password_digest", "staff", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["email", "y-77ca6fae@example.com"], ["password_digest", "$2a$04$MDOOwMa/I03gWhwFvx72TulU7uRh9IRM1N4mtuZNo4upCd754djf6"], ["staff", false], ["created_at", "2026-05-08 12:03:38.014373"], ["updated_at", "2026-05-08 12:03:38.014373"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts_memberships" WHERE "accounts_memberships"."identity_id" = $1 AND "accounts_memberships"."account_id" = $2 LIMIT $3[0m  [["identity_id", 2], ["account_id", "ca99b159-eba8-4a1c-ad04-4540124529bb"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Create (0.5ms)[0m  [1m[32mINSERT INTO "accounts_memberships" ("account_id", "identity_id", "name", "role", "active", "verified_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["account_id", "ca99b159-eba8-4a1c-ad04-4540124529bb"], ["identity_id", 2], ["name", "A"], ["role", "admin"], ["active", true], ["verified_at", nil], ["created_at", "2026-05-08 12:03:38.016008"], ["updated_at", "2026-05-08 12:03:38.016008"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Create (0.6ms)[0m  [1m[32mINSERT INTO "accounts_memberships" ("account_id", "identity_id", "name", "role", "active", "verified_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["account_id", "ca99b159-eba8-4a1c-ad04-4540124529bb"], ["identity_id", nil], ["name", "System"], ["role", "system"], ["active", true], ["verified_at", nil], ["created_at", "2026-05-08 12:03:38.017001"], ["updated_at", "2026-05-08 12:03:38.017001"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Exists? (0.6ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts_memberships" WHERE "accounts_memberships"."active" = $1 AND "accounts_memberships"."role" != $2 AND "accounts_memberships"."id" = $3 LIMIT $4[0m  [["active", true], ["role", "system"], ["id", "9ef2b123-6665-4bc2-9b1b-ab688814f251"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts_memberships" WHERE "accounts_memberships"."active" = $1 AND "accounts_memberships"."role" != $2 AND "accounts_memberships"."id" = $3 LIMIT $4[0m  [["active", true], ["role", "system"], ["id", "c6504614-48c7-4c3b-ae1a-c45e80959f33"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts_memberships" WHERE "accounts_memberships"."active" = $1 AND "accounts_memberships"."role" != $2 AND "accounts_memberships"."id" = $3 LIMIT $4[0m  [["active", true], ["role", "system"], ["id", "93777f01-9777-48ca-bd60-2bfd835c3929"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Load (0.5ms)[0m  [1m[34mSELECT "accounts_memberships".* FROM "accounts_memberships" WHERE "accounts_memberships"."active" = $1 AND "accounts_memberships"."role" != $2[0m  [["active", true], ["role", "system"]]
+  [1m[36mTRANSACTION (0.5ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (0.6ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 2126617159104162641], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (0.4ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Acme"], ["external_account_id", 2126617159104162641], ["cancelled_at", nil], ["incinerated_at", nil], ["created_at", "2026-05-08 12:03:38.032744"], ["updated_at", "2026-05-08 12:03:38.032744"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Pluck (0.3ms)[0m  [1m[34mSELECT "accounts_memberships"."identity_id" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "3420d916-76fe-48bf-8e99-75005912e22a"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAuth::Identity Create (0.5ms)[0m  [1m[32mINSERT INTO "auth_identities" ("email", "password_digest", "staff", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["email", "x-7ca2fd9c@example.com"], ["password_digest", "$2a$04$jRk7O79JeuFuCDPmVJIZ/ObAosnqaYlf0M.S5Ifld5aaU4TaRactm"], ["staff", false], ["created_at", "2026-05-08 12:03:38.036172"], ["updated_at", "2026-05-08 12:03:38.036172"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts_memberships" WHERE "accounts_memberships"."identity_id" = $1 AND "accounts_memberships"."account_id" = $2 LIMIT $3[0m  [["identity_id", 3], ["account_id", "3420d916-76fe-48bf-8e99-75005912e22a"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Create (0.4ms)[0m  [1m[32mINSERT INTO "accounts_memberships" ("account_id", "identity_id", "name", "role", "active", "verified_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["account_id", "3420d916-76fe-48bf-8e99-75005912e22a"], ["identity_id", 3], ["name", "O"], ["role", "owner"], ["active", true], ["verified_at", nil], ["created_at", "2026-05-08 12:03:38.037777"], ["updated_at", "2026-05-08 12:03:38.037777"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAuth::Identity Create (0.5ms)[0m  [1m[32mINSERT INTO "auth_identities" ("email", "password_digest", "staff", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["email", "y-24af6cdf@example.com"], ["password_digest", "$2a$04$ESgsSuQtRFIuDwHa.O.IoOoRZxZf.fR138nFQoCh2pwRkvAbTyMdG"], ["staff", false], ["created_at", "2026-05-08 12:03:38.039709"], ["updated_at", "2026-05-08 12:03:38.039709"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts_memberships" WHERE "accounts_memberships"."identity_id" = $1 AND "accounts_memberships"."account_id" = $2 LIMIT $3[0m  [["identity_id", 4], ["account_id", "3420d916-76fe-48bf-8e99-75005912e22a"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Create (0.4ms)[0m  [1m[32mINSERT INTO "accounts_memberships" ("account_id", "identity_id", "name", "role", "active", "verified_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["account_id", "3420d916-76fe-48bf-8e99-75005912e22a"], ["identity_id", 4], ["name", "A"], ["role", "admin"], ["active", true], ["verified_at", nil], ["created_at", "2026-05-08 12:03:38.041189"], ["updated_at", "2026-05-08 12:03:38.041189"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Create (0.5ms)[0m  [1m[32mINSERT INTO "accounts_memberships" ("account_id", "identity_id", "name", "role", "active", "verified_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["account_id", "3420d916-76fe-48bf-8e99-75005912e22a"], ["identity_id", nil], ["name", "System"], ["role", "system"], ["active", true], ["verified_at", nil], ["created_at", "2026-05-08 12:03:38.042032"], ["updated_at", "2026-05-08 12:03:38.042032"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts_memberships" WHERE "accounts_memberships"."role" IN ($1, $2) AND "accounts_memberships"."id" = $3 LIMIT $4[0m  [["role", "owner"], ["role", "admin"], ["id", "c6b721ee-11f4-46e8-aa4e-78c7112df528"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts_memberships" WHERE "accounts_memberships"."role" IN ($1, $2) AND "accounts_memberships"."id" = $3 LIMIT $4[0m  [["role", "owner"], ["role", "admin"], ["id", "a6da686f-fc4d-4f38-8553-191de34ecd3f"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts_memberships" WHERE "accounts_memberships"."role" IN ($1, $2) AND "accounts_memberships"."id" = $3 LIMIT $4[0m  [["role", "owner"], ["role", "admin"], ["id", "181aea1a-978f-49d7-bb42-530f7263e8ee"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Load (0.3ms)[0m  [1m[34mSELECT "accounts_memberships".* FROM "accounts_memberships" WHERE "accounts_memberships"."role" IN ($1, $2)[0m  [["role", "owner"], ["role", "admin"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 3622033802593645865], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (0.4ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Acme"], ["external_account_id", 3622033802593645865], ["cancelled_at", nil], ["incinerated_at", nil], ["created_at", "2026-05-08 12:03:38.051304"], ["updated_at", "2026-05-08 12:03:38.051304"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Pluck (0.3ms)[0m  [1m[34mSELECT "accounts_memberships"."identity_id" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "ee17b224-0c8c-45cc-a11d-15c696afd313"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 2666829570243790566], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (0.3ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Acme"], ["external_account_id", 2666829570243790566], ["cancelled_at", nil], ["incinerated_at", nil], ["created_at", "2026-05-08 12:03:38.075769"], ["updated_at", "2026-05-08 12:03:38.075769"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Pluck (0.3ms)[0m  [1m[34mSELECT "accounts_memberships"."identity_id" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "4d48da45-992c-4013-b0cc-bedd9e386a17"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (0.6ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 3573735447025204478], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (0.5ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Acme"], ["external_account_id", 3573735447025204478], ["cancelled_at", nil], ["incinerated_at", nil], ["created_at", "2026-05-08 12:03:38.079525"], ["updated_at", "2026-05-08 12:03:38.079525"]]
+  [1m[36mTRANSACTION (0.5ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Pluck (0.3ms)[0m  [1m[34mSELECT "accounts_memberships"."identity_id" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "52e4b6b1-549f-413c-8fa5-8cf95a7d1e94"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAuth::Identity Create (0.5ms)[0m  [1m[32mINSERT INTO "auth_identities" ("email", "password_digest", "staff", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["email", "x-d8ed2cd5@example.com"], ["password_digest", "$2a$04$BZN1qvwurz8Jb1pIvXjNoOL46ZcpEclqxBvKfFvjaYNOgwWJ3/9RW"], ["staff", false], ["created_at", "2026-05-08 12:03:38.083573"], ["updated_at", "2026-05-08 12:03:38.083573"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts_memberships" WHERE "accounts_memberships"."identity_id" = $1 AND "accounts_memberships"."account_id" = $2 LIMIT $3[0m  [["identity_id", 5], ["account_id", "52e4b6b1-549f-413c-8fa5-8cf95a7d1e94"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Create (0.2ms)[0m  [1m[32mINSERT INTO "accounts_memberships" ("account_id", "identity_id", "name", "role", "active", "verified_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["account_id", "52e4b6b1-549f-413c-8fa5-8cf95a7d1e94"], ["identity_id", 5], ["name", "First"], ["role", "member"], ["active", true], ["verified_at", nil], ["created_at", "2026-05-08 12:03:38.085021"], ["updated_at", "2026-05-08 12:03:38.085021"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts_memberships" WHERE "accounts_memberships"."identity_id" = $1 AND "accounts_memberships"."account_id" = $2 LIMIT $3[0m  [["identity_id", 5], ["account_id", "52e4b6b1-549f-413c-8fa5-8cf95a7d1e94"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 4538104210676826927], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (0.3ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Acme"], ["external_account_id", 4538104210676826927], ["cancelled_at", nil], ["incinerated_at", nil], ["created_at", "2026-05-08 12:03:38.087096"], ["updated_at", "2026-05-08 12:03:38.087096"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Pluck (0.2ms)[0m  [1m[34mSELECT "accounts_memberships"."identity_id" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "5dbadb89-4c8e-49c7-bd35-057093dcffcc"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Create (0.6ms)[0m  [1m[32mINSERT INTO "accounts_memberships" ("account_id", "identity_id", "name", "role", "active", "verified_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["account_id", "5dbadb89-4c8e-49c7-bd35-057093dcffcc"], ["identity_id", nil], ["name", "System"], ["role", "system"], ["active", true], ["verified_at", nil], ["created_at", "2026-05-08 12:03:38.088743"], ["updated_at", "2026-05-08 12:03:38.088743"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAuth::Identity Create (0.5ms)[0m  [1m[32mINSERT INTO "auth_identities" ("email", "password_digest", "staff", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["email", "owner-e695cc75@example.com"], ["password_digest", "$2a$04$cG5LiY/ZV1.ArhjCu9R6OeXR/9lwXo.tUnhboOVZwRHNUfUXN5c1W"], ["staff", false], ["created_at", "2026-05-08 12:03:38.097865"], ["updated_at", "2026-05-08 12:03:38.097865"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 1005598295487042800], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (0.3ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Acme"], ["external_account_id", 1005598295487042800], ["cancelled_at", nil], ["incinerated_at", nil], ["created_at", "2026-05-08 12:03:38.098974"], ["updated_at", "2026-05-08 12:03:38.098974"]]
+  [1m[36mAccounts::Account Load (0.4ms)[0m  [1m[34mSELECT "accounts".* FROM "accounts" WHERE "accounts"."id" = $1 LIMIT $2[0m  [["id", "1ec773c5-2bc0-421f-be81-976a1657d1c8"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Create (0.3ms)[0m  [1m[32mINSERT INTO "accounts_memberships" ("account_id", "identity_id", "name", "role", "active", "verified_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["account_id", "1ec773c5-2bc0-421f-be81-976a1657d1c8"], ["identity_id", nil], ["name", "System"], ["role", "system"], ["active", true], ["verified_at", nil], ["created_at", "2026-05-08 12:03:38.101330"], ["updated_at", "2026-05-08 12:03:38.101330"]]
+  [1m[36mAccounts::Account Load (0.2ms)[0m  [1m[34mSELECT "accounts".* FROM "accounts" WHERE "accounts"."id" = $1 LIMIT $2[0m  [["id", "1ec773c5-2bc0-421f-be81-976a1657d1c8"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts_memberships" WHERE "accounts_memberships"."identity_id" = $1 AND "accounts_memberships"."account_id" = $2 LIMIT $3[0m  [["identity_id", 6], ["account_id", "1ec773c5-2bc0-421f-be81-976a1657d1c8"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Create (0.3ms)[0m  [1m[32mINSERT INTO "accounts_memberships" ("account_id", "identity_id", "name", "role", "active", "verified_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["account_id", "1ec773c5-2bc0-421f-be81-976a1657d1c8"], ["identity_id", 6], ["name", "Ada Lovelace"], ["role", "owner"], ["active", true], ["verified_at", "2026-05-08 12:03:38.101866"], ["created_at", "2026-05-08 12:03:38.102785"], ["updated_at", "2026-05-08 12:03:38.102785"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Pluck (0.2ms)[0m  [1m[34mSELECT "accounts_memberships"."identity_id" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "1ec773c5-2bc0-421f-be81-976a1657d1c8"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Count (0.4ms)[0m  [1m[34mSELECT COUNT(*) FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1[0m  [["account_id", "1ec773c5-2bc0-421f-be81-976a1657d1c8"]]
+  [1m[36mAccounts::Membership Load (0.5ms)[0m  [1m[34mSELECT "accounts_memberships".* FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "1ec773c5-2bc0-421f-be81-976a1657d1c8"], ["role", "system"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Load (0.3ms)[0m  [1m[34mSELECT "accounts_memberships".* FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "1ec773c5-2bc0-421f-be81-976a1657d1c8"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAuth::Identity Create (0.7ms)[0m  [1m[32mINSERT INTO "auth_identities" ("email", "password_digest", "staff", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["email", "owner-23cfc9b9@example.com"], ["password_digest", "$2a$04$9/d0uplUIxqO/bIAiP03mexKwM0dTQ.PRyMdFla/V3L8XszRhF6WG"], ["staff", false], ["created_at", "2026-05-08 12:03:38.107426"], ["updated_at", "2026-05-08 12:03:38.107426"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 585814603073112087], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (0.3ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Acme"], ["external_account_id", 585814603073112087], ["cancelled_at", nil], ["incinerated_at", nil], ["created_at", "2026-05-08 12:03:38.108583"], ["updated_at", "2026-05-08 12:03:38.108583"]]
+  [1m[36mAccounts::Account Load (0.2ms)[0m  [1m[34mSELECT "accounts".* FROM "accounts" WHERE "accounts"."id" = $1 LIMIT $2[0m  [["id", "cc195591-f445-4666-9b78-989f57540448"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Create (0.3ms)[0m  [1m[32mINSERT INTO "accounts_memberships" ("account_id", "identity_id", "name", "role", "active", "verified_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["account_id", "cc195591-f445-4666-9b78-989f57540448"], ["identity_id", nil], ["name", "System"], ["role", "system"], ["active", true], ["verified_at", nil], ["created_at", "2026-05-08 12:03:38.110073"], ["updated_at", "2026-05-08 12:03:38.110073"]]
+  [1m[36mAccounts::Account Load (0.2ms)[0m  [1m[34mSELECT "accounts".* FROM "accounts" WHERE "accounts"."id" = $1 LIMIT $2[0m  [["id", "cc195591-f445-4666-9b78-989f57540448"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts_memberships" WHERE "accounts_memberships"."identity_id" = $1 AND "accounts_memberships"."account_id" = $2 LIMIT $3[0m  [["identity_id", 7], ["account_id", "cc195591-f445-4666-9b78-989f57540448"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Create (0.3ms)[0m  [1m[32mINSERT INTO "accounts_memberships" ("account_id", "identity_id", "name", "role", "active", "verified_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["account_id", "cc195591-f445-4666-9b78-989f57540448"], ["identity_id", 7], ["name", "Ada Lovelace"], ["role", "owner"], ["active", true], ["verified_at", "2026-05-08 12:03:38.110558"], ["created_at", "2026-05-08 12:03:38.111454"], ["updated_at", "2026-05-08 12:03:38.111454"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Pluck (0.2ms)[0m  [1m[34mSELECT "accounts_memberships"."identity_id" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "cc195591-f445-4666-9b78-989f57540448"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAuth::Identity Create (0.5ms)[0m  [1m[32mINSERT INTO "auth_identities" ("email", "password_digest", "staff", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["email", "u-025fd180@example.com"], ["password_digest", "$2a$04$ikgAKA0ZbgJNxQUrZRyS.uWjdjcfal8ZamHV4ktx6MLmQTGxodSDS"], ["staff", false], ["created_at", "2026-05-08 12:03:38.114420"], ["updated_at", "2026-05-08 12:03:38.114420"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 3311847046478224777], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (0.3ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Acme 2"], ["external_account_id", 3311847046478224777], ["cancelled_at", nil], ["incinerated_at", nil], ["created_at", "2026-05-08 12:03:38.115325"], ["updated_at", "2026-05-08 12:03:38.115325"]]
+  [1m[36mAccounts::Account Load (0.3ms)[0m  [1m[34mSELECT "accounts".* FROM "accounts" WHERE "accounts"."id" = $1 LIMIT $2[0m  [["id", "b5d41d67-4b51-4ef2-bf52-ed07b5ef7d61"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Create (0.3ms)[0m  [1m[32mINSERT INTO "accounts_memberships" ("account_id", "identity_id", "name", "role", "active", "verified_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["account_id", "b5d41d67-4b51-4ef2-bf52-ed07b5ef7d61"], ["identity_id", nil], ["name", "System"], ["role", "system"], ["active", true], ["verified_at", nil], ["created_at", "2026-05-08 12:03:38.116822"], ["updated_at", "2026-05-08 12:03:38.116822"]]
+  [1m[36mAccounts::Account Load (0.3ms)[0m  [1m[34mSELECT "accounts".* FROM "accounts" WHERE "accounts"."id" = $1 LIMIT $2[0m  [["id", "b5d41d67-4b51-4ef2-bf52-ed07b5ef7d61"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts_memberships" WHERE "accounts_memberships"."identity_id" = $1 AND "accounts_memberships"."account_id" = $2 LIMIT $3[0m  [["identity_id", 8], ["account_id", "b5d41d67-4b51-4ef2-bf52-ed07b5ef7d61"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Create (0.4ms)[0m  [1m[32mINSERT INTO "accounts_memberships" ("account_id", "identity_id", "name", "role", "active", "verified_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["account_id", "b5d41d67-4b51-4ef2-bf52-ed07b5ef7d61"], ["identity_id", 8], ["name", "Tester"], ["role", "owner"], ["active", true], ["verified_at", "2026-05-08 12:03:38.117319"], ["created_at", "2026-05-08 12:03:38.118575"], ["updated_at", "2026-05-08 12:03:38.118575"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Pluck (0.2ms)[0m  [1m[34mSELECT "accounts_memberships"."identity_id" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "b5d41d67-4b51-4ef2-bf52-ed07b5ef7d61"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Load (0.5ms)[0m  [1m[34mSELECT "accounts_memberships".* FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."identity_id" = $2 LIMIT $3[0m  [["account_id", "b5d41d67-4b51-4ef2-bf52-ed07b5ef7d61"], ["identity_id", 8], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAuth::Identity Create (0.5ms)[0m  [1m[32mINSERT INTO "auth_identities" ("email", "password_digest", "staff", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["email", "owner-7d59972d@example.com"], ["password_digest", "$2a$04$RuDp9uIwNRYxFIfn/YYNGOx5ZKIpXhT0H4q8YX8Vryx.r8IE39I1."], ["staff", false], ["created_at", "2026-05-08 12:03:38.122940"], ["updated_at", "2026-05-08 12:03:38.122940"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 1319787257260000440], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (0.3ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Acme"], ["external_account_id", 1319787257260000440], ["cancelled_at", nil], ["incinerated_at", nil], ["created_at", "2026-05-08 12:03:38.123758"], ["updated_at", "2026-05-08 12:03:38.123758"]]
+  [1m[36mAccounts::Account Load (0.2ms)[0m  [1m[34mSELECT "accounts".* FROM "accounts" WHERE "accounts"."id" = $1 LIMIT $2[0m  [["id", "6b8fa50f-2b41-4fcf-85c3-4dd14df318d3"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Create (0.3ms)[0m  [1m[32mINSERT INTO "accounts_memberships" ("account_id", "identity_id", "name", "role", "active", "verified_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["account_id", "6b8fa50f-2b41-4fcf-85c3-4dd14df318d3"], ["identity_id", nil], ["name", "System"], ["role", "system"], ["active", true], ["verified_at", nil], ["created_at", "2026-05-08 12:03:38.125379"], ["updated_at", "2026-05-08 12:03:38.125379"]]
+  [1m[36mAccounts::Account Load (0.2ms)[0m  [1m[34mSELECT "accounts".* FROM "accounts" WHERE "accounts"."id" = $1 LIMIT $2[0m  [["id", "6b8fa50f-2b41-4fcf-85c3-4dd14df318d3"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts_memberships" WHERE "accounts_memberships"."identity_id" = $1 AND "accounts_memberships"."account_id" = $2 LIMIT $3[0m  [["identity_id", 9], ["account_id", "6b8fa50f-2b41-4fcf-85c3-4dd14df318d3"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Create (0.3ms)[0m  [1m[32mINSERT INTO "accounts_memberships" ("account_id", "identity_id", "name", "role", "active", "verified_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["account_id", "6b8fa50f-2b41-4fcf-85c3-4dd14df318d3"], ["identity_id", 9], ["name", "Ada"], ["role", "owner"], ["active", true], ["verified_at", "2026-05-08 12:03:38.125938"], ["created_at", "2026-05-08 12:03:38.126873"], ["updated_at", "2026-05-08 12:03:38.126873"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Pluck (0.2ms)[0m  [1m[34mSELECT "accounts_memberships"."identity_id" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "6b8fa50f-2b41-4fcf-85c3-4dd14df318d3"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Pluck (0.4ms)[0m  [1m[34mSELECT "accounts_memberships"."role" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1[0m  [["account_id", "6b8fa50f-2b41-4fcf-85c3-4dd14df318d3"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAuth::Identity Create (0.5ms)[0m  [1m[32mINSERT INTO "auth_identities" ("email", "password_digest", "staff", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["email", "owner-3815c896@example.com"], ["password_digest", "$2a$04$u3YngOo0kUnhoT7kWHZX5eH7mxl8P/kfaQXNA.3mNa8dF0ZQmO0RS"], ["staff", false], ["created_at", "2026-05-08 12:03:38.130580"], ["updated_at", "2026-05-08 12:03:38.130580"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "accounts"[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 1545514145343531909], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (0.3ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Bad"], ["external_account_id", 1545514145343531909], ["cancelled_at", nil], ["incinerated_at", nil], ["created_at", "2026-05-08 12:03:38.133871"], ["updated_at", "2026-05-08 12:03:38.133871"]]
+  [1m[36mAccounts::Account Load (0.2ms)[0m  [1m[34mSELECT "accounts".* FROM "accounts" WHERE "accounts"."id" = $1 LIMIT $2[0m  [["id", "3e223d66-3a73-48bc-9f5a-3eff9120888c"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Create (0.3ms)[0m  [1m[32mINSERT INTO "accounts_memberships" ("account_id", "identity_id", "name", "role", "active", "verified_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["account_id", "3e223d66-3a73-48bc-9f5a-3eff9120888c"], ["identity_id", nil], ["name", "System"], ["role", "system"], ["active", true], ["verified_at", nil], ["created_at", "2026-05-08 12:03:38.135599"], ["updated_at", "2026-05-08 12:03:38.135599"]]
+  [1m[36mAccounts::Account Load (0.2ms)[0m  [1m[34mSELECT "accounts".* FROM "accounts" WHERE "accounts"."id" = $1 LIMIT $2[0m  [["id", "3e223d66-3a73-48bc-9f5a-3eff9120888c"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts_memberships" WHERE "accounts_memberships"."identity_id" = $1 AND "accounts_memberships"."account_id" = $2 LIMIT $3[0m  [["identity_id", 10], ["account_id", "3e223d66-3a73-48bc-9f5a-3eff9120888c"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK TO SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "accounts"[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 875740169069283196], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (0.3ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Live"], ["external_account_id", 875740169069283196], ["cancelled_at", nil], ["incinerated_at", nil], ["created_at", "2026-05-08 12:03:38.140080"], ["updated_at", "2026-05-08 12:03:38.140080"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Pluck (0.2ms)[0m  [1m[34mSELECT "accounts_memberships"."identity_id" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "ef3e1508-e1b8-4b8a-876d-e9a0f0e1500e"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 4033893768680774719], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (0.3ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Cancelled"], ["external_account_id", 4033893768680774719], ["cancelled_at", "2026-05-07 12:03:38.141809"], ["incinerated_at", nil], ["created_at", "2026-05-08 12:03:38.141946"], ["updated_at", "2026-05-08 12:03:38.141946"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Pluck (0.2ms)[0m  [1m[34mSELECT "accounts_memberships"."identity_id" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "c1c8daa1-dab5-48d4-937e-2a36d4830a9d"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."cancelled_at" IS NULL AND "accounts"."id" = $1 LIMIT $2[0m  [["id", "ef3e1508-e1b8-4b8a-876d-e9a0f0e1500e"], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."cancelled_at" IS NULL AND "accounts"."id" = $1 LIMIT $2[0m  [["id", "c1c8daa1-dab5-48d4-937e-2a36d4830a9d"], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Load (0.4ms)[0m  [1m[34mSELECT "accounts".* FROM "accounts" WHERE "accounts"."cancelled_at" IS NULL[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 2285084154677689569], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (0.3ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Acme"], ["external_account_id", 2285084154677689569], ["cancelled_at", nil], ["incinerated_at", nil], ["created_at", "2026-05-08 12:03:38.145641"], ["updated_at", "2026-05-08 12:03:38.145641"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Pluck (0.1ms)[0m  [1m[34mSELECT "accounts_memberships"."identity_id" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "d483538e-2c04-4b64-bbb4-2295cc80af4d"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[35m (5.5ms)[0m  [1m[35mDROP TABLE "auth_identities" CASCADE[0m
+  [1m[35m (2.3ms)[0m  [1m[35mDROP TABLE "accounts" CASCADE[0m
+  [1m[35m (5.3ms)[0m  [1m[35mDROP TABLE "accounts_memberships" CASCADE[0m
+  [1m[35m (1.7ms)[0m  [1m[35mDROP TABLE "schema_migrations" CASCADE[0m
+  [1m[35m (1.6ms)[0m  [1m[35mDROP TABLE "ar_internal_metadata" CASCADE[0m
+  [1m[35mSQL (0.8ms)[0m  [1m[35mCREATE EXTENSION IF NOT EXISTS "pgcrypto"[0m
+  [1m[35m (7.4ms)[0m  [1m[35mCREATE TABLE "auth_identities" ("id" bigserial primary key, "email" text NOT NULL, "password_digest" character varying NOT NULL, "staff" boolean DEFAULT FALSE NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (1.3ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_auth_identities_on_email" ON "auth_identities" ("email")[0m
+  [1m[35m (5.4ms)[0m  [1m[35mCREATE TABLE "accounts" ("id" uuid DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY, "name" character varying NOT NULL, "external_account_id" bigint NOT NULL, "cancelled_at" timestamp(6), "incinerated_at" timestamp(6), "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[35m (1.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_accounts_on_external_account_id" ON "accounts" ("external_account_id")[0m
+  [1m[35m (1.1ms)[0m  [1m[35mCREATE INDEX "index_accounts_on_cancelled_at" ON "accounts" ("cancelled_at")[0m
+  [1m[35m (5.6ms)[0m  [1m[35mCREATE TABLE "accounts_memberships" ("id" uuid DEFAULT gen_random_uuid() NOT NULL PRIMARY KEY, "account_id" uuid NOT NULL, "identity_id" bigint, "name" character varying NOT NULL, "role" character varying DEFAULT 'member' NOT NULL, "active" boolean DEFAULT TRUE NOT NULL, "verified_at" timestamp(6), "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL, CONSTRAINT "fk_rails_8d43abd265"
+FOREIGN KEY ("account_id")
+  REFERENCES "accounts" ("id")
+)[0m
+  [1m[35m (0.6ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_accounts_memberships_unique" ON "accounts_memberships" ("account_id", "identity_id")[0m
+  [1m[35m (0.4ms)[0m  [1m[35mCREATE INDEX "index_accounts_memberships_on_account_id_and_role" ON "accounts_memberships" ("account_id", "role")[0m
+  [1m[35m (0.4ms)[0m  [1m[35mCREATE INDEX "index_accounts_memberships_on_identity_id" ON "accounts_memberships" ("identity_id")[0m
+  [1m[35m (1.4ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" character varying NOT NULL PRIMARY KEY)[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.8ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[35m (0.5ms)[0m  [1m[32mINSERT INTO "schema_migrations" (version) VALUES (0)[0m
+  [1m[35m (3.1ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" character varying NOT NULL PRIMARY KEY, "value" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL)[0m
+  [1m[36mActiveRecord::InternalMetadata Load (2.5ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::InternalMetadata Create (0.6ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'test', '2026-05-08 12:50:39.905144', '2026-05-08 12:50:39.905145') RETURNING "key"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAuth::Identity Create (1.2ms)[0m  [1m[32mINSERT INTO "auth_identities" ("email", "password_digest", "staff", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["email", "owner-14a690e2@example.com"], ["password_digest", "$2a$04$dGcDqK8rWkKXUhU9gBOuPurKqS2G8HHnBmbsVBv/IgoNDVpbvIVbO"], ["staff", false], ["created_at", "2026-05-08 12:50:39.938747"], ["updated_at", "2026-05-08 12:50:39.938747"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Count (2.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "accounts"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 1494289492057254064], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (0.6ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Bad"], ["external_account_id", 1494289492057254064], ["cancelled_at", nil], ["incinerated_at", nil], ["created_at", "2026-05-08 12:50:39.949643"], ["updated_at", "2026-05-08 12:50:39.949643"]]
+  [1m[36mAccounts::Account Load (0.5ms)[0m  [1m[34mSELECT "accounts".* FROM "accounts" WHERE "accounts"."id" = $1 LIMIT $2[0m  [["id", "0b4073b0-180b-4bde-ac76-f36d98e10a16"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Create (3.2ms)[0m  [1m[32mINSERT INTO "accounts_memberships" ("account_id", "identity_id", "name", "role", "active", "verified_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["account_id", "0b4073b0-180b-4bde-ac76-f36d98e10a16"], ["identity_id", nil], ["name", "System"], ["role", "system"], ["active", true], ["verified_at", nil], ["created_at", "2026-05-08 12:50:39.960245"], ["updated_at", "2026-05-08 12:50:39.960245"]]
+  [1m[36mAccounts::Account Load (0.2ms)[0m  [1m[34mSELECT "accounts".* FROM "accounts" WHERE "accounts"."id" = $1 LIMIT $2[0m  [["id", "0b4073b0-180b-4bde-ac76-f36d98e10a16"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts_memberships" WHERE "accounts_memberships"."identity_id" = $1 AND "accounts_memberships"."account_id" = $2 LIMIT $3[0m  [["identity_id", 1], ["account_id", "0b4073b0-180b-4bde-ac76-f36d98e10a16"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK TO SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Count (0.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "accounts"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (1.3ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAuth::Identity Create (1.7ms)[0m  [1m[32mINSERT INTO "auth_identities" ("email", "password_digest", "staff", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["email", "owner-62d0a85c@example.com"], ["password_digest", "$2a$04$2OhBVclibqeNwSmhUlO1fu9Z5WA4P/x/c2kr/dzlahrOxgblVISaG"], ["staff", false], ["created_at", "2026-05-08 12:50:39.986745"], ["updated_at", "2026-05-08 12:50:39.986745"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 1519362419675561277], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (0.2ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Acme"], ["external_account_id", 1519362419675561277], ["cancelled_at", nil], ["incinerated_at", nil], ["created_at", "2026-05-08 12:50:39.988882"], ["updated_at", "2026-05-08 12:50:39.988882"]]
+  [1m[36mAccounts::Account Load (0.2ms)[0m  [1m[34mSELECT "accounts".* FROM "accounts" WHERE "accounts"."id" = $1 LIMIT $2[0m  [["id", "bc31f27b-c3aa-4e2a-890b-e2253a532bd8"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Create (0.3ms)[0m  [1m[32mINSERT INTO "accounts_memberships" ("account_id", "identity_id", "name", "role", "active", "verified_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["account_id", "bc31f27b-c3aa-4e2a-890b-e2253a532bd8"], ["identity_id", nil], ["name", "System"], ["role", "system"], ["active", true], ["verified_at", nil], ["created_at", "2026-05-08 12:50:39.990307"], ["updated_at", "2026-05-08 12:50:39.990307"]]
+  [1m[36mAccounts::Account Load (0.2ms)[0m  [1m[34mSELECT "accounts".* FROM "accounts" WHERE "accounts"."id" = $1 LIMIT $2[0m  [["id", "bc31f27b-c3aa-4e2a-890b-e2253a532bd8"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts_memberships" WHERE "accounts_memberships"."identity_id" = $1 AND "accounts_memberships"."account_id" = $2 LIMIT $3[0m  [["identity_id", 2], ["account_id", "bc31f27b-c3aa-4e2a-890b-e2253a532bd8"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Create (0.3ms)[0m  [1m[32mINSERT INTO "accounts_memberships" ("account_id", "identity_id", "name", "role", "active", "verified_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["account_id", "bc31f27b-c3aa-4e2a-890b-e2253a532bd8"], ["identity_id", 2], ["name", "Ada"], ["role", "owner"], ["active", true], ["verified_at", "2026-05-08 12:50:39.990742"], ["created_at", "2026-05-08 12:50:39.991773"], ["updated_at", "2026-05-08 12:50:39.991773"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Pluck (0.3ms)[0m  [1m[34mSELECT "accounts_memberships"."identity_id" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "bc31f27b-c3aa-4e2a-890b-e2253a532bd8"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Pluck (0.3ms)[0m  [1m[34mSELECT "accounts_memberships"."role" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1[0m  [["account_id", "bc31f27b-c3aa-4e2a-890b-e2253a532bd8"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 2936200173630318092], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (1.9ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Acme"], ["external_account_id", 2936200173630318092], ["cancelled_at", nil], ["incinerated_at", nil], ["created_at", "2026-05-08 12:50:39.994075"], ["updated_at", "2026-05-08 12:50:39.994075"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Pluck (0.2ms)[0m  [1m[34mSELECT "accounts_memberships"."identity_id" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "ca62cd24-13dd-4851-b39a-e570081681ed"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 4133654690648804632], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (0.2ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Live"], ["external_account_id", 4133654690648804632], ["cancelled_at", nil], ["incinerated_at", nil], ["created_at", "2026-05-08 12:50:39.998028"], ["updated_at", "2026-05-08 12:50:39.998028"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Pluck (0.2ms)[0m  [1m[34mSELECT "accounts_memberships"."identity_id" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "dc2722d3-ef4d-448a-ad2a-c6ba0d997834"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 3360816558806308002], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (0.2ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Cancelled"], ["external_account_id", 3360816558806308002], ["cancelled_at", "2026-05-07 12:50:39.999562"], ["incinerated_at", nil], ["created_at", "2026-05-08 12:50:39.999662"], ["updated_at", "2026-05-08 12:50:39.999662"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Pluck (0.2ms)[0m  [1m[34mSELECT "accounts_memberships"."identity_id" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "dab094fa-63b1-4759-9322-01ed0ed430cc"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."cancelled_at" IS NULL AND "accounts"."id" = $1 LIMIT $2[0m  [["id", "dc2722d3-ef4d-448a-ad2a-c6ba0d997834"], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."cancelled_at" IS NULL AND "accounts"."id" = $1 LIMIT $2[0m  [["id", "dab094fa-63b1-4759-9322-01ed0ed430cc"], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Load (0.3ms)[0m  [1m[34mSELECT "accounts".* FROM "accounts" WHERE "accounts"."cancelled_at" IS NULL[0m
+  [1m[36mTRANSACTION (2.4ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (0.5ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 3888326987286093107], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (1.9ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Acme"], ["external_account_id", 3888326987286093107], ["cancelled_at", nil], ["incinerated_at", nil], ["created_at", "2026-05-08 12:50:40.010322"], ["updated_at", "2026-05-08 12:50:40.010322"]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Pluck (0.2ms)[0m  [1m[34mSELECT "accounts_memberships"."identity_id" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "9d3f81a0-adc4-4e46-81e5-d070becab08f"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAuth::Identity Create (0.5ms)[0m  [1m[32mINSERT INTO "auth_identities" ("email", "password_digest", "staff", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["email", "x-bf041b8d@example.com"], ["password_digest", "$2a$04$3GSk/AWm6XpJNk8aFWDMneg1EoXL3uD9Cyu3qy5CsldZCphdEYRqi"], ["staff", false], ["created_at", "2026-05-08 12:50:40.015041"], ["updated_at", "2026-05-08 12:50:40.015041"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts_memberships" WHERE "accounts_memberships"."identity_id" = $1 AND "accounts_memberships"."account_id" = $2 LIMIT $3[0m  [["identity_id", 3], ["account_id", "9d3f81a0-adc4-4e46-81e5-d070becab08f"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Create (0.3ms)[0m  [1m[32mINSERT INTO "accounts_memberships" ("account_id", "identity_id", "name", "role", "active", "verified_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["account_id", "9d3f81a0-adc4-4e46-81e5-d070becab08f"], ["identity_id", 3], ["name", "O"], ["role", "owner"], ["active", true], ["verified_at", nil], ["created_at", "2026-05-08 12:50:40.016393"], ["updated_at", "2026-05-08 12:50:40.016393"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAuth::Identity Create (0.4ms)[0m  [1m[32mINSERT INTO "auth_identities" ("email", "password_digest", "staff", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["email", "y-f1b4f61d@example.com"], ["password_digest", "$2a$04$eBxwXjAKQf/5FWyhnibjkebnOpwlxTJU15BJymlLj4EHwYopbWjmy"], ["staff", false], ["created_at", "2026-05-08 12:50:40.018113"], ["updated_at", "2026-05-08 12:50:40.018113"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts_memberships" WHERE "accounts_memberships"."identity_id" = $1 AND "accounts_memberships"."account_id" = $2 LIMIT $3[0m  [["identity_id", 4], ["account_id", "9d3f81a0-adc4-4e46-81e5-d070becab08f"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Create (2.4ms)[0m  [1m[32mINSERT INTO "accounts_memberships" ("account_id", "identity_id", "name", "role", "active", "verified_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["account_id", "9d3f81a0-adc4-4e46-81e5-d070becab08f"], ["identity_id", 4], ["name", "A"], ["role", "admin"], ["active", true], ["verified_at", nil], ["created_at", "2026-05-08 12:50:40.019328"], ["updated_at", "2026-05-08 12:50:40.019328"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Create (0.4ms)[0m  [1m[32mINSERT INTO "accounts_memberships" ("account_id", "identity_id", "name", "role", "active", "verified_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["account_id", "9d3f81a0-adc4-4e46-81e5-d070becab08f"], ["identity_id", nil], ["name", "System"], ["role", "system"], ["active", true], ["verified_at", nil], ["created_at", "2026-05-08 12:50:40.022068"], ["updated_at", "2026-05-08 12:50:40.022068"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts_memberships" WHERE "accounts_memberships"."active" = $1 AND "accounts_memberships"."role" != $2 AND "accounts_memberships"."id" = $3 LIMIT $4[0m  [["active", true], ["role", "system"], ["id", "0abebea3-39b8-4be9-956e-32907605dec3"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts_memberships" WHERE "accounts_memberships"."active" = $1 AND "accounts_memberships"."role" != $2 AND "accounts_memberships"."id" = $3 LIMIT $4[0m  [["active", true], ["role", "system"], ["id", "9fc1381a-9057-4490-a8ba-5427c43811c7"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts_memberships" WHERE "accounts_memberships"."active" = $1 AND "accounts_memberships"."role" != $2 AND "accounts_memberships"."id" = $3 LIMIT $4[0m  [["active", true], ["role", "system"], ["id", "16b6cfce-ed0d-401b-afed-8fcabbd0078c"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Load (0.3ms)[0m  [1m[34mSELECT "accounts_memberships".* FROM "accounts_memberships" WHERE "accounts_memberships"."active" = $1 AND "accounts_memberships"."role" != $2[0m  [["active", true], ["role", "system"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 2455706941586728528], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (0.2ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Acme"], ["external_account_id", 2455706941586728528], ["cancelled_at", nil], ["incinerated_at", nil], ["created_at", "2026-05-08 12:50:40.025245"], ["updated_at", "2026-05-08 12:50:40.025245"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Pluck (0.2ms)[0m  [1m[34mSELECT "accounts_memberships"."identity_id" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "5b9eebc1-ddba-4e59-b877-4d31219bc974"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAuth::Identity Create (2.0ms)[0m  [1m[32mINSERT INTO "auth_identities" ("email", "password_digest", "staff", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["email", "x-f5c82378@example.com"], ["password_digest", "$2a$04$GU687onJfi6J2c4q5RQm6.B86JiGWXfRCNiUuVLKVUZ/VUw8MHbtW"], ["staff", false], ["created_at", "2026-05-08 12:50:40.027602"], ["updated_at", "2026-05-08 12:50:40.027602"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts_memberships" WHERE "accounts_memberships"."identity_id" = $1 AND "accounts_memberships"."account_id" = $2 LIMIT $3[0m  [["identity_id", 5], ["account_id", "5b9eebc1-ddba-4e59-b877-4d31219bc974"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Create (0.2ms)[0m  [1m[32mINSERT INTO "accounts_memberships" ("account_id", "identity_id", "name", "role", "active", "verified_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["account_id", "5b9eebc1-ddba-4e59-b877-4d31219bc974"], ["identity_id", 5], ["name", "O"], ["role", "owner"], ["active", true], ["verified_at", nil], ["created_at", "2026-05-08 12:50:40.030360"], ["updated_at", "2026-05-08 12:50:40.030360"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAuth::Identity Create (0.4ms)[0m  [1m[32mINSERT INTO "auth_identities" ("email", "password_digest", "staff", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["email", "y-90d38453@example.com"], ["password_digest", "$2a$04$jF9FdSe5COxDLjaWkgMZheQf2dbGxbRy10S7vTl0Zb6AZH8u3JkPi"], ["staff", false], ["created_at", "2026-05-08 12:50:40.031984"], ["updated_at", "2026-05-08 12:50:40.031984"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts_memberships" WHERE "accounts_memberships"."identity_id" = $1 AND "accounts_memberships"."account_id" = $2 LIMIT $3[0m  [["identity_id", 6], ["account_id", "5b9eebc1-ddba-4e59-b877-4d31219bc974"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Create (0.2ms)[0m  [1m[32mINSERT INTO "accounts_memberships" ("account_id", "identity_id", "name", "role", "active", "verified_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["account_id", "5b9eebc1-ddba-4e59-b877-4d31219bc974"], ["identity_id", 6], ["name", "A"], ["role", "admin"], ["active", true], ["verified_at", nil], ["created_at", "2026-05-08 12:50:40.033166"], ["updated_at", "2026-05-08 12:50:40.033166"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Create (0.3ms)[0m  [1m[32mINSERT INTO "accounts_memberships" ("account_id", "identity_id", "name", "role", "active", "verified_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["account_id", "5b9eebc1-ddba-4e59-b877-4d31219bc974"], ["identity_id", nil], ["name", "System"], ["role", "system"], ["active", true], ["verified_at", nil], ["created_at", "2026-05-08 12:50:40.033719"], ["updated_at", "2026-05-08 12:50:40.033719"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts_memberships" WHERE "accounts_memberships"."role" IN ($1, $2) AND "accounts_memberships"."id" = $3 LIMIT $4[0m  [["role", "owner"], ["role", "admin"], ["id", "5a49f6ee-8226-4c85-ad32-578cec28e0cc"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts_memberships" WHERE "accounts_memberships"."role" IN ($1, $2) AND "accounts_memberships"."id" = $3 LIMIT $4[0m  [["role", "owner"], ["role", "admin"], ["id", "f59b5e3b-990a-4bab-b804-c00310d81b97"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts_memberships" WHERE "accounts_memberships"."role" IN ($1, $2) AND "accounts_memberships"."id" = $3 LIMIT $4[0m  [["role", "owner"], ["role", "admin"], ["id", "76e17ab4-0518-4511-8a23-7370c459a54b"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Load (0.2ms)[0m  [1m[34mSELECT "accounts_memberships".* FROM "accounts_memberships" WHERE "accounts_memberships"."role" IN ($1, $2)[0m  [["role", "owner"], ["role", "admin"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 3994622473727287626], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (0.2ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Acme"], ["external_account_id", 3994622473727287626], ["cancelled_at", nil], ["incinerated_at", nil], ["created_at", "2026-05-08 12:50:40.037939"], ["updated_at", "2026-05-08 12:50:40.037939"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Pluck (0.1ms)[0m  [1m[34mSELECT "accounts_memberships"."identity_id" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "450bdaa4-e244-4ffd-ab04-954a4fb068ca"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAuth::Identity Create (0.3ms)[0m  [1m[32mINSERT INTO "auth_identities" ("email", "password_digest", "staff", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["email", "x-7dcc8d55@example.com"], ["password_digest", "$2a$04$ZZaNqRJSoB6F2A.H3Mo/7OHrtM6pxfj0nYvzCei0DZhc/CR7CKXvu"], ["staff", false], ["created_at", "2026-05-08 12:50:40.040386"], ["updated_at", "2026-05-08 12:50:40.040386"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts_memberships" WHERE "accounts_memberships"."identity_id" = $1 AND "accounts_memberships"."account_id" = $2 LIMIT $3[0m  [["identity_id", 7], ["account_id", "450bdaa4-e244-4ffd-ab04-954a4fb068ca"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Create (0.2ms)[0m  [1m[32mINSERT INTO "accounts_memberships" ("account_id", "identity_id", "name", "role", "active", "verified_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["account_id", "450bdaa4-e244-4ffd-ab04-954a4fb068ca"], ["identity_id", 7], ["name", "First"], ["role", "member"], ["active", true], ["verified_at", nil], ["created_at", "2026-05-08 12:50:40.041451"], ["updated_at", "2026-05-08 12:50:40.041451"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts_memberships" WHERE "accounts_memberships"."identity_id" = $1 AND "accounts_memberships"."account_id" = $2 LIMIT $3[0m  [["identity_id", 7], ["account_id", "450bdaa4-e244-4ffd-ab04-954a4fb068ca"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 2831084798202911212], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (0.2ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Acme"], ["external_account_id", 2831084798202911212], ["cancelled_at", nil], ["incinerated_at", nil], ["created_at", "2026-05-08 12:50:40.042959"], ["updated_at", "2026-05-08 12:50:40.042959"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Pluck (0.1ms)[0m  [1m[34mSELECT "accounts_memberships"."identity_id" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "acdf9f79-8de4-4145-b665-4075fa5d88ca"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Create (1.9ms)[0m  [1m[32mINSERT INTO "accounts_memberships" ("account_id", "identity_id", "name", "role", "active", "verified_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["account_id", "acdf9f79-8de4-4145-b665-4075fa5d88ca"], ["identity_id", nil], ["name", "System"], ["role", "system"], ["active", true], ["verified_at", nil], ["created_at", "2026-05-08 12:50:40.044105"], ["updated_at", "2026-05-08 12:50:40.044105"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 2508723426232779374], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (0.2ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Acme"], ["external_account_id", 2508723426232779374], ["cancelled_at", nil], ["incinerated_at", nil], ["created_at", "2026-05-08 12:50:40.047240"], ["updated_at", "2026-05-08 12:50:40.047240"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Pluck (0.1ms)[0m  [1m[34mSELECT "accounts_memberships"."identity_id" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "7003a55f-a5ca-4593-bc70-f1ab82a1fce7"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 291632333747153991], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (0.2ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Acme"], ["external_account_id", 291632333747153991], ["cancelled_at", nil], ["incinerated_at", nil], ["created_at", "2026-05-08 12:50:40.049243"], ["updated_at", "2026-05-08 12:50:40.049243"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Pluck (0.1ms)[0m  [1m[34mSELECT "accounts_memberships"."identity_id" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "9c1ddeed-53c9-4804-b17e-388095ba60cd"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (3.5ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAuth::Identity Create (3.8ms)[0m  [1m[32mINSERT INTO "auth_identities" ("email", "password_digest", "staff", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["email", "u-18de4125@example.com"], ["password_digest", "$2a$04$SMAnZqu8mqU.4KGiSnZlGungd627lLloi9bKSoQtUQUwGZClWgh0K"], ["staff", false], ["created_at", "2026-05-08 12:50:40.061038"], ["updated_at", "2026-05-08 12:50:40.061038"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 670659866516123984], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (0.2ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Acme 2"], ["external_account_id", 670659866516123984], ["cancelled_at", nil], ["incinerated_at", nil], ["created_at", "2026-05-08 12:50:40.065259"], ["updated_at", "2026-05-08 12:50:40.065259"]]
+  [1m[36mAccounts::Account Load (0.2ms)[0m  [1m[34mSELECT "accounts".* FROM "accounts" WHERE "accounts"."id" = $1 LIMIT $2[0m  [["id", "28cb64db-1995-4ea0-9ce8-050613bc9b0b"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Create (0.2ms)[0m  [1m[32mINSERT INTO "accounts_memberships" ("account_id", "identity_id", "name", "role", "active", "verified_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["account_id", "28cb64db-1995-4ea0-9ce8-050613bc9b0b"], ["identity_id", nil], ["name", "System"], ["role", "system"], ["active", true], ["verified_at", nil], ["created_at", "2026-05-08 12:50:40.066524"], ["updated_at", "2026-05-08 12:50:40.066524"]]
+  [1m[36mAccounts::Account Load (0.1ms)[0m  [1m[34mSELECT "accounts".* FROM "accounts" WHERE "accounts"."id" = $1 LIMIT $2[0m  [["id", "28cb64db-1995-4ea0-9ce8-050613bc9b0b"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts_memberships" WHERE "accounts_memberships"."identity_id" = $1 AND "accounts_memberships"."account_id" = $2 LIMIT $3[0m  [["identity_id", 8], ["account_id", "28cb64db-1995-4ea0-9ce8-050613bc9b0b"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Create (0.2ms)[0m  [1m[32mINSERT INTO "accounts_memberships" ("account_id", "identity_id", "name", "role", "active", "verified_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["account_id", "28cb64db-1995-4ea0-9ce8-050613bc9b0b"], ["identity_id", 8], ["name", "Tester"], ["role", "owner"], ["active", true], ["verified_at", "2026-05-08 12:50:40.066888"], ["created_at", "2026-05-08 12:50:40.067573"], ["updated_at", "2026-05-08 12:50:40.067573"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Pluck (0.1ms)[0m  [1m[34mSELECT "accounts_memberships"."identity_id" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "28cb64db-1995-4ea0-9ce8-050613bc9b0b"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Load (0.3ms)[0m  [1m[34mSELECT "accounts_memberships".* FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."identity_id" = $2 LIMIT $3[0m  [["account_id", "28cb64db-1995-4ea0-9ce8-050613bc9b0b"], ["identity_id", 8], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAuth::Identity Create (0.4ms)[0m  [1m[32mINSERT INTO "auth_identities" ("email", "password_digest", "staff", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["email", "owner-f334147e@example.com"], ["password_digest", "$2a$04$VHDnKx/dH5AJIPoHdDcNJOmY5Me.wG.X3iWKPAAX.J275KKJ8VxVG"], ["staff", false], ["created_at", "2026-05-08 12:50:40.072250"], ["updated_at", "2026-05-08 12:50:40.072250"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (0.3ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 2071081034869369402], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (0.2ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Acme"], ["external_account_id", 2071081034869369402], ["cancelled_at", nil], ["incinerated_at", nil], ["created_at", "2026-05-08 12:50:40.072989"], ["updated_at", "2026-05-08 12:50:40.072989"]]
+  [1m[36mAccounts::Account Load (0.1ms)[0m  [1m[34mSELECT "accounts".* FROM "accounts" WHERE "accounts"."id" = $1 LIMIT $2[0m  [["id", "21d871b1-a872-4385-8aab-f7fc79860591"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Create (0.2ms)[0m  [1m[32mINSERT INTO "accounts_memberships" ("account_id", "identity_id", "name", "role", "active", "verified_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["account_id", "21d871b1-a872-4385-8aab-f7fc79860591"], ["identity_id", nil], ["name", "System"], ["role", "system"], ["active", true], ["verified_at", nil], ["created_at", "2026-05-08 12:50:40.074117"], ["updated_at", "2026-05-08 12:50:40.074117"]]
+  [1m[36mAccounts::Account Load (0.1ms)[0m  [1m[34mSELECT "accounts".* FROM "accounts" WHERE "accounts"."id" = $1 LIMIT $2[0m  [["id", "21d871b1-a872-4385-8aab-f7fc79860591"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts_memberships" WHERE "accounts_memberships"."identity_id" = $1 AND "accounts_memberships"."account_id" = $2 LIMIT $3[0m  [["identity_id", 9], ["account_id", "21d871b1-a872-4385-8aab-f7fc79860591"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Create (0.2ms)[0m  [1m[32mINSERT INTO "accounts_memberships" ("account_id", "identity_id", "name", "role", "active", "verified_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["account_id", "21d871b1-a872-4385-8aab-f7fc79860591"], ["identity_id", 9], ["name", "Ada Lovelace"], ["role", "owner"], ["active", true], ["verified_at", "2026-05-08 12:50:40.074487"], ["created_at", "2026-05-08 12:50:40.075136"], ["updated_at", "2026-05-08 12:50:40.075136"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Pluck (0.1ms)[0m  [1m[34mSELECT "accounts_memberships"."identity_id" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "21d871b1-a872-4385-8aab-f7fc79860591"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1[0m  [["account_id", "21d871b1-a872-4385-8aab-f7fc79860591"]]
+  [1m[36mAccounts::Membership Load (0.3ms)[0m  [1m[34mSELECT "accounts_memberships".* FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "21d871b1-a872-4385-8aab-f7fc79860591"], ["role", "system"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Load (0.2ms)[0m  [1m[34mSELECT "accounts_memberships".* FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "21d871b1-a872-4385-8aab-f7fc79860591"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAuth::Identity Create (0.8ms)[0m  [1m[32mINSERT INTO "auth_identities" ("email", "password_digest", "staff", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5) RETURNING "id"[0m  [["email", "owner-c9a6cb1c@example.com"], ["password_digest", "$2a$04$0McxzMgaColzFlCCYB42r.HzJlzic6S/3dMbyBXsXWrJ/uy2s.C0S"], ["staff", false], ["created_at", "2026-05-08 12:50:40.078971"], ["updated_at", "2026-05-08 12:50:40.078971"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mSAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Account Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts" WHERE "accounts"."external_account_id" = $1 LIMIT $2[0m  [["external_account_id", 3637355725100412013], ["LIMIT", 1]]
+  [1m[36mAccounts::Account Create (0.2ms)[0m  [1m[32mINSERT INTO "accounts" ("name", "external_account_id", "cancelled_at", "incinerated_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6) RETURNING "id"[0m  [["name", "Acme"], ["external_account_id", 3637355725100412013], ["cancelled_at", nil], ["incinerated_at", nil], ["created_at", "2026-05-08 12:50:40.080192"], ["updated_at", "2026-05-08 12:50:40.080192"]]
+  [1m[36mAccounts::Account Load (0.1ms)[0m  [1m[34mSELECT "accounts".* FROM "accounts" WHERE "accounts"."id" = $1 LIMIT $2[0m  [["id", "6737ed42-41d4-4ad5-9433-aefbd7b9a645"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Create (0.2ms)[0m  [1m[32mINSERT INTO "accounts_memberships" ("account_id", "identity_id", "name", "role", "active", "verified_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["account_id", "6737ed42-41d4-4ad5-9433-aefbd7b9a645"], ["identity_id", nil], ["name", "System"], ["role", "system"], ["active", true], ["verified_at", nil], ["created_at", "2026-05-08 12:50:40.081512"], ["updated_at", "2026-05-08 12:50:40.081512"]]
+  [1m[36mAccounts::Account Load (0.1ms)[0m  [1m[34mSELECT "accounts".* FROM "accounts" WHERE "accounts"."id" = $1 LIMIT $2[0m  [["id", "6737ed42-41d4-4ad5-9433-aefbd7b9a645"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "accounts_memberships" WHERE "accounts_memberships"."identity_id" = $1 AND "accounts_memberships"."account_id" = $2 LIMIT $3[0m  [["identity_id", 10], ["account_id", "6737ed42-41d4-4ad5-9433-aefbd7b9a645"], ["LIMIT", 1]]
+  [1m[36mAccounts::Membership Create (0.2ms)[0m  [1m[32mINSERT INTO "accounts_memberships" ("account_id", "identity_id", "name", "role", "active", "verified_at", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"[0m  [["account_id", "6737ed42-41d4-4ad5-9433-aefbd7b9a645"], ["identity_id", 10], ["name", "Ada Lovelace"], ["role", "owner"], ["active", true], ["verified_at", "2026-05-08 12:50:40.081918"], ["created_at", "2026-05-08 12:50:40.082594"], ["updated_at", "2026-05-08 12:50:40.082594"]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mRELEASE SAVEPOINT active_record_1[0m
+  [1m[36mAccounts::Membership Pluck (0.1ms)[0m  [1m[34mSELECT "accounts_memberships"."identity_id" FROM "accounts_memberships" WHERE "accounts_memberships"."account_id" = $1 AND "accounts_memberships"."role" = $2 LIMIT $3[0m  [["account_id", "6737ed42-41d4-4ad5-9433-aefbd7b9a645"], ["role", "owner"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[31mROLLBACK[0m

@@ -14,8 +14,10 @@
 #      server restart).
 #   3. Publish from anywhere — controllers, services, jobs — with
 #      `Seams::Events::Publisher.publish("user.onboarded.example",
-#      user_id: user.id, ...)`. db/seeds.rb does exactly that to
-#      let you watch the bus fire on a fresh checkout.
+#      identity_id: identity.id, account_id: account.id, ...)`. The
+#      Wave 9 demo carries both ids in the payload so subscribers can
+#      address the human OR the tenant. db/seeds.rb does exactly that
+#      to let you watch the bus fire on a fresh checkout.
 Rails.application.config.after_initialize do
   Seams::EventRegistry.register("user.onboarded.example", emitted_by: "Host")
 

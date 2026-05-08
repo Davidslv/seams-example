@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  mount Accounts::Engine, at: "/accounts"
   mount Core::Engine, at: "/core"
   mount Teams::Engine, at: "/teams"
   mount Billing::Engine, at: "/billing"
