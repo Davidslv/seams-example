@@ -8,6 +8,10 @@ building Rails applications as a modular monolith. The point of this
 repo is to be the simplest possible answer to *"what does a project
 that uses seams actually look like?"*.
 
+> seams-example is the production-shaped reference implementation for
+> **[Modular Rails: Architecture for the Long Game](https://davidslv.uk/modular-rails/)**
+> by David Silva. The book is the artefact; this repo is the evidence.
+
 The seams gem itself is loaded as a sibling **path source**:
 
 ```ruby
